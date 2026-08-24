@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import { Game, TournamentFormat } from "@/types/database";
 import { SCORING_PRESETS } from "@/lib/scoring/presets";
+import { GameLogo } from "@/components/common/GameLogo";
 import {
   Trophy,
   ArrowLeft,
@@ -18,6 +19,7 @@ import {
   Shield,
   Crosshair,
   Layers,
+  Zap,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -49,7 +51,7 @@ export default function CreateTournamentPage() {
     {
       id: "SOLO",
       label: "Solo (1v1 / 1-Player)",
-      description: "Individual combatants (e.g. 50-100 players). Player name directly displayed in scoreboard.",
+      description: "Individual combatants (e.g. 50-100 players). Player name displayed directly on the scoreboard.",
       teamSize: 1,
       icon: User,
       recommendedPreset: "bgmi_solo_50players",
@@ -57,7 +59,7 @@ export default function CreateTournamentPage() {
     {
       id: "DUO",
       label: "Duo (2 Players)",
-      description: "2 Players per team (e.g. 25-50 duo pairs).",
+      description: "2 Players per team (e.g. 25 duo pairs competing).",
       teamSize: 2,
       icon: Users,
       recommendedPreset: "bgmi_duo_clash",
@@ -73,7 +75,7 @@ export default function CreateTournamentPage() {
     {
       id: "SQUAD",
       label: "Squad (4 Players)",
-      description: "Standard 4-player starting lineup + 1 substitute (BGMI / Free Fire official standard).",
+      description: "Standard 4-player starting lineup (BGMI / Free Fire official esports standard).",
       teamSize: 4,
       icon: Layers,
       recommendedPreset: "bgmi_official_10pt",
@@ -99,6 +101,10 @@ export default function CreateTournamentPage() {
     loadGames();
   }, []);
 
+  const selectedGame = useMemo(() => {
+    return games.find((g) => g.id === gameId);
+  }, [games, gameId]);
+
   const handleNameChange = (val: string) => {
     setName(val);
     const autoSlug = val
@@ -107,6 +113,23 @@ export default function CreateTournamentPage() {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
     setSlug(autoSlug);
+  };
+
+  const handleGameSelect = (g: Game) => {
+    setGameId(g.id);
+    if (g.slug === "bgmi") {
+      setSelectedPresetKey(format === "SOLO" ? "bgmi_solo_50players" : format === "DUO" ? "bgmi_duo_clash" : "bgmi_official_10pt");
+    } else if (g.slug === "free-fire") {
+      setSelectedPresetKey(format === "SOLO" ? "free_fire_solo_48" : "free_fire_official");
+    } else if (g.slug === "valorant") {
+      setFormat("5v5");
+      setTeamSize(5);
+      setSelectedPresetKey("valorant_tourney");
+    } else if (g.slug === "cod-mobile") {
+      setSelectedPresetKey("cod_mobile_br");
+    } else {
+      setSelectedPresetKey("custom_customizable");
+    }
   };
 
   const handleFormatSelect = (fmtOption: typeof FORMAT_OPTIONS[0]) => {
@@ -120,7 +143,7 @@ export default function CreateTournamentPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !slug || !gameId) {
-      alert("Please fill in the tournament name and select a game.");
+      alert("Please enter tournament name and select a game.");
       return;
     }
 
@@ -138,9 +161,9 @@ export default function CreateTournamentPage() {
           visibility,
           format,
           team_size: teamSize,
-          logo_url: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=256&auto=format&fit=crop&q=80",
+          logo_url: selectedGame?.logo_url || null,
           banner_url: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200&auto=format&fit=crop&q=80",
-          custom_colors: { primary: "#0066FF", accent: "#FFDE00" },
+          custom_colors: { primary: "#2563EB", accent: "#F5C400" },
         })
         .select()
         .single();
@@ -177,38 +200,93 @@ export default function CreateTournamentPage() {
   };
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto max-w-4xl space-y-6 pb-12">
       {/* Top Breadcrumb */}
       <div className="flex items-center gap-3">
         <Link
           href="/admin"
-          className="flex items-center gap-1.5 text-xs font-bold uppercase text-slate-500 hover:text-slate-900"
+          className="flex items-center gap-1.5 text-xs font-bold uppercase text-slate-500 hover:text-slate-900 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back to Control Room</span>
         </Link>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xl space-y-6">
-        <div className="border-b border-slate-100 pb-4">
-          <div className="flex items-center gap-2">
-            <Trophy className="h-6 w-6 text-blue-600" />
-            <h1 className="font-display text-2xl font-black uppercase text-slate-900">
-              Create New Esports Tournament
-            </h1>
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs space-y-8">
+        {/* Header Title */}
+        <div className="border-b border-slate-100 pb-5">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-xs">
+              <Trophy className="h-5 w-5" />
+            </div>
+            <div>
+              <h1 className="font-display text-2xl font-black uppercase text-slate-900 tracking-tight">
+                Create New Esports Tournament
+              </h1>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Configure your game title, tournament format, and point scoring rules.
+              </p>
+            </div>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Configure tournament format (Solo, Duo, Squad, 5v5), game title, and scoring presets.
-          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Tournament Format Selection */}
-          <div>
-            <label className="block text-xs font-black uppercase tracking-wider text-slate-600 mb-2.5 flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-yellow-500" />
-              <span>Select Tournament Team Format *</span>
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Step 1: Game Title Selection with Game Logos */}
+          <div className="space-y-3">
+            <label className="block text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-2">
+              <Gamepad2 className="h-4 w-4 text-blue-600" />
+              <span>Step 1: Select Game Title *</span>
             </label>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {games.map((g) => {
+                const isSelected = gameId === g.id;
+
+                return (
+                  <button
+                    type="button"
+                    key={g.id}
+                    onClick={() => handleGameSelect(g)}
+                    className={cn(
+                      "flex items-center gap-3.5 rounded-2xl border p-4 text-left transition-all group",
+                      isSelected
+                        ? "border-blue-600 bg-blue-50/70 text-slate-900 shadow-xs ring-2 ring-blue-600/20"
+                        : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+                    )}
+                  >
+                    <GameLogo
+                      slug={g.slug}
+                      name={g.name}
+                      size="md"
+                      className="shrink-0"
+                    />
+
+                    <div className="flex-1 overflow-hidden">
+                      <div className="flex items-center justify-between">
+                        <span className="font-display text-sm font-black uppercase text-slate-900 group-hover:text-blue-600 transition-colors truncate">
+                          {g.name.split("(")[0].trim()}
+                        </span>
+                        {isSelected && (
+                          <CheckCircle className="h-4 w-4 text-blue-600 shrink-0 ml-1" />
+                        )}
+                      </div>
+                      <span className="text-[11px] text-slate-500 block truncate mt-0.5">
+                        {g.description || g.slug}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Step 2: Tournament Team Format */}
+          <div className="space-y-3 border-t border-slate-100 pt-6">
+            <label className="block text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-2">
+              <Layers className="h-4 w-4 text-blue-600" />
+              <span>Step 2: Select Tournament Format *</span>
+            </label>
+
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-5">
               {FORMAT_OPTIONS.map((fmtOption) => {
                 const Icon = fmtOption.icon;
@@ -220,18 +298,18 @@ export default function CreateTournamentPage() {
                     key={fmtOption.id}
                     onClick={() => handleFormatSelect(fmtOption)}
                     className={cn(
-                      "flex flex-col items-start justify-between rounded-xl border p-3.5 text-left transition-all",
+                      "flex flex-col items-start justify-between rounded-2xl border p-4 text-left transition-all",
                       isSelected
-                        ? "border-blue-600 bg-blue-50 text-slate-900 shadow-md shadow-blue-500/10"
+                        ? "border-blue-600 bg-blue-50/70 text-slate-900 shadow-xs ring-2 ring-blue-600/20"
                         : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
                     )}
                   >
-                    <div className="flex items-center justify-between w-full mb-2">
+                    <div className="flex items-center justify-between w-full mb-3">
                       <div
                         className={cn(
-                          "flex h-8 w-8 items-center justify-center rounded-lg border",
+                          "flex h-9 w-9 items-center justify-center rounded-xl border",
                           isSelected
-                            ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                            ? "bg-blue-600 text-white border-blue-600 shadow-xs"
                             : "bg-slate-100 text-slate-600 border-slate-200"
                         )}
                       >
@@ -244,7 +322,7 @@ export default function CreateTournamentPage() {
                       <span className="font-display text-sm font-black uppercase text-slate-900 block">
                         {fmtOption.label}
                       </span>
-                      <span className="text-[10px] text-slate-500 mt-1 line-clamp-2 block leading-relaxed">
+                      <span className="text-[10px] text-slate-500 mt-1 line-clamp-2 leading-relaxed block">
                         {fmtOption.description}
                       </span>
                     </div>
@@ -254,154 +332,97 @@ export default function CreateTournamentPage() {
             </div>
           </div>
 
-          {/* Tournament Name & Slug */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <label className="block text-xs font-black uppercase tracking-wider text-slate-600 mb-1.5">
-                Tournament Name *
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="e.g. Free Fire All-Stars Solo Showdown 2026"
-                value={name}
-                onChange={(e) => handleNameChange(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 shadow-sm"
-              />
+          {/* Step 3: Tournament Name & Slug */}
+          <div className="space-y-4 border-t border-slate-100 pt-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1.5">
+                  Tournament Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. BGMI Pro Championship 2026"
+                  value={name}
+                  onChange={(e) => handleNameChange(e.target.value)}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/15 shadow-2xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1.5">
+                  URL Slug (Live Scorecard Link) *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="bgmi-pro-championship-2026"
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-mono text-blue-600 placeholder-slate-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/15 shadow-2xs"
+                />
+              </div>
             </div>
 
             <div>
-              <label className="block text-xs font-black uppercase tracking-wider text-slate-600 mb-1.5">
-                URL Slug *
+              <label className="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1.5">
+                Overview & Description (Optional)
               </label>
-              <input
-                type="text"
-                required
-                placeholder="free-fire-solo-showdown-2026"
-                value={slug}
-                onChange={(e) => setSlug(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-mono text-blue-600 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 shadow-sm"
+              <textarea
+                rows={2}
+                placeholder="Details on prize pool, tournament schedule dates, streaming channel links..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/15 shadow-2xs"
               />
             </div>
           </div>
 
-          {/* Game Selection */}
-          <div>
-            <label className="block text-xs font-black uppercase tracking-wider text-slate-600 mb-2 flex items-center gap-1.5">
-              <Gamepad2 className="h-4 w-4 text-blue-600" />
-              <span>Select Game Title *</span>
+          {/* Step 4: Scoring Rule Preset */}
+          <div className="space-y-3 border-t border-slate-100 pt-6">
+            <label className="block text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-2">
+              <Sliders className="h-4 w-4 text-blue-600" />
+              <span>Step 4: Scoring Rule Preset *</span>
             </label>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              {games.map((g) => (
-                <button
-                  type="button"
-                  key={g.id}
-                  onClick={() => setGameId(g.id)}
-                  className={cn(
-                    "flex flex-col items-start rounded-xl border p-3.5 text-left transition-all",
-                    gameId === g.id
-                      ? "border-blue-600 bg-blue-50 text-slate-900 shadow-sm"
-                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
-                  )}
-                >
-                  <span className="font-display text-sm font-black uppercase text-slate-900">
-                    {g.name}
-                  </span>
-                  <span className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">
-                    {g.description || g.slug}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
 
-          {/* Scoring Preset Selection */}
-          <div>
-            <label className="block text-xs font-black uppercase tracking-wider text-slate-600 mb-2 flex items-center gap-1.5">
-              <Sliders className="h-4 w-4 text-yellow-500" />
-              <span>Scoring Rule Preset *</span>
-            </label>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {Object.entries(SCORING_PRESETS).map(([key, item]) => (
-                <button
-                  type="button"
-                  key={key}
-                  onClick={() => setSelectedPresetKey(key)}
-                  className={cn(
-                    "flex flex-col items-start rounded-xl border p-3.5 text-left transition-all",
-                    selectedPresetKey === key
-                      ? "border-yellow-400 bg-yellow-50 text-slate-900 shadow-sm"
-                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
-                  )}
-                >
-                  <div className="flex items-center justify-between w-full">
-                    <span className="font-display text-sm font-black uppercase text-slate-900">
-                      {item.name}
-                    </span>
-                    {selectedPresetKey === key && (
-                      <CheckCircle className="h-4 w-4 text-yellow-600" />
+              {Object.entries(SCORING_PRESETS).map(([key, item]) => {
+                const isSelected = selectedPresetKey === key;
+
+                return (
+                  <button
+                    type="button"
+                    key={key}
+                    onClick={() => setSelectedPresetKey(key)}
+                    className={cn(
+                      "flex flex-col items-start rounded-2xl border p-4 text-left transition-all",
+                      isSelected
+                        ? "border-amber-400 bg-amber-50/70 text-slate-900 shadow-xs ring-2 ring-amber-400/20"
+                        : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
                     )}
-                  </div>
-                  <span className="text-[11px] text-slate-500 mt-1">
-                    {item.description}
-                  </span>
-                </button>
-              ))}
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <span className="font-display text-sm font-black uppercase text-slate-900">
+                        {item.name}
+                      </span>
+                      {isSelected && (
+                        <CheckCircle className="h-4 w-4 text-amber-600 shrink-0" />
+                      )}
+                    </div>
+                    <span className="text-[11px] text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                      {item.description}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Description */}
-          <div>
-            <label className="block text-xs font-black uppercase tracking-wider text-slate-600 mb-1.5">
-              Tournament Overview / Description
-            </label>
-            <textarea
-              rows={3}
-              placeholder="Provide event details, schedule dates, prize pool, or streaming links..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 shadow-sm"
-            />
-          </div>
-
-          {/* Status & Visibility */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <label className="block text-xs font-black uppercase tracking-wider text-slate-600 mb-1.5">
-                Initial Status
-              </label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-900 focus:border-blue-500 focus:outline-none shadow-sm"
-              >
-                <option value="UPCOMING">UPCOMING</option>
-                <option value="LIVE">LIVE NOW</option>
-                <option value="DRAFT">DRAFT</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-black uppercase tracking-wider text-slate-600 mb-1.5">
-                Visibility
-              </label>
-              <select
-                value={visibility}
-                onChange={(e) => setVisibility(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-900 focus:border-blue-500 focus:outline-none shadow-sm"
-              >
-                <option value="PUBLIC">PUBLIC (Listed)</option>
-                <option value="UNLISTED">UNLISTED (Direct Link Only)</option>
-                <option value="PRIVATE">PRIVATE (Admin Only)</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-4">
+          {/* Action Submission */}
+          <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-6">
             <Link
               href="/admin"
-              className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-600 hover:bg-slate-50"
             >
               Cancel
             </Link>
@@ -409,7 +430,7 @@ export default function CreateTournamentPage() {
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-6 py-2.5 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-blue-500/20 hover:brightness-110 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-6 py-2.5 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-blue-500/20 hover:brightness-110 active:scale-95 disabled:opacity-50 transition-all"
             >
               {loading ? (
                 <>
