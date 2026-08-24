@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,600;0,700;1,700&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0B132B;
+  --foreground: #F8F3E7;
+  --font-sans: 'Inter', sans-serif;
+  --font-display: 'Chakra Petch', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+body {
+  background-color: #0B132B;
+  color: #F8F3E7;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Custom Esports Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #070C1E;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1F3563;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #E96D2F;
+}
+
+/* Esports Utility Classes */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.text-glow-orange {
+  text-shadow: 0 0 12px rgba(233, 109, 47, 0.7);
+}
+
+.text-glow-gold {
+  text-shadow: 0 0 12px rgba(255, 183, 3, 0.7);
+}
+
+.box-glow-orange {
+  box-shadow: 0 0 20px -3px rgba(233, 109, 47, 0.4);
+}
+
+.box-glow-gold {
+  box-shadow: 0 0 25px -3px rgba(255, 183, 3, 0.4);
+}
+
+.bg-grid-pattern {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(31, 53, 99, 0.2) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(31, 53, 99, 0.2) 1px, transparent 1px);
+}
+
+.clip-slanted {
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+}
+
+.clip-slanted-right {
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 100%, 0 100%);
+}
+
+.clip-slanted-left {
+  clip-path: polygon(16px 0, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Dense table row hover transition */
+.table-row-hover {
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.table-row-hover:hover {
+  background-color: rgba(26, 43, 80, 0.75);
+  transform: translateX(2px);
+}
