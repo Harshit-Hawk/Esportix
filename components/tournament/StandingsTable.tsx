@@ -17,6 +17,11 @@ import {
   Sparkles,
   Download,
   Share2,
+  Medal,
+  Crosshair,
+  Zap,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -39,12 +44,24 @@ export function StandingsTable({
 }: StandingsTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("All");
+  const [viewMode, setViewMode] = useState<"BROADCAST" | "TACTICAL">("BROADCAST");
   const [selectedTeamModal, setSelectedTeamModal] = useState<LeaderboardRow | null>(null);
 
   const isSolo = tournament.format === "SOLO";
   const isDuo = tournament.format === "DUO";
 
   const groups = ["All", ...Array.from(new Set(standings.map((r) => r.team.group_name).filter(Boolean)))];
+
+  // Top 3 Podium
+  const top1 = standings[0] || null;
+  const top2 = standings[1] || null;
+  const top3 = standings[2] || null;
+
+  // Kill MVP Leader
+  const killLeader = useMemo(() => {
+    if (!standings.length) return null;
+    return standings.reduce((max, curr) => (curr.totalKills > max.totalKills ? curr : max), standings[0]);
+  }, [standings]);
 
   const filteredStandings = useMemo(() => {
     return standings.filter((row) => {
@@ -56,25 +73,129 @@ export function StandingsTable({
     });
   }, [standings, searchTerm, selectedGroup]);
 
-  const activeStage = matches.find((m) => m.status === "LIVE")?.round_name ||
-    matches[matches.length - 1]?.round_name ||
-    "GRAND FINALS";
-
   return (
-    <div className="space-y-4">
-      {/* Controls Bar */}
+    <div className="space-y-6">
+      {/* Top 3 Podium & MVP Fraggers Showcase (Broadcast Graphic Banner) */}
+      {standings.length >= 3 && (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          {/* #1 Leader Podium Card */}
+          <div className="relative overflow-hidden rounded-2xl border-2 border-[#F5C400] bg-gradient-to-br from-[#1C1C1C] to-[#121212] p-4 text-white shadow-md">
+            <div className="absolute -right-3 -top-3 h-16 w-16 rounded-full bg-[#F5C400]/10 blur-xl pointer-events-none" />
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-1 font-oswald text-xs font-black uppercase tracking-wider text-[#F5C400]">
+                <Crown className="h-4 w-4" /> #1 TOURNAMENT LEADER
+              </span>
+              <span className="rounded-full bg-[#F5C400] px-2 py-0.5 font-oswald text-[10px] font-black uppercase text-[#141414]">
+                WWCD: {top1?.wins || 0}
+              </span>
+            </div>
+            <div className="mt-3 flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 border border-[#F5C400]/40 font-oswald text-sm font-black text-[#F5C400]">
+                {top1?.team.short_name.slice(0, 3)}
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <h4 className="font-oswald text-lg font-black uppercase truncate text-white leading-tight">
+                  {top1?.team.name}
+                </h4>
+                <span className="font-mono text-xs text-slate-400">
+                  {top1?.totalPoints} PTS ({top1?.placementPoints}p + {top1?.finishPoints}k)
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* #2 Runner-Up Podium Card */}
+          <div className="relative overflow-hidden rounded-2xl border border-slate-700 bg-[#1C1C1C] p-4 text-white shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="font-oswald text-xs font-bold uppercase tracking-wider text-slate-300">
+                #2 RUNNER-UP
+              </span>
+              <span className="font-mono text-xs text-slate-400">
+                {top2?.totalPoints} PTS
+              </span>
+            </div>
+            <div className="mt-3 flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 border border-slate-700 font-oswald text-sm font-bold text-slate-300">
+                {top2?.team.short_name.slice(0, 3)}
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <h4 className="font-oswald text-base font-black uppercase truncate text-white leading-tight">
+                  {top2?.team.name}
+                </h4>
+                <span className="font-mono text-[11px] text-slate-400">
+                  {top2?.totalKills} Kills • {top2?.wins} Wins
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* #3 2nd Runner-Up Podium Card */}
+          <div className="relative overflow-hidden rounded-2xl border border-slate-700 bg-[#1C1C1C] p-4 text-white shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="font-oswald text-xs font-bold uppercase tracking-wider text-slate-300">
+                #3 PODIUM
+              </span>
+              <span className="font-mono text-xs text-slate-400">
+                {top3?.totalPoints} PTS
+              </span>
+            </div>
+            <div className="mt-3 flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 border border-slate-700 font-oswald text-sm font-bold text-slate-300">
+                {top3?.team.short_name.slice(0, 3)}
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <h4 className="font-oswald text-base font-black uppercase truncate text-white leading-tight">
+                  {top3?.team.name}
+                </h4>
+                <span className="font-mono text-[11px] text-slate-400">
+                  {top3?.totalKills} Kills • {top3?.wins} Wins
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Tournament MVP Fragger Card */}
+          {killLeader && killLeader.totalKills > 0 && (
+            <div className="relative overflow-hidden rounded-2xl border border-rose-800/80 bg-gradient-to-br from-[#1F1414] to-[#141414] p-4 text-white shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-1 font-oswald text-xs font-black uppercase tracking-wider text-rose-400">
+                  <Flame className="h-4 w-4 text-rose-500" /> TOURNAMENT MVP
+                </span>
+                <span className="rounded-full bg-rose-950 border border-rose-700 px-2 py-0.5 font-oswald text-[10px] font-black uppercase text-rose-300">
+                  {killLeader.totalKills} KILLS
+                </span>
+              </div>
+              <div className="mt-3 flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-950 border border-rose-700/60 font-oswald text-sm font-black text-rose-400">
+                  <Crosshair className="h-5 w-5" />
+                </div>
+                <div className="flex-1 overflow-hidden">
+                  <h4 className="font-oswald text-base font-black uppercase truncate text-white leading-tight">
+                    {killLeader.team.name}
+                  </h4>
+                  <span className="font-mono text-[11px] text-rose-300">
+                    [{killLeader.team.short_name}] • Avg {(killLeader.totalKills / Math.max(1, killLeader.matchesPlayed)).toFixed(1)} k/m
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Controls & Filter Bar */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        {/* Groups */}
+        {/* Group Selector */}
         {groups.length > 2 ? (
-          <div className="inline-flex rounded-lg border border-slate-300 bg-white p-1 shadow-2xs">
+          <div className="inline-flex rounded-xl border border-slate-300 bg-white p-1 shadow-2xs">
             {groups.map((grp) => (
               <button
                 key={grp}
                 onClick={() => setSelectedGroup(grp)}
                 className={cn(
-                  "rounded-md px-3 py-1 text-xs font-bold uppercase transition-all",
+                  "rounded-lg px-3.5 py-1 text-xs font-oswald font-bold uppercase tracking-wider transition-all",
                   selectedGroup === grp
-                    ? "bg-[#171717] text-white"
+                    ? "bg-[#141414] text-white shadow-xs"
                     : "text-slate-600 hover:text-slate-900"
                 )}
               >
@@ -85,21 +206,21 @@ export function StandingsTable({
         ) : (
           <div className="flex items-center gap-2">
             <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
-              Official Leaderboard ({standings.length} {isSolo ? "Combatants" : "Squads"})
+            <span className="font-oswald text-xs font-bold uppercase tracking-wider text-slate-700">
+              OFFICIAL CHAMPIONSHIP LEADERBOARD ({standings.length} {isSolo ? "Combatants" : "Squads"})
             </span>
           </div>
         )}
 
         {/* Search */}
-        <div className="relative w-full sm:w-64">
+        <div className="relative w-full sm:w-72">
           <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder={isSolo ? "Search player or IGN..." : "Search team or tag..."}
+            placeholder={isSolo ? "Search player or in-game ID..." : "Search team or tag..."}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-xl border border-slate-300 bg-white py-1.5 pl-8 pr-3 text-xs text-slate-900 placeholder-slate-400 focus:border-slate-900 focus:outline-none shadow-2xs"
+            className="w-full rounded-xl border border-slate-300 bg-white py-2 pl-9 pr-4 text-xs text-slate-900 placeholder-slate-400 focus:border-slate-900 focus:outline-none shadow-2xs"
           />
         </div>
       </div>
@@ -113,13 +234,13 @@ export function StandingsTable({
         style={{
           backgroundImage: `
             radial-gradient(#C8C0A5 1px, transparent 1px),
-            linear-gradient(135deg, rgba(255, 204, 0, 0.15) 0%, transparent 40%, rgba(255, 204, 0, 0.12) 100%)
+            linear-gradient(135deg, rgba(255, 204, 0, 0.18) 0%, transparent 40%, rgba(255, 204, 0, 0.14) 100%)
           `,
           backgroundSize: "20px 20px, 100% 100%",
         }}
       >
         {/* Top Graphic Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-4 border-b-2 border-[#D8D0B5]/60 mb-4">
           {/* Left Shield Badge & Series Logo */}
           <div className="flex items-center gap-3.5">
             <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-[#141414] border-2 border-[#F5C400] text-[#F5C400] shadow-md">
@@ -135,7 +256,7 @@ export function StandingsTable({
             </div>
 
             <div>
-              <div className="text-[11px] font-bold uppercase tracking-widest text-[#786E50]">
+              <div className="text-[11px] font-oswald font-bold uppercase tracking-widest text-[#786E50]">
                 {tournament.game?.name || "Official Tournament"}
               </div>
               <h2 className="font-oswald text-2xl sm:text-3xl font-black uppercase tracking-tight text-[#141414] leading-none">
@@ -172,18 +293,17 @@ export function StandingsTable({
               {/* Header Bar */}
               <thead>
                 <tr className="bg-[#1C1C1C] text-[#F5C400] font-oswald text-xs uppercase tracking-wider border-b border-[#2B2B2B]">
-                  <th className="py-2.5 pl-3 pr-2 text-center w-14 font-black">#</th>
-                  <th className="py-2.5 px-3 font-black">{isSolo ? "PLAYER" : "TEAM"}</th>
-                  <th className="py-2.5 px-3 text-center w-16 font-black" title="WWCD / Wins">
+                  <th className="py-3 pl-3 pr-2 text-center w-14 font-black">#</th>
+                  <th className="py-3 px-3 font-black">{isSolo ? "PLAYER" : "TEAM"}</th>
+                  <th className="py-3 px-3 text-center w-16 font-black" title="WWCD / Wins">
                     <div className="flex items-center justify-center gap-1">
-                      {/* WWCD Chicken / Trophy Graphic */}
                       <span className="text-base leading-none">🏆</span>
                     </div>
                   </th>
-                  <th className="py-2.5 px-3 text-center w-20 font-black">MATCHES</th>
-                  <th className="py-2.5 px-3 text-center w-20 font-black">FIN. PTS.</th>
-                  <th className="py-2.5 px-3 text-center w-20 font-black">POS. PTS.</th>
-                  <th className="py-2.5 pl-3 pr-4 text-right w-24 font-black text-white">TOTAL</th>
+                  <th className="py-3 px-3 text-center w-20 font-black">MATCHES</th>
+                  <th className="py-3 px-3 text-center w-20 font-black">FIN. PTS.</th>
+                  <th className="py-3 px-3 text-center w-20 font-black">POS. PTS.</th>
+                  <th className="py-3 pl-3 pr-4 text-right w-24 font-black text-white">TOTAL</th>
                 </tr>
               </thead>
 
@@ -192,7 +312,7 @@ export function StandingsTable({
                 {filteredStandings.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="py-12 text-center bg-[#EDE8D2] text-slate-600 font-sans text-xs">
-                      No teams found.
+                      No participants found.
                     </td>
                   </tr>
                 ) : (
@@ -323,7 +443,7 @@ export function StandingsTable({
         </div>
       </div>
 
-      {/* Team Details Modal */}
+      {/* Team Inspection Modal */}
       {selectedTeamModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 animate-in fade-in">
           <div className="relative w-full max-w-md rounded-2xl border-2 border-[#D8D0B5] bg-[#F4F0E1] p-6 shadow-2xl space-y-4">
