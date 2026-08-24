@@ -2,11 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase/client";
 import {
   Shield,
   LayoutDashboard,
   PlusCircle,
   Radio,
+  Trophy,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +19,20 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const [activeTourney, setActiveTourney] = useState<{ name: string; slug: string } | null>(null);
+
+  useEffect(() => {
+    async function loadActive() {
+      const { data } = await supabase
+        .from("tournaments")
+        .select("name, slug")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+      if (data) setActiveTourney(data);
+    }
+    loadActive();
+  }, []);
 
   const sidebarLinks = [
     { href: "/admin", label: "Tournaments", icon: LayoutDashboard },
@@ -52,23 +69,32 @@ export default function AdminLayout({
           })}
         </nav>
 
-        {/* Public Scoreboard Link */}
-        <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
-          <div className="text-[11px] font-semibold text-slate-700">
-            Active Event
+        {/* Dynamic Tournament Link if exists */}
+        {activeTourney ? (
+          <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
+            <div className="text-[11px] font-semibold text-slate-700">
+              Active Event
+            </div>
+            <p className="text-[11px] text-slate-500 leading-tight truncate">
+              {activeTourney.name}
+            </p>
+            <Link
+              href={`/tournament/${activeTourney.slug}`}
+              target="_blank"
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700 hover:bg-slate-100 border border-slate-200 shadow-2xs"
+            >
+              <Radio className="h-3 w-3 text-red-500" />
+              <span>Public Scorecard</span>
+            </Link>
           </div>
-          <p className="text-[11px] text-slate-500 leading-tight">
-            BGMI Campus Showdown 2026
-          </p>
-          <Link
-            href="/tournament/bgmi-campus-showdown-2026"
-            target="_blank"
-            className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700 hover:bg-slate-100 border border-slate-200 shadow-2xs"
-          >
-            <Radio className="h-3 w-3 text-red-500" />
-            <span>Public Scorecard</span>
-          </Link>
-        </div>
+        ) : (
+          <div className="mt-6 rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-3 text-center space-y-2">
+            <Trophy className="mx-auto h-5 w-5 text-slate-400" />
+            <p className="text-[11px] text-slate-500">
+              No tournaments yet. Create one to get started.
+            </p>
+          </div>
+        )}
       </aside>
 
       {/* Main Admin Viewport */}
