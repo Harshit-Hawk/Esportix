@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shield, Tv, PlusCircle, Zap, Terminal } from "lucide-react";
+import { Shield, Tv, PlusCircle, Zap, Terminal, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function Navbar() {
@@ -10,33 +10,34 @@ export function Navbar() {
   const isAdmin = pathname.startsWith("/admin");
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-[#242945] bg-[#090A10]/90 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b-2 border-[#FCEE0A]/40 bg-[#05050A]/95 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.8)]">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand */}
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#00F0FF] to-[#FF2A85] text-slate-950 font-orbitron font-black text-base shadow-[0_0_12px_rgba(0,240,255,0.4)] group-hover:scale-105 transition-transform">
+            {/* Cyberpunk Yellow Cutout Box */}
+            <div className="relative flex h-8 w-8 items-center justify-center bg-[#FCEE0A] text-slate-950 font-orbitron font-black text-base cyber-cut-tr shadow-[0_0_15px_rgba(252,238,10,0.5)] group-hover:scale-105 transition-transform">
               E
             </div>
             <div className="flex flex-col">
-              <span className="font-orbitron text-base font-black uppercase tracking-wider text-white group-hover:text-[#00F0FF] transition-colors">
-                ESPORTIX<span className="text-[#FF2A85]">.</span>
+              <span className="font-orbitron text-base font-black uppercase tracking-wider text-white group-hover:text-[#FCEE0A] transition-colors">
+                ESPORTIX<span className="text-[#FCEE0A]">_2077</span>
               </span>
-              <span className="font-mono text-[9px] uppercase tracking-widest text-[#00F0FF]/80 leading-none">
-                SYS.V2.6 // REALTIME
+              <span className="font-mono text-[9px] uppercase tracking-widest text-[#00F0FF] leading-none">
+                [ SYS_NET: LINKED ]
               </span>
             </div>
           </Link>
 
           {/* Navigation Links */}
-          <nav className="hidden md:flex items-center gap-2 text-xs font-chakra font-bold tracking-wider uppercase">
+          <nav className="hidden md:flex items-center gap-2 text-xs font-rajdhani font-bold tracking-wider uppercase">
             <Link
               href="/"
               className={cn(
-                "rounded-lg px-3.5 py-1.5 transition-all",
+                "rounded-md px-3.5 py-1.5 transition-all cyber-cut-tr",
                 pathname === "/"
-                  ? "bg-[#16192B] text-[#00F0FF] border border-[#00F0FF]/40 shadow-[0_0_10px_rgba(0,240,255,0.2)]"
-                  : "text-slate-400 hover:text-white hover:bg-[#11131F]"
+                  ? "bg-[#FCEE0A] text-slate-950 font-black shadow-[0_0_12px_rgba(252,238,10,0.4)]"
+                  : "text-slate-300 hover:text-white hover:bg-[#12121E]"
               )}
             >
               Tournaments
@@ -45,13 +46,13 @@ export function Navbar() {
             <Link
               href="/admin"
               className={cn(
-                "rounded-lg px-3.5 py-1.5 transition-all",
+                "rounded-md px-3.5 py-1.5 transition-all cyber-cut-tr",
                 isAdmin
-                  ? "bg-[#16192B] text-[#FF2A85] border border-[#FF2A85]/40 shadow-[0_0_10px_rgba(255,42,133,0.2)]"
-                  : "text-slate-400 hover:text-white hover:bg-[#11131F]"
+                  ? "bg-[#00F0FF] text-slate-950 font-black shadow-[0_0_12px_rgba(0,240,255,0.4)]"
+                  : "text-slate-300 hover:text-white hover:bg-[#12121E]"
               )}
             >
-              Admin Terminal
+              Command Center
             </Link>
           </nav>
         </div>
@@ -60,7 +61,7 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           <Link
             href="/admin/tournaments/new"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-[#00F0FF]/40 bg-[#00F0FF]/10 px-3.5 py-1.5 font-chakra text-xs font-bold uppercase tracking-wider text-[#00F0FF] hover:bg-[#00F0FF] hover:text-slate-950 transition-all shadow-[0_0_10px_rgba(0,240,255,0.15)]"
+            className="inline-flex items-center gap-1.5 bg-[#FCEE0A]/10 border border-[#FCEE0A] px-3.5 py-1.5 font-rajdhani text-xs font-bold uppercase tracking-wider text-[#FCEE0A] hover:bg-[#FCEE0A] hover:text-slate-950 transition-all cyber-cut-tr shadow-[0_0_10px_rgba(252,238,10,0.2)]"
           >
             <PlusCircle className="h-3.5 w-3.5" />
             <span>Create Tournament</span>
@@ -69,18 +70,18 @@ export function Navbar() {
           {!isAdmin ? (
             <Link
               href="/admin"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#FF2A85] to-[#9D4EDD] px-4 py-1.5 font-chakra text-xs font-bold uppercase tracking-wider text-white hover:brightness-110 active:scale-95 transition-all shadow-[0_0_15px_rgba(255,42,133,0.3)]"
+              className="inline-flex items-center gap-1.5 bg-gradient-to-r from-[#FF0055] to-[#FF007F] px-4 py-1.5 font-rajdhani text-xs font-bold uppercase tracking-wider text-white hover:brightness-110 active:scale-95 transition-all cyber-cut-tr shadow-[0_0_15px_rgba(255,0,85,0.35)]"
             >
               <Shield className="h-3.5 w-3.5" />
-              <span>Host Portal</span>
+              <span>Organizer Terminal</span>
             </Link>
           ) : (
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 rounded-xl border border-[#242945] bg-[#11131F] px-3.5 py-1.5 font-chakra text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white hover:border-slate-500 transition-colors"
+              className="inline-flex items-center gap-1.5 border border-[#252538] bg-[#0E0E1A] px-3.5 py-1.5 font-rajdhani text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white hover:border-[#00F0FF] transition-colors cyber-cut-tr"
             >
               <Tv className="h-3.5 w-3.5 text-[#00F0FF]" />
-              <span>Arena View</span>
+              <span>Arena HUD</span>
             </Link>
           )}
         </div>

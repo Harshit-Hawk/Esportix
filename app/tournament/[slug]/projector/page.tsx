@@ -7,7 +7,7 @@ import { Tournament, ScoringRulesConfig, Team, Match } from "@/types/database";
 import { calculateLeaderboard, LeaderboardRow } from "@/lib/scoring/leaderboard";
 import { useTournamentRealtime } from "@/hooks/use-tournament-realtime";
 import { GameLogo } from "@/components/common/GameLogo";
-import { Trophy, Maximize, Minimize, ArrowLeft, Clock, User, Activity, Zap } from "lucide-react";
+import { Trophy, Maximize, Minimize, ArrowLeft, Clock, User, Activity, Zap, Terminal } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -114,24 +114,24 @@ export default function ProjectorScoreboardPage() {
   const col2 = shouldSplitColumns ? standings.slice(splitIndex) : [];
 
   const renderTableSection = (rows: LeaderboardRow[], title: string) => (
-    <div className="overflow-hidden rounded-2xl border-2 border-[#242945] bg-[#090A10] shadow-[0_0_30px_rgba(0,240,255,0.1)]">
-      <div className="bg-[#11131F] px-4 py-2.5 text-xs font-orbitron font-black uppercase tracking-wider text-[#00F0FF] flex items-center justify-between border-b border-[#242945]">
+    <div className="overflow-hidden border-2 border-[#252538] bg-[#05050A] shadow-[0_0_30px_rgba(252,238,10,0.1)]">
+      <div className="bg-[#12121E] px-4 py-2.5 text-xs font-orbitron font-black uppercase tracking-wider text-[#FCEE0A] flex items-center justify-between border-b-2 border-[#FCEE0A]">
         <span>{title}</span>
         <span className="text-[11px] text-slate-400 font-mono">{rows.length} {isSolo ? "Combatants" : "Teams"}</span>
       </div>
       <table className="w-full text-left border-collapse select-none">
         <thead>
-          <tr className="bg-[#16192B] text-[#00F0FF] font-orbitron text-xs uppercase tracking-wider border-b border-[#242945]">
+          <tr className="bg-[#161626] text-[#FCEE0A] font-orbitron text-xs uppercase tracking-wider border-b border-[#252538]">
             <th className="py-2.5 pl-3 pr-2 text-center w-12 font-black">#</th>
             <th className="py-2.5 px-3 font-black">{isSolo ? "PLAYER / IGN & ID" : "TEAM"}</th>
             <th className="py-2.5 px-3 text-center w-14 font-black">🏆</th>
             <th className="py-2.5 px-3 text-center w-20 font-black">MATCHES</th>
-            <th className="py-2.5 px-3 text-center w-24 font-black">FINISH POINTS</th>
-            <th className="py-2.5 px-3 text-center w-24 font-black">POSITION POINTS</th>
-            <th className="py-2.5 pl-3 pr-4 text-right w-24 font-black text-white">TOTAL POINTS</th>
+            <th className="py-2.5 px-3 text-center w-28 font-black text-[#FF0055]">FINISH POINTS</th>
+            <th className="py-2.5 px-3 text-center w-28 font-black text-[#00F0FF]">POSITION POINTS</th>
+            <th className="py-2.5 pl-3 pr-4 text-right w-28 font-black text-white">TOTAL POINTS</th>
           </tr>
         </thead>
-        <tbody className="font-chakra text-sm">
+        <tbody className="font-rajdhani text-sm font-semibold">
           {rows.map((row, idx) => {
             const isEven = idx % 2 === 0;
             const isWinner = row.rank === 1;
@@ -140,9 +140,9 @@ export default function ProjectorScoreboardPage() {
               <tr
                 key={row.team.id}
                 className={cn(
-                  "transition-colors border-b border-[#242945]/40",
-                  isEven ? "bg-[#0D0E18]" : "bg-[#11131F]",
-                  isWinner && "bg-gradient-to-r from-[#FFE600]/10 via-[#11131F] to-transparent border-l-4 border-l-[#FFE600]"
+                  "transition-colors border-b border-[#252538]/50",
+                  isEven ? "bg-[#07070F]" : "bg-[#0E0E1A]",
+                  isWinner && "bg-gradient-to-r from-[#FCEE0A]/15 via-[#12121E] to-transparent border-l-4 border-l-[#FCEE0A]"
                 )}
               >
                 <td className="py-2.5 pl-3 pr-2 text-center">
@@ -151,7 +151,7 @@ export default function ProjectorScoreboardPage() {
                       {row.rankDelta !== undefined && row.rankDelta > 0 ? (
                         <span className="text-[#00FF66] drop-shadow-[0_0_5px_#00FF66]">▲</span>
                       ) : row.rankDelta !== undefined && row.rankDelta < 0 ? (
-                        <span className="text-[#FF2A85] drop-shadow-[0_0_5px_#FF2A85]">▼</span>
+                        <span className="text-[#FF0055] drop-shadow-[0_0_5px_#FF0055]">▼</span>
                       ) : (
                         <span className="text-slate-600">—</span>
                       )}
@@ -159,7 +159,7 @@ export default function ProjectorScoreboardPage() {
                     <span
                       className={
                         isWinner
-                          ? "text-[#FFE600] drop-shadow-[0_0_8px_#FFE600]"
+                          ? "text-[#FCEE0A] drop-shadow-[0_0_8px_#FCEE0A]"
                           : row.rank <= 3
                           ? "text-[#00F0FF]"
                           : "text-white"
@@ -171,9 +171,9 @@ export default function ProjectorScoreboardPage() {
                 </td>
                 <td className="py-2.5 px-3">
                   <div className="flex items-center gap-2">
-                    <div className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#16192B] border border-[#242945] overflow-hidden">
+                    <div className="relative flex h-7 w-7 shrink-0 items-center justify-center bg-[#161626] border border-[#252538] overflow-hidden cyber-cut-tr">
                       {isSolo ? (
-                        <User className="h-3.5 w-3.5 text-[#00F0FF]" />
+                        <User className="h-3.5 w-3.5 text-[#FCEE0A]" />
                       ) : row.team.logo_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -182,7 +182,7 @@ export default function ProjectorScoreboardPage() {
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <span className="font-orbitron font-black text-[9px] text-[#00F0FF]">
+                        <span className="font-orbitron font-black text-[9px] text-[#FCEE0A]">
                           {row.team.short_name ? row.team.short_name.slice(0, 3) : "TM"}
                         </span>
                       )}
@@ -192,23 +192,23 @@ export default function ProjectorScoreboardPage() {
                         {row.team.name}
                       </span>
                       {row.team.short_name && row.team.short_name !== row.team.name && (
-                        <span className="rounded bg-[#00F0FF]/15 border border-[#00F0FF]/30 px-1.5 py-0.2 font-mono text-[10px] font-bold text-[#00F0FF] shrink-0">
+                        <span className="bg-[#FCEE0A]/15 border border-[#FCEE0A]/30 px-1.5 py-0.2 font-mono text-[10px] font-bold text-[#FCEE0A] shrink-0">
                           {isSolo ? `ID:${row.team.short_name}` : row.team.short_name}
                         </span>
                       )}
                     </div>
                   </div>
                 </td>
-                <td className="py-2.5 px-3 text-center font-orbitron text-base font-bold text-[#FFE600]">
+                <td className="py-2.5 px-3 text-center font-orbitron text-base font-bold text-[#FCEE0A]">
                   {row.wins}
                 </td>
-                <td className="py-2.5 px-3 text-center font-chakra text-base font-bold text-slate-300">
+                <td className="py-2.5 px-3 text-center font-rajdhani text-base font-bold text-slate-300">
                   {row.matchesPlayed}
                 </td>
-                <td className="py-2.5 px-3 text-center font-chakra text-base font-bold text-[#FF2A85]">
+                <td className="py-2.5 px-3 text-center font-rajdhani text-base font-bold text-[#FF0055]">
                   {row.finishPoints}
                 </td>
-                <td className="py-2.5 px-3 text-center font-chakra text-base font-bold text-[#00F0FF]">
+                <td className="py-2.5 px-3 text-center font-rajdhani text-base font-bold text-[#00F0FF]">
                   {row.placementPoints}
                 </td>
                 <td className="py-2.5 pl-3 pr-4 text-right font-orbitron text-lg font-black text-white">
@@ -223,20 +223,20 @@ export default function ProjectorScoreboardPage() {
   );
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#090A10] text-white select-none retro-grid">
+    <div className="flex min-h-screen flex-col bg-[#05050A] text-white select-none cyber-grid font-rajdhani">
       {/* Cyber Stage Broadcast Header */}
-      <header className="flex items-center justify-between border-b-2 border-[#242945] bg-[#0E101B]/95 backdrop-blur px-6 py-3 shadow-[0_0_20px_rgba(0,240,255,0.15)] text-white">
+      <header className="flex items-center justify-between border-b-2 border-[#FCEE0A] bg-[#0A0A12]/95 backdrop-blur px-6 py-3 shadow-[0_0_25px_rgba(252,238,10,0.2)] text-white">
         <div className="flex items-center gap-4">
           <Link
             href={`/tournament/${slug}`}
-            className="flex items-center gap-1.5 rounded-xl border border-[#242945] bg-[#16192B] px-3 py-1.5 font-chakra text-xs font-bold uppercase text-[#00F0FF] hover:bg-[#00F0FF] hover:text-slate-950 transition-all"
+            className="flex items-center gap-1.5 border border-[#FCEE0A] bg-[#FCEE0A]/10 px-3.5 py-1.5 text-xs font-bold uppercase text-[#FCEE0A] hover:bg-[#FCEE0A] hover:text-slate-950 transition-all cyber-cut-tr"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Exit HUD</span>
           </Link>
 
           <div className="flex items-center gap-3">
-            <div className="p-1 rounded-xl bg-[#16192B] border border-[#00F0FF]/40 shadow-[0_0_10px_rgba(0,240,255,0.2)]">
+            <div className="p-1 bg-[#12121E] border border-[#FCEE0A] shadow-[0_0_10px_rgba(252,238,10,0.3)] cyber-cut-tr">
               <GameLogo
                 slug={tournament?.game?.slug}
                 name={tournament?.game?.name}
@@ -248,11 +248,11 @@ export default function ProjectorScoreboardPage() {
                 <h1 className="font-orbitron text-xl font-black uppercase text-white tracking-tight">
                   {tournament?.name || "Official Tournament"}
                 </h1>
-                <span className="rounded-md bg-[#00F0FF] text-slate-950 px-2 py-0.2 font-orbitron text-[11px] font-black uppercase shadow-[0_0_8px_#00F0FF]">
+                <span className="bg-[#FCEE0A] text-slate-950 px-2 py-0.2 font-orbitron text-[11px] font-black uppercase shadow-[0_0_8px_#FCEE0A]">
                   {tournament?.format || "SQUAD"}
                 </span>
               </div>
-              <div className="text-xs text-slate-400 font-chakra uppercase tracking-wider">
+              <div className="text-xs text-slate-400 font-rajdhani uppercase tracking-wider font-bold">
                 {tournament?.game?.name} • MATCH {completedMatchesCount} OF {matches.length || "LIVE"}
               </div>
             </div>
@@ -260,19 +260,19 @@ export default function ProjectorScoreboardPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 rounded-full bg-[#FF2A85]/20 border border-[#FF2A85] px-3 py-1 text-xs font-chakra font-bold uppercase tracking-wider text-[#FF2A85] shadow-[0_0_10px_rgba(255,42,133,0.3)]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#FF2A85] animate-pulse" />
-            <span>BROADCAST LIVE</span>
+          <div className="flex items-center gap-1.5 bg-[#FF0055] px-3 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-[0_0_10px_rgba(255,0,85,0.4)] cyber-cut-tr">
+            <span className="h-1.5 w-1.5 bg-white animate-pulse" />
+            <span>LIVE STAGE</span>
           </div>
 
-          <div className="hidden sm:flex items-center gap-1.5 font-mono text-xs text-[#00F0FF] bg-[#16192B] px-3 py-1.5 rounded-xl font-bold border border-[#242945]">
+          <div className="hidden sm:flex items-center gap-1.5 font-mono text-xs text-[#00F0FF] bg-[#12121E] px-3 py-1.5 font-bold border border-[#252538]">
             <Clock className="h-3.5 w-3.5 text-[#00F0FF]" />
             <span>{currentTime}</span>
           </div>
 
           <button
             onClick={toggleFullscreen}
-            className="rounded-xl bg-[#16192B] p-2 text-slate-300 hover:text-white hover:border-[#00F0FF] transition-all border border-[#242945]"
+            className="bg-[#12121E] p-2 text-slate-300 hover:text-[#FCEE0A] hover:border-[#FCEE0A] transition-all border border-[#252538]"
             title="Toggle Fullscreen"
           >
             {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
@@ -283,7 +283,7 @@ export default function ProjectorScoreboardPage() {
       {/* Main Broadcast Arena Table */}
       <main className="flex-1 p-6 flex flex-col justify-center">
         {standings.length === 0 ? (
-          <div className="rounded-2xl border border-[#242945] bg-[#11131F] p-12 text-center font-orbitron text-base text-slate-400 font-bold uppercase">
+          <div className="border border-[#252538] bg-[#0A0A12] p-12 text-center font-orbitron text-base text-slate-400 font-bold uppercase">
             No participants linked to grid yet.
           </div>
         ) : shouldSplitColumns ? (
