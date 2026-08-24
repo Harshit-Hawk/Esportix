@@ -45,12 +45,12 @@ export function ExportModal({
       const headers = [
         "Rank",
         "Team Name",
-        "Tag / IGN UID",
+        "Tag",
         "Seed",
         "Group",
         "Matches Played",
         "WWCD / Wins",
-        "Position Points",
+        "Placement Points",
         "Finish Points",
         "Total Kills",
         "Bonus Points",
@@ -89,7 +89,7 @@ export function ExportModal({
       link.click();
       document.body.removeChild(link);
 
-      setSuccessMsg("CSV spreadsheet telemetry downloaded!");
+      setSuccessMsg("CSV spreadsheet downloaded!");
       setTimeout(() => setSuccessMsg(null), 3000);
     } catch (err) {
       console.error("CSV Export error:", err);
@@ -109,7 +109,7 @@ export function ExportModal({
       }
 
       const canvas = await html2canvas(element, {
-        backgroundColor: "#0E101B",
+        backgroundColor: "#F4F0E1",
         scale: 2,
         logging: false,
         useCORS: true,
@@ -118,10 +118,10 @@ export function ExportModal({
       const image = canvas.toDataURL("image/png");
       const link = document.createElement("a");
       link.href = image;
-      link.download = `${tournament.slug}-cyber-standings-poster.png`;
+      link.download = `${tournament.slug}-standings-poster.png`;
       link.click();
 
-      setSuccessMsg("Holo-Scorecard Poster downloaded in High Res!");
+      setSuccessMsg("PNG Scorecard Poster downloaded in High Res!");
       setTimeout(() => setSuccessMsg(null), 3000);
     } catch (err) {
       console.error("PNG export error:", err);
@@ -132,27 +132,27 @@ export function ExportModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in font-chakra">
-      <div className="relative w-full max-w-md overflow-hidden rounded-3xl border-2 border-[#00F0FF]/50 bg-[#0E101B] p-6 shadow-[0_0_50px_rgba(0,240,255,0.2)] space-y-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
+      <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#242945] pb-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#00F0FF]/15 border border-[#00F0FF] text-[#00F0FF] shadow-[0_0_10px_rgba(0,240,255,0.3)]">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 border border-blue-200 text-blue-600">
               <Share2 className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="font-orbitron text-lg font-black uppercase text-white">
-                Export Holo-Scorecard
+              <h3 className="font-display text-lg font-black uppercase text-slate-900">
+                Export & Share Scorecard
               </h3>
-              <p className="text-xs text-slate-400">
-                Download broadcast posters & spreadsheet telemetry
+              <p className="text-xs text-slate-500">
+                Download standings for broadcast, social media, or sheets
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="rounded-xl p-1.5 text-slate-400 hover:bg-[#16192B] hover:text-white"
+            className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-900"
           >
             <X className="h-5 w-5" />
           </button>
@@ -160,8 +160,8 @@ export function ExportModal({
 
         {/* Success Alert */}
         {successMsg && (
-          <div className="flex items-center gap-2 rounded-2xl border border-[#00FF66]/40 bg-[#00FF66]/10 p-3 text-xs font-bold text-[#00FF66] shadow-[0_0_10px_rgba(0,255,102,0.2)]">
-            <CheckCircle2 className="h-4 w-4 text-[#00FF66]" />
+          <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs font-bold text-emerald-800">
+            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
             <span>{successMsg}</span>
           </div>
         )}
@@ -172,24 +172,24 @@ export function ExportModal({
           <button
             onClick={handleDownloadPng}
             disabled={downloadingPng}
-            className="flex w-full items-center justify-between rounded-2xl border-2 border-[#00F0FF]/30 bg-[#16192B] p-4 text-left transition-all hover:border-[#00F0FF] hover:shadow-[0_0_15px_rgba(0,240,255,0.25)]"
+            className="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 p-4 text-left transition-all hover:border-blue-400 hover:bg-blue-50/50"
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#00F0FF] to-[#FF2A85] text-slate-950 font-black shadow-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
                 <ImageIcon className="h-5 w-5" />
               </div>
               <div>
-                <span className="font-orbitron text-sm font-black uppercase text-white block">
-                  Holo-Poster PNG (High-Res)
+                <span className="font-display text-sm font-black uppercase text-slate-900 block">
+                  PNG Social Poster (High-Res)
                 </span>
-                <span className="text-[11px] text-slate-400">
-                  Ready for live streams, Instagram, and Discord overlays
+                <span className="text-[11px] text-slate-500">
+                  Ready for Instagram, Discord, and Live Stream overlays
                 </span>
               </div>
             </div>
 
             {downloadingPng ? (
-              <Loader2 className="h-5 w-5 animate-spin text-[#00F0FF]" />
+              <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
             ) : (
               <Download className="h-5 w-5 text-slate-400" />
             )}
@@ -199,24 +199,24 @@ export function ExportModal({
           <button
             onClick={handleDownloadCsv}
             disabled={downloadingCsv}
-            className="flex w-full items-center justify-between rounded-2xl border-2 border-[#242945] bg-[#11131F] p-4 text-left transition-all hover:border-[#00FF66] hover:shadow-[0_0_15px_rgba(0,255,102,0.2)]"
+            className="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 p-4 text-left transition-all hover:border-emerald-400 hover:bg-emerald-50/50"
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00FF66]/20 border border-[#00FF66] text-[#00FF66]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-sm">
                 <FileSpreadsheet className="h-5 w-5" />
               </div>
               <div>
-                <span className="font-orbitron text-sm font-black uppercase text-white block">
-                  CSV Telemetry Sheet (.csv)
+                <span className="font-display text-sm font-black uppercase text-slate-900 block">
+                  CSV Spreadsheet (.csv)
                 </span>
-                <span className="text-[11px] text-slate-400">
-                  Import into Excel, Google Sheets, or graphics systems
+                <span className="text-[11px] text-slate-500">
+                  Import into Excel, Google Sheets, or custom graphics systems
                 </span>
               </div>
             </div>
 
             {downloadingCsv ? (
-              <Loader2 className="h-5 w-5 animate-spin text-[#00FF66]" />
+              <Loader2 className="h-5 w-5 animate-spin text-emerald-600" />
             ) : (
               <Download className="h-5 w-5 text-slate-400" />
             )}
@@ -227,7 +227,7 @@ export function ExportModal({
         <div className="flex justify-end pt-2">
           <button
             onClick={onClose}
-            className="rounded-2xl bg-[#16192B] px-5 py-2 text-xs font-bold uppercase text-slate-300 hover:text-white border border-[#242945]"
+            className="rounded-xl bg-slate-100 px-5 py-2 text-xs font-bold uppercase text-slate-600 hover:bg-slate-200"
           >
             Close
           </button>
