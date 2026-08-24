@@ -29,16 +29,16 @@ export function TeamRosterGrid({ teams }: TeamRosterGridProps) {
       {/* Search Filter */}
       <div className="flex items-center justify-between gap-4">
         <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-esports-silver" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             placeholder="Search teams or player in-game IDs..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-lg border border-esports-navy-border bg-esports-navy-card py-2 pl-9 pr-4 text-xs text-white placeholder-esports-silver/60 focus:border-esports-orange focus:outline-none"
+            className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-4 text-xs text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none shadow-sm"
           />
         </div>
-        <div className="text-xs text-esports-silver font-semibold">
+        <div className="text-xs text-slate-500 font-bold">
           {filteredTeams.length} competing squads
         </div>
       </div>
@@ -48,12 +48,12 @@ export function TeamRosterGrid({ teams }: TeamRosterGridProps) {
         {filteredTeams.map((team) => (
           <div
             key={team.id}
-            className="flex flex-col justify-between overflow-hidden rounded-xl border border-esports-navy-border bg-esports-navy-card shadow-lg hover:border-esports-orange/60 transition-all"
+            className="flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm hover:border-blue-400 hover:shadow-md transition-all"
           >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-esports-navy-border bg-esports-navy/80 p-4">
+            <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 p-4">
               <div className="flex items-center gap-3">
-                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-esports-navy-border bg-esports-navy-dark">
+                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
                   {team.logo_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -62,28 +62,28 @@ export function TeamRosterGrid({ teams }: TeamRosterGridProps) {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <Shield className="h-5 w-5 text-esports-orange" />
+                    <Shield className="h-5 w-5 text-blue-600" />
                   )}
                 </div>
                 <div className="flex flex-col">
-                  <h4 className="font-display text-sm font-black uppercase text-white truncate max-w-[140px]">
+                  <h4 className="font-display text-sm font-black uppercase text-slate-900 truncate max-w-[140px]">
                     {team.name}
                   </h4>
-                  <span className="text-[10px] text-esports-silver font-mono">
+                  <span className="text-[10px] text-slate-500 font-mono">
                     [{team.short_name}] • {team.group_name}
                   </span>
                 </div>
               </div>
 
-              <div className="rounded-md bg-esports-navy-light px-2 py-0.5 text-[11px] font-bold text-esports-gold border border-esports-navy-border">
-                Seed #{team.seed}
+              <div className="rounded-full bg-yellow-100 px-2 py-0.5 text-[10px] font-black text-amber-900 border border-yellow-300">
+                #{team.seed}
               </div>
             </div>
 
             {/* Players List */}
             <div className="p-4 flex-1">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-esports-silver mb-2.5 flex items-center gap-1.5">
-                <Users className="h-3 w-3 text-esports-orange" />
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2.5 flex items-center gap-1.5">
+                <Users className="h-3 w-3 text-blue-600" />
                 <span>Active Roster</span>
               </div>
 
@@ -92,22 +92,22 @@ export function TeamRosterGrid({ teams }: TeamRosterGridProps) {
                   {team.players.map((player) => (
                     <div
                       key={player.id}
-                      className="flex items-center justify-between rounded-md bg-esports-navy-dark/60 px-2.5 py-1.5 text-xs border border-esports-navy-border/40"
+                      className="flex items-center justify-between rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs border border-slate-200"
                     >
                       <div className="flex items-center gap-2">
-                        <UserCheck className="h-3.5 w-3.5 text-esports-silver/60" />
-                        <span className="font-semibold text-esports-cream truncate max-w-[130px]">
+                        <UserCheck className="h-3.5 w-3.5 text-slate-400" />
+                        <span className="font-bold text-slate-900 truncate max-w-[130px]">
                           {player.name}
                         </span>
                       </div>
-                      <span className="font-mono text-[11px] font-bold text-esports-orange">
+                      <span className="font-mono text-[11px] font-bold text-blue-600">
                         {player.player_identifier || "Player"}
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-xs text-zinc-500 italic py-2">No players assigned</div>
+                <div className="text-xs text-slate-400 italic py-2">No players assigned</div>
               )}
             </div>
           </div>

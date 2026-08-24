@@ -199,27 +199,27 @@ export default function TournamentMatchesAdminPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       {/* Breadcrumb Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-esports-navy-border pb-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-4">
         <div>
           <div className="flex items-center gap-3">
             <Link
               href="/admin"
-              className="flex items-center gap-1 text-xs font-bold uppercase text-esports-silver hover:text-white"
+              className="flex items-center gap-1 text-xs font-bold uppercase text-slate-500 hover:text-slate-900"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Control Room</span>
             </Link>
-            <span className="text-esports-navy-border">/</span>
-            <span className="text-xs font-bold text-white uppercase">{tournament?.name}</span>
+            <span className="text-slate-300">/</span>
+            <span className="text-xs font-bold text-slate-900 uppercase">{tournament?.name}</span>
           </div>
           <div className="flex items-center gap-3 mt-1">
-            <h1 className="font-display text-2xl font-black uppercase text-white">
+            <h1 className="font-display text-2xl font-black uppercase text-slate-900">
               Matches & Dynamic Schedule
             </h1>
-            <span className="inline-flex items-center gap-1 rounded-full bg-esports-navy-light px-2.5 py-0.5 text-xs font-bold text-esports-orange border border-esports-navy-border">
-              <Gamepad2 className="h-3 w-3" />
+            <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-bold text-blue-600 border border-blue-200">
+              <Gamepad2 className="h-3.5 w-3.5" />
               {tournament?.game?.name || "Esports"}
             </span>
           </div>
@@ -228,10 +228,10 @@ export default function TournamentMatchesAdminPage() {
         <div className="flex items-center gap-2.5">
           <button
             onClick={handleQuickAddNextMatch}
-            className="flex items-center gap-1.5 rounded-lg border border-esports-navy-border bg-esports-navy-light px-3.5 py-2 text-xs font-bold uppercase text-esports-cream hover:bg-esports-navy hover:text-white transition-colors"
+            className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-black uppercase tracking-wider text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors shadow-sm"
             title="Instantly schedule the next match for this game"
           >
-            <Zap className="h-4 w-4 text-esports-gold" />
+            <Zap className="h-4 w-4 text-yellow-500" />
             <span>+ Quick Add Match {matches.length + 1}</span>
           </button>
 
@@ -243,23 +243,23 @@ export default function TournamentMatchesAdminPage() {
               setMapName(availableMaps[0] || "Map");
               setShowAddMatch(!showAddMatch);
             }}
-            className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-esports-orange to-orange-600 px-4 py-2 text-xs font-black uppercase tracking-wider text-white shadow hover:brightness-110"
+            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-4 py-2 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-blue-500/20 hover:brightness-110"
           >
-            <PlusCircle className="h-4 w-4" />
+            <PlusCircle className="h-4 w-4 text-yellow-300" />
             <span>Custom Match</span>
           </button>
         </div>
       </div>
 
-      {/* Add / Edit Match Drawer with Game-Filtered Maps */}
+      {/* Add / Edit Match Drawer */}
       {showAddMatch && (
         <form
           onSubmit={handleCreateOrUpdateMatch}
-          className="rounded-xl border border-esports-orange/40 bg-esports-navy-card p-5 shadow-xl space-y-4 animate-in fade-in slide-in-from-top-2"
+          className="rounded-2xl border border-blue-300 bg-white p-5 shadow-lg space-y-4 animate-in fade-in slide-in-from-top-2"
         >
-          <div className="font-display text-sm font-black uppercase text-white flex items-center justify-between">
+          <div className="font-display text-sm font-black uppercase text-slate-900 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-esports-orange" />
+              <Sparkles className="h-4 w-4 text-yellow-500" />
               <span>
                 {editingMatch ? `Edit ${editingMatch.name}` : `Schedule Match for ${tournament?.game?.name || "Game"}`}
               </span>
@@ -270,7 +270,7 @@ export default function TournamentMatchesAdminPage() {
                 setShowAddMatch(false);
                 setEditingMatch(null);
               }}
-              className="text-xs text-esports-silver hover:text-white"
+              className="text-xs text-slate-400 hover:text-slate-900"
             >
               Close
             </button>
@@ -278,7 +278,7 @@ export default function TournamentMatchesAdminPage() {
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
             <div>
-              <label className="block text-[11px] font-bold uppercase text-esports-silver mb-1">
+              <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">
                 Match Number
               </label>
               <input
@@ -286,31 +286,31 @@ export default function TournamentMatchesAdminPage() {
                 min={1}
                 value={matchNumber}
                 onChange={(e) => setMatchNumber(Number(e.target.value))}
-                className="w-full rounded-md border border-esports-navy-border bg-esports-navy-dark px-3 py-1.5 text-xs text-white"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold uppercase text-esports-silver mb-1">
+              <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">
                 Match Name
               </label>
               <input
                 type="text"
                 value={matchName}
                 onChange={(e) => setMatchName(e.target.value)}
-                className="w-full rounded-md border border-esports-navy-border bg-esports-navy-dark px-3 py-1.5 text-xs text-white"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900"
               />
             </div>
 
             {/* Game-Filtered Map Selector */}
             <div>
-              <label className="block text-[11px] font-bold uppercase text-esports-silver mb-1 flex items-center justify-between">
+              <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1 flex items-center justify-between">
                 <span>Map Name ({tournament?.game?.name?.split(" ")[0] || "Game"})</span>
               </label>
               <select
                 value={mapName}
                 onChange={(e) => setMapName(e.target.value)}
-                className="w-full rounded-md border border-esports-navy-border bg-esports-navy-dark px-3 py-1.5 text-xs text-white font-bold focus:border-esports-orange focus:outline-none"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 font-bold focus:border-blue-500 focus:outline-none"
               >
                 {availableMaps.map((mapOption) => (
                   <option key={mapOption} value={mapOption}>
@@ -326,20 +326,20 @@ export default function TournamentMatchesAdminPage() {
                   placeholder="Type Custom Map Name..."
                   value={customMapInput}
                   onChange={(e) => setCustomMapInput(e.target.value)}
-                  className="mt-2 w-full rounded-md border border-esports-orange bg-esports-navy px-3 py-1 text-xs text-white"
+                  className="mt-2 w-full rounded-lg border border-blue-500 bg-blue-50 px-3 py-1.5 text-xs text-slate-900"
                 />
               )}
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold uppercase text-esports-silver mb-1">
+              <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">
                 Round / Stage
               </label>
               <input
                 type="text"
                 value={roundName}
                 onChange={(e) => setRoundName(e.target.value)}
-                className="w-full rounded-md border border-esports-navy-border bg-esports-navy-dark px-3 py-1.5 text-xs text-white"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900"
               />
             </div>
           </div>
@@ -351,13 +351,13 @@ export default function TournamentMatchesAdminPage() {
                 setShowAddMatch(false);
                 setEditingMatch(null);
               }}
-              className="rounded-md border border-esports-navy-border px-3 py-1.5 text-xs font-bold uppercase text-esports-silver"
+              className="rounded-xl border border-slate-200 px-3.5 py-1.5 text-xs font-bold uppercase text-slate-600 hover:bg-slate-50"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded-md bg-esports-orange px-4 py-1.5 text-xs font-black uppercase text-white shadow"
+              className="rounded-xl bg-blue-600 px-4 py-1.5 text-xs font-black uppercase text-white shadow-sm hover:bg-blue-700"
             >
               {editingMatch ? "Update Match" : "Save Match"}
             </button>
@@ -367,21 +367,21 @@ export default function TournamentMatchesAdminPage() {
 
       {/* Matches List */}
       {matches.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-esports-navy-border bg-esports-navy-card/60 p-12 text-center space-y-4">
-          <CalendarPlus className="mx-auto h-12 w-12 text-esports-orange/60" />
+        <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-12 text-center space-y-4 shadow-sm">
+          <CalendarPlus className="mx-auto h-12 w-12 text-blue-500 mb-2" />
           <div className="space-y-1">
-            <h3 className="font-display text-lg font-black uppercase text-white">
+            <h3 className="font-display text-lg font-black uppercase text-slate-900">
               No Matches Scheduled Yet
             </h3>
-            <p className="text-xs text-esports-silver max-w-md mx-auto">
+            <p className="text-xs text-slate-500 max-w-md mx-auto">
               Matches are not pre-decided. You can dynamically create Match 1, Match 2, etc. with {tournament?.game?.name || "game"} maps as your tournament unfolds.
             </p>
           </div>
           <button
             onClick={handleQuickAddNextMatch}
-            className="inline-flex items-center gap-2 rounded-lg bg-esports-orange px-5 py-2.5 text-xs font-black uppercase tracking-wider text-white shadow hover:brightness-110"
+            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-black uppercase tracking-wider text-white shadow hover:bg-blue-700"
           >
-            <PlusCircle className="h-4 w-4" />
+            <PlusCircle className="h-4 w-4 text-yellow-300" />
             <span>Create Match 1 ({availableMaps[0] || "Map 1"})</span>
           </button>
         </div>
@@ -396,22 +396,22 @@ export default function TournamentMatchesAdminPage() {
               <div
                 key={m.id}
                 className={cn(
-                  "flex flex-col justify-between rounded-xl border p-5 shadow-lg transition-all",
+                  "flex flex-col justify-between rounded-2xl border p-5 shadow-sm transition-all bg-white",
                   isLive
-                    ? "border-red-500/60 bg-red-500/10 shadow-red-500/10"
+                    ? "border-red-300 bg-red-50/40"
                     : isCompleted
-                    ? "border-esports-navy-border bg-esports-navy-card"
-                    : "border-esports-navy-border/60 bg-esports-navy-card/60"
+                    ? "border-slate-200"
+                    : "border-slate-200 bg-slate-50/50"
                 )}
               >
                 <div>
                   {/* Header */}
-                  <div className="flex items-center justify-between border-b border-esports-navy-border/60 pb-3">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div className="flex items-center gap-2">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-md bg-esports-orange font-display text-xs font-black text-white">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 font-display text-xs font-black text-white shadow-sm">
                         #{m.match_number}
                       </span>
-                      <h3 className="font-display text-base font-black uppercase text-white">
+                      <h3 className="font-display text-base font-black uppercase text-slate-900">
                         {m.name}
                       </h3>
                     </div>
@@ -420,7 +420,7 @@ export default function TournamentMatchesAdminPage() {
                       <button
                         onClick={() => handleEditClick(m)}
                         title="Edit Match"
-                        className="text-esports-silver hover:text-white p-1"
+                        className="text-slate-400 hover:text-slate-900 p-1"
                       >
                         <Edit2 className="h-3.5 w-3.5" />
                       </button>
@@ -428,7 +428,7 @@ export default function TournamentMatchesAdminPage() {
                       <button
                         onClick={() => handleDeleteMatch(m)}
                         title="Delete Match"
-                        className="text-esports-silver hover:text-red-400 p-1"
+                        className="text-slate-400 hover:text-red-500 p-1"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
@@ -443,8 +443,8 @@ export default function TournamentMatchesAdminPage() {
                           className={cn(
                             "rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ml-1",
                             isCompleted
-                              ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                              : "bg-esports-navy-light text-esports-silver"
+                              ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                              : "bg-slate-100 text-slate-600"
                           )}
                         >
                           {m.status}
@@ -454,40 +454,40 @@ export default function TournamentMatchesAdminPage() {
                   </div>
 
                   {/* Details */}
-                  <div className="py-4 space-y-2 text-xs text-esports-silver">
+                  <div className="py-4 space-y-2 text-xs text-slate-600">
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
-                        <MapPin className="h-3.5 w-3.5 text-esports-orange" />
+                        <MapPin className="h-3.5 w-3.5 text-blue-600" />
                         <span>Map:</span>
                       </span>
-                      <strong className="text-white font-mono">{m.map_name || availableMaps[0]}</strong>
+                      <strong className="text-slate-900 font-mono">{m.map_name || availableMaps[0]}</strong>
                     </div>
 
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
-                        <Layers className="h-3.5 w-3.5 text-esports-gold" />
+                        <Layers className="h-3.5 w-3.5 text-yellow-600" />
                         <span>Stage:</span>
                       </span>
-                      <span className="text-esports-cream">{m.round_name}</span>
+                      <span className="text-slate-800 font-semibold">{m.round_name}</span>
                     </div>
 
                     <div className="flex items-center justify-between">
                       <span>Scores Recorded:</span>
-                      <span className="font-mono text-white font-bold">{resultsCount} Teams</span>
+                      <span className="font-mono text-slate-900 font-bold">{resultsCount} Teams</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Actions Footer */}
-                <div className="border-t border-esports-navy-border/60 pt-3.5 flex items-center justify-between gap-2">
+                <div className="border-t border-slate-100 pt-3.5 flex items-center justify-between gap-2">
                   <button
                     onClick={() => handleToggleLock(m)}
                     title={m.is_locked ? "Click to unlock scores for editing" : "Click to lock scores"}
                     className={cn(
-                      "flex items-center gap-1 rounded-md px-2.5 py-1.5 text-[11px] font-bold uppercase transition-colors",
+                      "flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[11px] font-black uppercase transition-colors",
                       m.is_locked
-                        ? "bg-esports-navy-dark text-esports-gold border border-esports-gold/30 hover:bg-esports-navy-light"
-                        : "bg-esports-navy-dark text-esports-silver hover:text-white"
+                        ? "bg-yellow-100 text-amber-900 border border-yellow-300"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                     )}
                   >
                     {m.is_locked ? (
@@ -505,9 +505,9 @@ export default function TournamentMatchesAdminPage() {
 
                   <Link
                     href={`/admin/tournaments/${tournamentId}/matches/${m.id}/score`}
-                    className="flex items-center gap-1.5 rounded-md bg-esports-orange px-3.5 py-1.5 text-xs font-black uppercase tracking-wider text-white shadow-md hover:brightness-110 active:scale-95"
+                    className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-3.5 py-1.5 text-xs font-black uppercase tracking-wider text-white shadow-sm hover:bg-blue-700 active:scale-95"
                   >
-                    <Crosshair className="h-3.5 w-3.5" />
+                    <Crosshair className="h-3.5 w-3.5 text-yellow-300" />
                     <span>Enter Scores</span>
                   </Link>
                 </div>

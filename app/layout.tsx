@@ -18,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className="min-h-screen bg-esports-navy-dark text-esports-cream antialiased selection:bg-esports-orange selection:text-white">
+    <html lang="en">
+      <body className="min-h-screen bg-[#F8FAFC] text-slate-900 antialiased selection:bg-blue-600 selection:text-white">
         <div className="relative flex min-h-screen flex-col bg-grid-pattern">
           <Navbar />
           <main className="flex-1">{children}</main>

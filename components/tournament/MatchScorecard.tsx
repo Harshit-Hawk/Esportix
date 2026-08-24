@@ -22,12 +22,12 @@ export function MatchScorecard({
 
   if (sortedMatches.length === 0) {
     return (
-      <div className="rounded-xl border border-esports-navy-border bg-esports-navy-card p-12 text-center space-y-3 shadow-xl">
-        <CalendarPlus className="mx-auto h-12 w-12 text-esports-orange/60 mb-2" />
-        <h3 className="font-display text-lg font-black uppercase text-white">
+      <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center space-y-3 shadow-sm">
+        <CalendarPlus className="mx-auto h-12 w-12 text-blue-500 mb-2" />
+        <h3 className="font-display text-lg font-black uppercase text-slate-900">
           No Matches Recorded Yet
         </h3>
-        <p className="text-xs text-esports-silver max-w-md mx-auto">
+        <p className="text-xs text-slate-500 max-w-md mx-auto">
           Matches are created and broadcast dynamically as the tournament unfolds. Match breakdown scorecards will appear here once Match 1 begins.
         </p>
       </div>
@@ -43,7 +43,6 @@ export function MatchScorecard({
   const teamMap = new Map<string, Team>();
   teams.forEach((t) => teamMap.set(t.id, t));
 
-  // Sort match results by placement ascending (1st place first)
   const results = activeMatch?.match_results
     ? [...activeMatch.match_results].sort((a, b) => a.placement - b.placement)
     : [];
@@ -62,27 +61,27 @@ export function MatchScorecard({
               key={m.id}
               onClick={() => onSelectMatch?.(m.id)}
               className={cn(
-                "flex shrink-0 flex-col items-start rounded-lg border px-3.5 py-2 text-left transition-all",
+                "flex shrink-0 flex-col items-start rounded-xl border px-4 py-2.5 text-left transition-all",
                 isSelected
-                  ? "border-esports-orange bg-esports-orange/20 text-white shadow-md shadow-esports-orange/10"
+                  ? "border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-500/20"
                   : isLive
-                  ? "border-red-500/40 bg-red-500/10 text-red-300 hover:border-red-500"
+                  ? "border-red-300 bg-red-50 text-red-600 hover:border-red-400"
                   : isCompleted
-                  ? "border-esports-navy-border bg-esports-navy-card text-esports-silver hover:bg-esports-navy-light hover:text-white"
-                  : "border-esports-navy-border/40 bg-esports-navy-dark/60 text-zinc-600"
+                  ? "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                  : "border-slate-200 bg-slate-50 text-slate-400"
               )}
             >
-              <div className="flex items-center gap-1.5 w-full justify-between">
+              <div className="flex items-center gap-2 w-full justify-between">
                 <span className="font-display text-xs font-black uppercase">
                   M{m.match_number}
                 </span>
                 {isLive ? (
-                  <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-ping" />
+                  <span className="h-2 w-2 rounded-full bg-red-500 animate-ping" />
                 ) : isCompleted ? (
-                  <CheckCircle2 className="h-3 w-3 text-emerald-400" />
+                  <CheckCircle2 className={cn("h-3.5 w-3.5", isSelected ? "text-yellow-300" : "text-emerald-500")} />
                 ) : null}
               </div>
-              <span className="text-[10px] text-esports-silver/80 font-medium">
+              <span className={cn("text-[10px] font-medium", isSelected ? "text-blue-100" : "text-slate-500")}>
                 {m.map_name || "Erangel"}
               </span>
             </button>
@@ -92,26 +91,26 @@ export function MatchScorecard({
 
       {/* Selected Match Card */}
       {activeMatch && (
-        <div className="overflow-hidden rounded-xl border border-esports-navy-border bg-esports-navy-card shadow-2xl">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
           {/* Match Banner Info */}
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-esports-navy-border bg-gradient-to-r from-esports-navy to-esports-navy-light px-6 py-4">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 bg-gradient-to-r from-blue-50 to-slate-50 px-6 py-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-esports-orange/20 text-esports-orange border border-esports-orange/40 font-display text-base font-black">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm font-display text-base font-black">
                 #{activeMatch.match_number}
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-display text-lg font-black uppercase text-white">
+                  <h3 className="font-display text-lg font-black uppercase text-slate-900">
                     {activeMatch.name}
                   </h3>
-                  <span className="rounded-full bg-esports-navy-dark border border-esports-navy-border px-2.5 py-0.5 text-[10px] font-bold text-esports-gold">
+                  <span className="rounded-full bg-yellow-100 border border-yellow-300 px-2.5 py-0.5 text-[10px] font-black text-amber-900">
                     {activeMatch.round_name}
                   </span>
                 </div>
-                <div className="flex items-center gap-3 text-xs text-esports-silver mt-0.5">
+                <div className="flex items-center gap-3 text-xs text-slate-500 mt-0.5">
                   <span className="flex items-center gap-1">
-                    <MapPin className="h-3.5 w-3.5 text-esports-orange" />
-                    Map: <strong className="text-white">{activeMatch.map_name || "Erangel"}</strong>
+                    <MapPin className="h-3.5 w-3.5 text-blue-600" />
+                    Map: <strong className="text-slate-800">{activeMatch.map_name || "Erangel"}</strong>
                   </span>
                   <span>•</span>
                   <span>
@@ -119,18 +118,18 @@ export function MatchScorecard({
                     <strong
                       className={
                         activeMatch.status === "LIVE"
-                          ? "text-red-400"
+                          ? "text-red-600"
                           : activeMatch.status === "COMPLETED"
-                          ? "text-emerald-400"
-                          : "text-esports-silver"
+                          ? "text-emerald-600"
+                          : "text-slate-500"
                       }
                     >
                       {activeMatch.status}
                     </strong>
                   </span>
                   {activeMatch.is_locked && (
-                    <span className="flex items-center gap-1 text-esports-silver">
-                      <Lock className="h-3 w-3 text-esports-gold" /> Locked
+                    <span className="flex items-center gap-1 text-slate-500">
+                      <Lock className="h-3 w-3 text-amber-600" /> Locked
                     </span>
                   )}
                 </div>
@@ -139,13 +138,13 @@ export function MatchScorecard({
 
             {/* Winner Badge if completed */}
             {results.length > 0 && results[0].placement === 1 && (
-              <div className="flex items-center gap-2.5 rounded-lg border border-esports-gold/40 bg-gradient-to-r from-esports-gold/20 to-transparent px-4 py-2">
-                <Flame className="h-5 w-5 text-esports-gold animate-bounce" />
+              <div className="flex items-center gap-2.5 rounded-xl border border-yellow-300 bg-gradient-to-r from-yellow-100 to-amber-50 px-4 py-2 shadow-sm">
+                <Flame className="h-5 w-5 text-amber-600 animate-bounce" />
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-esports-gold">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-amber-800">
                     WWCD / MATCH WINNER
                   </span>
-                  <span className="font-display text-sm font-black text-white">
+                  <span className="font-display text-sm font-black text-slate-900">
                     {teamMap.get(results[0].team_id)?.name || "Winner"}
                   </span>
                 </div>
@@ -157,20 +156,20 @@ export function MatchScorecard({
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-esports-navy-border bg-esports-navy-dark text-[11px] font-black uppercase tracking-wider text-esports-silver">
-                  <th className="py-3 pl-4 pr-2 text-center w-14">Placement</th>
-                  <th className="py-3 px-3">Team</th>
+                <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-black uppercase tracking-wider text-slate-600">
+                  <th className="py-3 pl-5 pr-2 text-center w-16">Placement</th>
+                  <th className="py-3 px-4">Team</th>
                   <th className="py-3 px-3 text-center">Kills</th>
                   <th className="py-3 px-3 text-center">Placement Pts</th>
                   <th className="py-3 px-3 text-center">Finish Pts</th>
                   <th className="py-3 px-3 text-center">Score Equation</th>
-                  <th className="py-3 pl-3 pr-6 text-right font-black text-white">Match Total</th>
+                  <th className="py-3 pl-3 pr-6 text-right font-black text-slate-900">Match Total</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-esports-navy-border/40 text-xs font-semibold">
+              <tbody className="divide-y divide-slate-100 text-xs font-semibold">
                 {results.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-10 text-center text-esports-silver">
+                    <td colSpan={7} className="py-12 text-center text-slate-500">
                       No results recorded for this match yet.
                     </td>
                   </tr>
@@ -185,30 +184,30 @@ export function MatchScorecard({
                         className={cn(
                           "table-row-hover",
                           isWin
-                            ? "bg-amber-500/10 hover:bg-amber-500/20"
+                            ? "bg-yellow-50/70"
                             : res.placement <= 4
-                            ? "bg-esports-navy-light/40"
-                            : "bg-esports-navy-card"
+                            ? "bg-blue-50/20"
+                            : "bg-white"
                         )}
                       >
-                        <td className="py-2.5 pl-4 pr-2 text-center">
+                        <td className="py-3 pl-5 pr-2 text-center">
                           <span
                             className={cn(
-                              "inline-flex h-6 w-6 items-center justify-center rounded-md font-display text-xs font-black",
+                              "inline-flex h-6 w-6 items-center justify-center rounded-lg font-display text-xs font-black",
                               isWin
-                                ? "bg-esports-gold text-zinc-950 shadow-sm"
+                                ? "bg-yellow-400 text-slate-950 shadow-sm border border-yellow-500"
                                 : res.placement <= 3
-                                ? "bg-esports-navy-light text-white"
-                                : "text-esports-silver"
+                                ? "bg-slate-200 text-slate-800"
+                                : "text-slate-500"
                             )}
                           >
                             #{res.placement}
                           </span>
                         </td>
 
-                        <td className="py-2.5 px-3">
+                        <td className="py-3 px-4">
                           <div className="flex items-center gap-2.5">
-                            <div className="h-6 w-6 shrink-0 rounded overflow-hidden bg-esports-navy-dark border border-esports-navy-border">
+                            <div className="h-7 w-7 shrink-0 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 flex items-center justify-center">
                               {team?.logo_url ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img
@@ -217,43 +216,43 @@ export function MatchScorecard({
                                   className="h-full w-full object-cover"
                                 />
                               ) : (
-                                <span className="text-[9px] font-bold text-esports-orange flex items-center justify-center h-full">
+                                <span className="text-[10px] font-bold text-blue-600">
                                   {team?.short_name.slice(0, 3)}
                                 </span>
                               )}
                             </div>
-                            <span className="font-display font-bold text-white">
+                            <span className="font-display font-black text-slate-900">
                               {team?.name || "Team"}
                             </span>
-                            <span className="text-[10px] text-esports-silver font-mono">
+                            <span className="text-[10px] text-slate-500 font-mono">
                               ({team?.short_name})
                             </span>
                           </div>
                         </td>
 
-                        <td className="py-2.5 px-3 text-center font-mono text-esports-silver">
+                        <td className="py-3 px-3 text-center font-mono text-slate-700">
                           {res.kills}
                         </td>
 
-                        <td className="py-2.5 px-3 text-center font-mono text-esports-cream">
+                        <td className="py-3 px-3 text-center font-mono text-slate-700">
                           {res.placement_points}
                         </td>
 
-                        <td className="py-2.5 px-3 text-center font-mono text-esports-cream">
+                        <td className="py-3 px-3 text-center font-mono text-slate-700">
                           {res.finish_points}
                         </td>
 
-                        <td className="py-2.5 px-3 text-center font-mono text-[11px] text-esports-silver">
+                        <td className="py-3 px-3 text-center font-mono text-[11px] text-slate-500">
                           {res.placement_points} (place) + {res.finish_points} ({res.kills} kills)
                         </td>
 
-                        <td className="py-2.5 pl-3 pr-6 text-right">
+                        <td className="py-3 pl-3 pr-6 text-right">
                           <span
                             className={cn(
-                              "inline-block rounded-md px-2.5 py-0.5 font-display text-xs font-black",
+                              "inline-block rounded-xl px-3 py-1 font-display text-xs font-black",
                               isWin
-                                ? "bg-esports-gold text-zinc-950"
-                                : "bg-esports-navy-light text-esports-orange border border-esports-navy-border"
+                                ? "bg-yellow-400 text-slate-950 border border-yellow-500 shadow-sm"
+                                : "bg-blue-600 text-white shadow-sm"
                             )}
                           >
                             {res.total_points} PTS

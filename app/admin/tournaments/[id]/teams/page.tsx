@@ -83,7 +83,6 @@ export default function TournamentTeamsAdminPage() {
   const isSolo = tournament?.format === "SOLO";
   const isDuo = tournament?.format === "DUO";
 
-  // Create Team (Format-Aware)
   const handleCreateTeam = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -157,7 +156,6 @@ export default function TournamentTeamsAdminPage() {
         setDuoPlayer2Name("");
         setDuoPlayer2Ign("");
       } else {
-        // Squad / 5v5
         const { error } = await supabase.from("teams").insert({
           tournament_id: tournamentId,
           name: teamName,
@@ -219,24 +217,24 @@ export default function TournamentTeamsAdminPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Breadcrumb Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-esports-navy-border pb-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-4">
         <div>
           <div className="flex items-center gap-3">
             <Link
               href="/admin"
-              className="flex items-center gap-1 text-xs font-bold uppercase text-esports-silver hover:text-white"
+              className="flex items-center gap-1 text-xs font-bold uppercase text-slate-500 hover:text-slate-900"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Control Room</span>
             </Link>
-            <span className="text-esports-navy-border">/</span>
-            <span className="text-xs font-bold text-white uppercase">{tournament?.name}</span>
+            <span className="text-slate-300">/</span>
+            <span className="text-xs font-bold text-slate-900 uppercase">{tournament?.name}</span>
           </div>
           <div className="flex items-center gap-2 mt-1">
-            <h1 className="font-display text-2xl font-black uppercase text-white">
+            <h1 className="font-display text-2xl font-black uppercase text-slate-900">
               {isSolo ? "Solo Participants Roster" : isDuo ? "Duo Teams Roster" : "Teams & Lineup Management"}
             </h1>
-            <span className="rounded-full bg-esports-orange/20 border border-esports-orange/40 px-2.5 py-0.5 text-[10px] font-black uppercase text-esports-orange">
+            <span className="rounded-full bg-blue-50 border border-blue-200 px-2.5 py-0.5 text-[10px] font-black uppercase text-blue-600">
               {tournament?.format || "SQUAD"} FORMAT
             </span>
           </div>
@@ -245,32 +243,31 @@ export default function TournamentTeamsAdminPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowAddTeam(!showAddTeam)}
-            className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-esports-orange to-orange-600 px-4 py-2 text-xs font-black uppercase tracking-wider text-white shadow hover:brightness-110"
+            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-4 py-2 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-blue-500/20 hover:brightness-110"
           >
-            <PlusCircle className="h-4 w-4" />
+            <PlusCircle className="h-4 w-4 text-yellow-300" />
             <span>{isSolo ? "Add Solo Player" : isDuo ? "Add Duo Team" : "Add Squad"}</span>
           </button>
         </div>
       </div>
 
-      {/* Add Drawer (Format Adaptive) */}
+      {/* Add Drawer */}
       {showAddTeam && (
         <form
           onSubmit={handleCreateTeam}
-          className="rounded-xl border border-esports-orange/40 bg-esports-navy-card p-5 shadow-xl space-y-4 animate-in fade-in"
+          className="rounded-2xl border border-blue-300 bg-white p-5 shadow-lg space-y-4 animate-in fade-in"
         >
-          <div className="font-display text-sm font-black uppercase text-white flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-esports-orange" />
+          <div className="font-display text-sm font-black uppercase text-slate-900 flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-yellow-500" />
             <span>
               {isSolo ? "Register Solo Combatant" : isDuo ? "Register Duo Pair" : "Add Competing Squad"}
             </span>
           </div>
 
           {isSolo ? (
-            /* Solo Format Form */
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
               <div>
-                <label className="block text-[11px] font-bold uppercase text-esports-silver mb-1">
+                <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">
                   Player Real Name *
                 </label>
                 <input
@@ -279,12 +276,12 @@ export default function TournamentTeamsAdminPage() {
                   placeholder="e.g. Alex Mercer"
                   value={soloPlayerName}
                   onChange={(e) => setSoloPlayerName(e.target.value)}
-                  className="w-full rounded-md border border-esports-navy-border bg-esports-navy-dark px-3 py-1.5 text-xs text-white"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold uppercase text-esports-silver mb-1">
+                <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">
                   In-Game ID / IGN *
                 </label>
                 <input
@@ -293,12 +290,12 @@ export default function TournamentTeamsAdminPage() {
                   placeholder="e.g. ShadowViper"
                   value={soloPlayerIgn}
                   onChange={(e) => setSoloPlayerIgn(e.target.value)}
-                  className="w-full rounded-md border border-esports-navy-border bg-esports-navy-dark px-3 py-1.5 text-xs text-white font-mono"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 font-mono focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold uppercase text-esports-silver mb-1">
+                <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">
                   Seed Number
                 </label>
                 <input
@@ -306,18 +303,18 @@ export default function TournamentTeamsAdminPage() {
                   min={1}
                   value={seed}
                   onChange={(e) => setSeed(Number(e.target.value))}
-                  className="w-full rounded-md border border-esports-navy-border bg-esports-navy-dark px-3 py-1.5 text-xs text-white"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold uppercase text-esports-silver mb-1">
+                <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">
                   Group
                 </label>
                 <select
                   value={groupName}
                   onChange={(e) => setGroupName(e.target.value)}
-                  className="w-full rounded-md border border-esports-navy-border bg-esports-navy-dark px-3 py-1.5 text-xs text-white"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900"
                 >
                   <option value="Group A">Group A</option>
                   <option value="Group B">Group B</option>
@@ -326,10 +323,9 @@ export default function TournamentTeamsAdminPage() {
               </div>
             </div>
           ) : isDuo ? (
-            /* Duo Format Form */
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <div>
-                <label className="block text-[11px] font-bold uppercase text-esports-silver mb-1">
+                <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">
                   Duo Team Name (Optional)
                 </label>
                 <input
@@ -337,12 +333,12 @@ export default function TournamentTeamsAdminPage() {
                   placeholder="e.g. Dynamic Duo"
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
-                  className="w-full rounded-md border border-esports-navy-border bg-esports-navy-dark px-3 py-1.5 text-xs text-white"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold uppercase text-esports-silver mb-1">
+                <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">
                   Player 1 (Name / IGN) *
                 </label>
                 <input
@@ -351,12 +347,12 @@ export default function TournamentTeamsAdminPage() {
                   placeholder="e.g. Player 1 IGN"
                   value={duoPlayer1Ign}
                   onChange={(e) => setDuoPlayer1Ign(e.target.value)}
-                  className="w-full rounded-md border border-esports-navy-border bg-esports-navy-dark px-3 py-1.5 text-xs text-white font-mono"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 font-mono"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold uppercase text-esports-silver mb-1">
+                <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">
                   Player 2 (Name / IGN) *
                 </label>
                 <input
@@ -365,15 +361,14 @@ export default function TournamentTeamsAdminPage() {
                   placeholder="e.g. Player 2 IGN"
                   value={duoPlayer2Ign}
                   onChange={(e) => setDuoPlayer2Ign(e.target.value)}
-                  className="w-full rounded-md border border-esports-navy-border bg-esports-navy-dark px-3 py-1.5 text-xs text-white font-mono"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 font-mono"
                 />
               </div>
             </div>
           ) : (
-            /* Squad / 5v5 Format Form */
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
               <div>
-                <label className="block text-[11px] font-bold uppercase text-esports-silver mb-1">
+                <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">
                   Team Name *
                 </label>
                 <input
@@ -382,12 +377,12 @@ export default function TournamentTeamsAdminPage() {
                   placeholder="e.g. Apex Predators"
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
-                  className="w-full rounded-md border border-esports-navy-border bg-esports-navy-dark px-3 py-1.5 text-xs text-white"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold uppercase text-esports-silver mb-1">
+                <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">
                   Short Tag (3-5 chars) *
                 </label>
                 <input
@@ -397,12 +392,12 @@ export default function TournamentTeamsAdminPage() {
                   placeholder="APEX"
                   value={shortName}
                   onChange={(e) => setShortName(e.target.value)}
-                  className="w-full rounded-md border border-esports-navy-border bg-esports-navy-dark px-3 py-1.5 text-xs text-white font-mono"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 font-mono"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold uppercase text-esports-silver mb-1">
+                <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">
                   Seed Number
                 </label>
                 <input
@@ -410,18 +405,18 @@ export default function TournamentTeamsAdminPage() {
                   min={1}
                   value={seed}
                   onChange={(e) => setSeed(Number(e.target.value))}
-                  className="w-full rounded-md border border-esports-navy-border bg-esports-navy-dark px-3 py-1.5 text-xs text-white"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold uppercase text-esports-silver mb-1">
+                <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">
                   Group
                 </label>
                 <select
                   value={groupName}
                   onChange={(e) => setGroupName(e.target.value)}
-                  className="w-full rounded-md border border-esports-navy-border bg-esports-navy-dark px-3 py-1.5 text-xs text-white"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900"
                 >
                   <option value="Group A">Group A</option>
                   <option value="Group B">Group B</option>
@@ -435,13 +430,13 @@ export default function TournamentTeamsAdminPage() {
             <button
               type="button"
               onClick={() => setShowAddTeam(false)}
-              className="rounded-md border border-esports-navy-border px-3 py-1.5 text-xs font-bold uppercase text-esports-silver"
+              className="rounded-xl border border-slate-200 px-3.5 py-1.5 text-xs font-bold uppercase text-slate-600 hover:bg-slate-50"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded-md bg-esports-orange px-4 py-1.5 text-xs font-black uppercase text-white shadow"
+              className="rounded-xl bg-blue-600 px-4 py-1.5 text-xs font-black uppercase text-white shadow-sm hover:bg-blue-700"
             >
               Save {isSolo ? "Player" : "Team"}
             </button>
@@ -454,13 +449,12 @@ export default function TournamentTeamsAdminPage() {
         {teams.map((team) => (
           <div
             key={team.id}
-            className="flex flex-col justify-between rounded-xl border border-esports-navy-border bg-esports-navy-card p-5 shadow-lg space-y-4"
+            className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-4"
           >
-            {/* Header */}
             <div>
-              <div className="flex items-center justify-between border-b border-esports-navy-border/60 pb-3">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded bg-esports-navy-dark border border-esports-navy-border font-display text-xs font-black text-esports-orange">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 border border-blue-200 font-display text-xs font-black text-blue-600">
                     {isSolo ? (
                       <User className="h-4 w-4" />
                     ) : (
@@ -468,22 +462,22 @@ export default function TournamentTeamsAdminPage() {
                     )}
                   </div>
                   <div>
-                    <h3 className="font-display text-sm font-black uppercase text-white">
+                    <h3 className="font-display text-sm font-black uppercase text-slate-900">
                       {team.name}
                     </h3>
-                    <span className="text-[10px] text-esports-silver font-mono">
+                    <span className="text-[10px] text-slate-500 font-mono">
                       [{team.short_name}] • {team.group_name}
                     </span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="rounded bg-esports-navy-light px-2 py-0.5 text-[10px] font-bold text-esports-gold">
+                  <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-[10px] font-black text-amber-900 border border-yellow-300">
                     #{team.seed}
                   </span>
                   <button
                     onClick={() => handleDeleteTeam(team.id, team.name)}
-                    className="text-esports-silver hover:text-red-400 p-1"
+                    className="text-slate-400 hover:text-red-500 p-1"
                     title="Delete"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -493,14 +487,14 @@ export default function TournamentTeamsAdminPage() {
 
               {/* Roster list */}
               <div className="pt-3 space-y-2">
-                <div className="flex items-center justify-between text-[11px] font-bold uppercase text-esports-silver">
+                <div className="flex items-center justify-between text-[11px] font-bold uppercase text-slate-600">
                   <span>{isSolo ? "Player Identifier" : `Roster (${team.players?.length || 0})`}</span>
                   {!isSolo && (
                     <button
                       onClick={() =>
                         setActiveTeamForPlayer(activeTeamForPlayer === team.id ? null : team.id)
                       }
-                      className="flex items-center gap-1 text-esports-orange hover:text-white"
+                      className="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-bold"
                     >
                       <UserPlus className="h-3 w-3" />
                       <span>+ Player</span>
@@ -508,35 +502,35 @@ export default function TournamentTeamsAdminPage() {
                   )}
                 </div>
 
-                {/* Inline Player Form for Squads */}
+                {/* Inline Player Form */}
                 {activeTeamForPlayer === team.id && (
-                  <div className="rounded-lg border border-esports-orange/40 bg-esports-navy-dark p-2.5 space-y-2">
+                  <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-2.5 space-y-2">
                     <input
                       type="text"
                       placeholder="Player Name"
                       value={playerName}
                       onChange={(e) => setPlayerName(e.target.value)}
-                      className="w-full rounded border border-esports-navy-border bg-esports-navy px-2 py-1 text-xs text-white"
+                      className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-900"
                     />
                     <input
                       type="text"
                       placeholder="In-Game ID / IGN"
                       value={playerIgn}
                       onChange={(e) => setPlayerIgn(e.target.value)}
-                      className="w-full rounded border border-esports-navy-border bg-esports-navy px-2 py-1 text-xs text-white font-mono"
+                      className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-900 font-mono"
                     />
                     <div className="flex justify-end gap-1.5 pt-1">
                       <button
                         type="button"
                         onClick={() => setActiveTeamForPlayer(null)}
-                        className="text-[10px] text-esports-silver px-2 py-1"
+                        className="text-[10px] text-slate-500 px-2 py-1"
                       >
                         Cancel
                       </button>
                       <button
                         type="button"
                         onClick={() => handleAddPlayer(team.id)}
-                        className="rounded bg-esports-orange px-2.5 py-1 text-[10px] font-black uppercase text-white"
+                        className="rounded-lg bg-blue-600 px-2.5 py-1 text-[10px] font-black uppercase text-white shadow-sm"
                       >
                         Save
                       </button>
@@ -549,18 +543,18 @@ export default function TournamentTeamsAdminPage() {
                   {(team.players || []).map((p) => (
                     <div
                       key={p.id}
-                      className="flex items-center justify-between rounded bg-esports-navy-dark/70 px-2 py-1 text-xs border border-esports-navy-border/40"
+                      className="flex items-center justify-between rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs border border-slate-200"
                     >
                       <div className="flex items-center gap-1.5">
-                        <span className="font-semibold text-esports-cream">{p.name}</span>
-                        <span className="font-mono text-[10px] text-esports-orange font-bold">
+                        <span className="font-bold text-slate-900">{p.name}</span>
+                        <span className="font-mono text-[10px] text-blue-600 font-bold">
                           ({p.player_identifier})
                         </span>
                       </div>
                       {!isSolo && (
                         <button
                           onClick={() => handleDeletePlayer(p.id)}
-                          className="text-zinc-600 hover:text-red-400 p-0.5"
+                          className="text-slate-400 hover:text-red-500 p-0.5"
                         >
                           <Trash2 className="h-3 w-3" />
                         </button>
