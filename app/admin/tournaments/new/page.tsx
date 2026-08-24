@@ -163,7 +163,7 @@ export default function CreateTournamentPage() {
           team_size: teamSize,
           logo_url: selectedGame?.logo_url || null,
           banner_url: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200&auto=format&fit=crop&q=80",
-          custom_colors: { primary: "#2563EB", accent: "#F5C400" },
+          custom_colors: { primary: "#00F0FF", accent: "#FF2A85" },
         })
         .select()
         .single();
@@ -200,31 +200,31 @@ export default function CreateTournamentPage() {
   };
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 pb-12">
+    <div className="mx-auto max-w-4xl space-y-6 pb-12 font-chakra">
       {/* Top Breadcrumb */}
       <div className="flex items-center gap-3">
         <Link
           href="/admin"
-          className="flex items-center gap-1.5 text-xs font-bold uppercase text-slate-500 hover:text-slate-900 transition-colors"
+          className="flex items-center gap-1.5 text-xs font-bold uppercase text-slate-400 hover:text-[#00F0FF] transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span>Back to Control Room</span>
+          <span>Back to Command Center</span>
         </Link>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs space-y-8">
+      <div className="rounded-3xl border-2 border-[#242945] bg-[#11131F] p-6 sm:p-8 shadow-[0_0_40px_rgba(0,240,255,0.08)] retro-grid space-y-8">
         {/* Header Title */}
-        <div className="border-b border-slate-100 pb-5">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-xs">
-              <Trophy className="h-5 w-5" />
+        <div className="border-b border-[#242945] pb-5">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#00F0FF] to-[#FF2A85] text-slate-950 shadow-[0_0_15px_rgba(0,240,255,0.4)]">
+              <Trophy className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="font-display text-2xl font-black uppercase text-slate-900 tracking-tight">
-                Create New Esports Tournament
+              <h1 className="font-orbitron text-2xl font-black uppercase text-white tracking-tight">
+                Launch New Esports Tournament
               </h1>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Configure your game title, tournament format, and point scoring rules.
+              <p className="text-xs text-slate-400 mt-0.5">
+                Configure your game title, tournament format, and telemetry scoring preset.
               </p>
             </div>
           </div>
@@ -233,9 +233,9 @@ export default function CreateTournamentPage() {
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Step 1: Game Title Selection with Game Logos */}
           <div className="space-y-3">
-            <label className="block text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-2">
-              <Gamepad2 className="h-4 w-4 text-blue-600" />
-              <span>Step 1: Select Game Title *</span>
+            <label className="block text-xs font-orbitron font-bold uppercase tracking-wider text-[#00F0FF] flex items-center gap-2">
+              <Gamepad2 className="h-4 w-4" />
+              <span>Step 1: Select Game Arena *</span>
             </label>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -248,29 +248,31 @@ export default function CreateTournamentPage() {
                     key={g.id}
                     onClick={() => handleGameSelect(g)}
                     className={cn(
-                      "flex items-center gap-3.5 rounded-2xl border p-4 text-left transition-all group",
+                      "flex items-center gap-3.5 rounded-2xl border-2 p-4 text-left transition-all group",
                       isSelected
-                        ? "border-blue-600 bg-blue-50/70 text-slate-900 shadow-xs ring-2 ring-blue-600/20"
-                        : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+                        ? "border-[#00F0FF] bg-[#16192B] text-white shadow-[0_0_20px_rgba(0,240,255,0.25)]"
+                        : "border-[#242945] bg-[#0E101B] text-slate-400 hover:border-slate-500 hover:bg-[#16192B]"
                     )}
                   >
-                    <GameLogo
-                      slug={g.slug}
-                      name={g.name}
-                      size="md"
-                      className="shrink-0"
-                    />
+                    <div className="p-1 rounded-xl bg-[#090A10] border border-[#242945]">
+                      <GameLogo
+                        slug={g.slug}
+                        name={g.name}
+                        size="md"
+                        className="shrink-0"
+                      />
+                    </div>
 
                     <div className="flex-1 overflow-hidden">
                       <div className="flex items-center justify-between">
-                        <span className="font-display text-sm font-black uppercase text-slate-900 group-hover:text-blue-600 transition-colors truncate">
+                        <span className="font-orbitron text-sm font-black uppercase text-white group-hover:text-[#00F0FF] transition-colors truncate">
                           {g.name.split("(")[0].trim()}
                         </span>
                         {isSelected && (
-                          <CheckCircle className="h-4 w-4 text-blue-600 shrink-0 ml-1" />
+                          <CheckCircle className="h-4 w-4 text-[#00F0FF] shrink-0 ml-1 drop-shadow-[0_0_5px_#00F0FF]" />
                         )}
                       </div>
-                      <span className="text-[11px] text-slate-500 block truncate mt-0.5">
+                      <span className="text-[11px] text-slate-400 block truncate mt-0.5">
                         {g.description || g.slug}
                       </span>
                     </div>
@@ -281,9 +283,9 @@ export default function CreateTournamentPage() {
           </div>
 
           {/* Step 2: Tournament Team Format */}
-          <div className="space-y-3 border-t border-slate-100 pt-6">
-            <label className="block text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-2">
-              <Layers className="h-4 w-4 text-blue-600" />
+          <div className="space-y-3 border-t border-[#242945] pt-6">
+            <label className="block text-xs font-orbitron font-bold uppercase tracking-wider text-[#00F0FF] flex items-center gap-2">
+              <Layers className="h-4 w-4" />
               <span>Step 2: Select Tournament Format *</span>
             </label>
 
@@ -298,10 +300,10 @@ export default function CreateTournamentPage() {
                     key={fmtOption.id}
                     onClick={() => handleFormatSelect(fmtOption)}
                     className={cn(
-                      "flex flex-col items-start justify-between rounded-2xl border p-4 text-left transition-all",
+                      "flex flex-col items-start justify-between rounded-2xl border-2 p-4 text-left transition-all",
                       isSelected
-                        ? "border-blue-600 bg-blue-50/70 text-slate-900 shadow-xs ring-2 ring-blue-600/20"
-                        : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                        ? "border-[#00F0FF] bg-[#16192B] text-white shadow-[0_0_20px_rgba(0,240,255,0.25)]"
+                        : "border-[#242945] bg-[#0E101B] text-slate-400 hover:border-slate-500 hover:bg-[#16192B]"
                     )}
                   >
                     <div className="flex items-center justify-between w-full mb-3">
@@ -309,20 +311,20 @@ export default function CreateTournamentPage() {
                         className={cn(
                           "flex h-9 w-9 items-center justify-center rounded-xl border",
                           isSelected
-                            ? "bg-blue-600 text-white border-blue-600 shadow-xs"
-                            : "bg-slate-100 text-slate-600 border-slate-200"
+                            ? "bg-[#00F0FF] text-slate-950 border-[#00F0FF] shadow-[0_0_10px_#00F0FF]"
+                            : "bg-[#11131F] text-slate-400 border-[#242945]"
                         )}
                       >
                         <Icon className="h-4 w-4" />
                       </div>
-                      {isSelected && <CheckCircle className="h-4 w-4 text-blue-600" />}
+                      {isSelected && <CheckCircle className="h-4 w-4 text-[#00F0FF]" />}
                     </div>
 
                     <div>
-                      <span className="font-display text-sm font-black uppercase text-slate-900 block">
+                      <span className="font-orbitron text-sm font-black uppercase text-white block">
                         {fmtOption.label}
                       </span>
-                      <span className="text-[10px] text-slate-500 mt-1 line-clamp-2 leading-relaxed block">
+                      <span className="text-[10px] text-slate-400 mt-1 line-clamp-2 leading-relaxed block">
                         {fmtOption.description}
                       </span>
                     </div>
@@ -333,55 +335,55 @@ export default function CreateTournamentPage() {
           </div>
 
           {/* Step 3: Tournament Name & Slug */}
-          <div className="space-y-4 border-t border-slate-100 pt-6">
+          <div className="space-y-4 border-t border-[#242945] pt-6">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1.5">
+                <label className="block text-xs font-orbitron font-bold uppercase tracking-wider text-slate-300 mb-1.5">
                   Tournament Name *
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. BGMI Pro Championship 2026"
+                  placeholder="e.g. Cyber Clash Pro Championship 2026"
                   value={name}
                   onChange={(e) => handleNameChange(e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/15 shadow-2xs"
+                  className="w-full rounded-2xl border border-[#242945] bg-[#0E101B] px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-[#00F0FF] focus:outline-none shadow-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1.5">
-                  URL Slug (Live Scorecard Link) *
+                <label className="block text-xs font-orbitron font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                  URL Slug (Live Hologram Link) *
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="bgmi-pro-championship-2026"
+                  placeholder="cyber-clash-pro-2026"
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-mono text-blue-600 placeholder-slate-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/15 shadow-2xs"
+                  className="w-full rounded-2xl border border-[#242945] bg-[#0E101B] px-4 py-2.5 text-sm font-mono text-[#00F0FF] placeholder-slate-500 focus:border-[#00F0FF] focus:outline-none shadow-sm"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1.5">
-                Overview & Description (Optional)
+              <label className="block text-xs font-orbitron font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                Overview & Protocol Details (Optional)
               </label>
               <textarea
                 rows={2}
-                placeholder="Details on prize pool, tournament schedule dates, streaming channel links..."
+                placeholder="Details on prize pool, dates, streaming channels..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/15 shadow-2xs"
+                className="w-full rounded-2xl border border-[#242945] bg-[#0E101B] px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:border-[#00F0FF] focus:outline-none shadow-sm"
               />
             </div>
           </div>
 
           {/* Step 4: Scoring Rule Preset */}
-          <div className="space-y-3 border-t border-slate-100 pt-6">
-            <label className="block text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-2">
-              <Sliders className="h-4 w-4 text-blue-600" />
+          <div className="space-y-3 border-t border-[#242945] pt-6">
+            <label className="block text-xs font-orbitron font-bold uppercase tracking-wider text-[#FFE600] flex items-center gap-2">
+              <Sliders className="h-4 w-4" />
               <span>Step 4: Scoring Rule Preset *</span>
             </label>
 
@@ -395,21 +397,21 @@ export default function CreateTournamentPage() {
                     key={key}
                     onClick={() => setSelectedPresetKey(key)}
                     className={cn(
-                      "flex flex-col items-start rounded-2xl border p-4 text-left transition-all",
+                      "flex flex-col items-start rounded-2xl border-2 p-4 text-left transition-all",
                       isSelected
-                        ? "border-amber-400 bg-amber-50/70 text-slate-900 shadow-xs ring-2 ring-amber-400/20"
-                        : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                        ? "border-[#FFE600] bg-[#16192B] text-white shadow-[0_0_20px_rgba(255,230,0,0.25)]"
+                        : "border-[#242945] bg-[#0E101B] text-slate-400 hover:border-slate-500 hover:bg-[#16192B]"
                     )}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <span className="font-display text-sm font-black uppercase text-slate-900">
+                      <span className="font-orbitron text-sm font-black uppercase text-white">
                         {item.name}
                       </span>
                       {isSelected && (
-                        <CheckCircle className="h-4 w-4 text-amber-600 shrink-0" />
+                        <CheckCircle className="h-4 w-4 text-[#FFE600] shrink-0 drop-shadow-[0_0_5px_#FFE600]" />
                       )}
                     </div>
-                    <span className="text-[11px] text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                    <span className="text-[11px] text-slate-400 mt-1 line-clamp-2 leading-relaxed">
                       {item.description}
                     </span>
                   </button>
@@ -419,10 +421,10 @@ export default function CreateTournamentPage() {
           </div>
 
           {/* Action Submission */}
-          <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-6">
+          <div className="flex items-center justify-end gap-3 border-t border-[#242945] pt-6">
             <Link
               href="/admin"
-              className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-600 hover:bg-slate-50"
+              className="rounded-2xl border border-[#242945] px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white"
             >
               Cancel
             </Link>
@@ -430,17 +432,17 @@ export default function CreateTournamentPage() {
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-6 py-2.5 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-blue-500/20 hover:brightness-110 active:scale-95 disabled:opacity-50 transition-all"
+              className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#00F0FF] via-[#FF2A85] to-[#FFE600] px-7 py-3 font-chakra text-xs font-black uppercase tracking-wider text-slate-950 shadow-[0_0_20px_rgba(0,240,255,0.4)] hover:brightness-110 active:scale-95 disabled:opacity-50 transition-all"
             >
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Creating Tournament...</span>
+                  <span>Launching Grid...</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="h-4 w-4 text-yellow-300" />
-                  <span>Create & Add Teams</span>
+                  <Sparkles className="h-4 w-4 text-slate-950" />
+                  <span>Launch & Link Roster</span>
                 </>
               )}
             </button>
