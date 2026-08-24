@@ -384,30 +384,30 @@ export default function RapidScoreEntryPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
       {/* Top Breadcrumb & Control Bar */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-esports-navy-border pb-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-4">
         <div>
           <div className="flex items-center gap-3">
             <Link
               href={`/admin/tournaments/${tournamentId}/matches`}
-              className="flex items-center gap-1 text-xs font-bold uppercase text-esports-silver hover:text-white"
+              className="flex items-center gap-1 text-xs font-bold uppercase text-slate-500 hover:text-slate-900"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Matches List</span>
             </Link>
-            <span className="text-esports-navy-border">/</span>
-            <span className="text-xs font-bold text-esports-orange uppercase">
+            <span className="text-slate-300">/</span>
+            <span className="text-xs font-black text-blue-600 uppercase">
               {match?.name} ({match?.map_name || "Erangel"})
             </span>
           </div>
           <div className="flex items-center gap-3 mt-1">
-            <h1 className="font-display text-2xl font-black uppercase text-white">
+            <h1 className="font-display text-2xl font-black uppercase text-slate-900">
               {isSolo ? "Solo Combatant Score Entry" : "Rapid Score Entry Control Room"}
             </h1>
-            <span className="rounded-full bg-esports-orange/20 border border-esports-orange/40 px-2.5 py-0.5 text-[10px] font-black uppercase text-esports-orange">
+            <span className="rounded-full bg-blue-50 border border-blue-200 px-2.5 py-0.5 text-[10px] font-black uppercase text-blue-600">
               {tournament?.format || "SQUAD"}
             </span>
             {match?.is_locked && (
-              <span className="inline-flex items-center gap-1 rounded-md bg-esports-navy-light px-2.5 py-0.5 text-xs font-black uppercase text-esports-gold border border-esports-gold/30">
+              <span className="inline-flex items-center gap-1 rounded-md bg-yellow-50 px-2.5 py-0.5 text-xs font-black uppercase text-amber-800 border border-yellow-300">
                 <Lock className="h-3 w-3" /> Locked
               </span>
             )}
@@ -419,10 +419,10 @@ export default function RapidScoreEntryPage() {
           <button
             onClick={() => setSortByPoints(!sortByPoints)}
             className={cn(
-              "flex items-center gap-1 rounded-xl px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all border",
+              "flex items-center gap-1 rounded-xl px-3 py-2 text-xs font-black uppercase tracking-wider transition-all border",
               sortByPoints
-                ? "bg-esports-gold text-zinc-950 border-esports-gold shadow-md shadow-esports-gold/20"
-                : "border-esports-navy-border bg-esports-navy-light text-esports-silver hover:text-white"
+                ? "bg-yellow-400 text-slate-950 border-yellow-500 shadow-sm"
+                : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900"
             )}
             title="Toggle Live Ranking Sort"
           >
@@ -432,17 +432,17 @@ export default function RapidScoreEntryPage() {
 
           <button
             onClick={handleSimulateRandomScores}
-            className="flex items-center gap-1.5 rounded-xl border border-purple-500/40 bg-purple-500/10 px-3 py-2 text-xs font-bold uppercase text-purple-300 hover:bg-purple-500/20"
-            title="Randomize realistic scores for quick live rehearsal testing"
+            className="flex items-center gap-1.5 rounded-xl border border-yellow-300 bg-yellow-50 px-3 py-2 text-xs font-black uppercase text-amber-800 hover:bg-yellow-100 shadow-sm"
+            title="Randomize realistic scores for quick rehearsal testing"
           >
-            <Dices className="h-3.5 w-3.5" />
+            <Dices className="h-3.5 w-3.5 text-yellow-600" />
             <span>Simulate Rehearsal</span>
           </button>
 
           <button
             onClick={handleAutoFillPlacements}
             type="button"
-            className="rounded-xl border border-esports-navy-border bg-esports-navy-light px-3.5 py-2 text-xs font-bold uppercase text-esports-cream hover:bg-esports-navy hover:text-white"
+            className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-black uppercase text-slate-700 hover:bg-slate-100 hover:text-slate-900 shadow-sm"
             title={`Auto-fill sequential placements 1 to ${scoreRows.length}`}
           >
             Auto-Fill 1-{scoreRows.length}
@@ -451,7 +451,7 @@ export default function RapidScoreEntryPage() {
           <button
             onClick={handleClearPlacements}
             type="button"
-            className="rounded-xl border border-esports-navy-border bg-esports-navy-dark px-3 py-2 text-xs font-bold uppercase text-esports-silver hover:text-red-400"
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold uppercase text-slate-500 hover:text-red-500 shadow-sm"
             title="Reset all inputs"
           >
             <Trash2 className="h-3.5 w-3.5" />
@@ -460,21 +460,21 @@ export default function RapidScoreEntryPage() {
           <button
             onClick={() => handleSaveResults(false)}
             disabled={isSaving}
-            className="flex items-center gap-1.5 rounded-xl border border-esports-navy-border bg-esports-navy-light px-4 py-2 text-xs font-black uppercase tracking-wider text-white hover:bg-esports-navy shadow"
+            className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-black uppercase tracking-wider text-slate-700 hover:bg-slate-50 shadow-sm"
           >
-            <Save className="h-4 w-4 text-esports-silver" />
+            <Save className="h-4 w-4 text-slate-500" />
             <span>Save Draft</span>
           </button>
 
           <button
             onClick={() => handleSaveResults(true)}
             disabled={isSaving}
-            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-esports-orange to-orange-600 px-5 py-2 text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-esports-orange/20 hover:brightness-110 active:scale-95 disabled:opacity-50"
+            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-5 py-2 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-blue-500/20 hover:brightness-110 active:scale-95 disabled:opacity-50"
           >
             {isSaving ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <FileCheck className="h-4 w-4" />
+              <FileCheck className="h-4 w-4 text-yellow-300" />
             )}
             <span>Publish & Broadcast Live</span>
           </button>
@@ -483,15 +483,15 @@ export default function RapidScoreEntryPage() {
 
       {/* Save Success Banner */}
       {saveSuccessMessage && (
-        <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/15 p-4 text-xs font-bold text-emerald-300 flex items-center justify-between shadow-xl animate-in fade-in">
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-xs font-bold text-emerald-800 flex items-center justify-between shadow-sm animate-in fade-in">
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
             <span>{saveSuccessMessage}</span>
           </div>
           <Link
             href={`/tournament/${tournament?.slug}`}
             target="_blank"
-            className="rounded-lg bg-emerald-500/20 px-3 py-1.5 text-xs text-white underline hover:bg-emerald-500/30"
+            className="rounded-lg bg-emerald-100 px-3 py-1.5 text-xs text-emerald-900 underline hover:bg-emerald-200"
           >
             View Live Scorecard &rarr;
           </Link>
@@ -500,34 +500,34 @@ export default function RapidScoreEntryPage() {
 
       {/* Validation Warnings Banner */}
       {validationErrors.length > 0 && (
-        <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-xs font-bold text-amber-300 flex items-center gap-2.5">
-          <AlertTriangle className="h-5 w-5 text-amber-400 shrink-0" />
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs font-bold text-amber-800 flex items-center gap-2.5 shadow-sm">
+          <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0" />
           <div>{validationErrors.join(" | ")}</div>
         </div>
       )}
 
       {/* Main Dense Score Entry Grid */}
-      <div className="overflow-hidden rounded-2xl border border-esports-navy-border bg-esports-navy-card shadow-2xl">
-        <div className="flex items-center justify-between border-b border-esports-navy-border bg-gradient-to-r from-esports-navy to-esports-navy-light px-6 py-3.5 text-xs">
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+        <div className="flex items-center justify-between border-b border-slate-100 bg-gradient-to-r from-blue-50 to-slate-50 px-6 py-3.5 text-xs">
           <div className="flex items-center gap-3">
-            <Crosshair className="h-4 w-4 text-esports-orange" />
-            <span className="font-display font-black uppercase tracking-wider text-white">
+            <Crosshair className="h-4 w-4 text-blue-600" />
+            <span className="font-display font-black uppercase tracking-wider text-slate-900">
               {match?.name} Score Entry Matrix ({scoreRows.length} {isSolo ? "Combatants" : "Teams"})
             </span>
-            <span className="text-esports-silver font-mono">
+            <span className="text-slate-500 font-mono">
               • Scoring Rule: {scoringRules?.kill_points} pt/kill
             </span>
           </div>
-          <div className="flex items-center gap-2 text-esports-silver text-[11px]">
-            <Keyboard className="h-3.5 w-3.5 text-esports-silver" />
-            <span>Tip: Press <kbd className="rounded bg-esports-navy-dark px-1.5 py-0.5 border border-esports-navy-border font-mono text-white">Tab</kbd> to jump rows</span>
+          <div className="flex items-center gap-2 text-slate-500 text-[11px]">
+            <Keyboard className="h-3.5 w-3.5 text-slate-400" />
+            <span>Tip: Press <kbd className="rounded bg-slate-100 px-1.5 py-0.5 border border-slate-300 font-mono text-slate-700">Tab</kbd> to jump rows</span>
           </div>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-esports-navy-border bg-esports-navy-dark text-[11px] font-black uppercase tracking-wider text-esports-silver">
+              <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-black uppercase tracking-wider text-slate-600">
                 <th className="py-3 pl-5 pr-2 text-center w-14"># Seed</th>
                 <th className="py-3 px-4">{isSolo ? "Player" : "Team"}</th>
                 <th className="py-3 px-3 text-center w-32">Placement</th>
@@ -536,10 +536,10 @@ export default function RapidScoreEntryPage() {
                 <th className="py-3 px-3 text-center hidden md:table-cell">Finish Pts</th>
                 <th className="py-3 px-3 text-center w-20 hidden lg:table-cell">Bonus</th>
                 <th className="py-3 px-3 text-center w-20 hidden lg:table-cell">Penalty</th>
-                <th className="py-3 pl-3 pr-6 text-right font-black text-white w-36">Total Points</th>
+                <th className="py-3 pl-3 pr-6 text-right font-black text-slate-900 w-36">Total Points</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-esports-navy-border/40 text-xs font-semibold">
+            <tbody className="divide-y divide-slate-100 text-xs font-semibold">
               {displayedRows.map((row) => {
                 const isWinner = row.placement === 1;
 
@@ -549,26 +549,26 @@ export default function RapidScoreEntryPage() {
                     className={cn(
                       "transition-colors",
                       isWinner
-                        ? "bg-amber-500/15"
+                        ? "bg-yellow-50/80"
                         : row.isDirty
-                        ? "bg-esports-orange/5"
-                        : "bg-esports-navy-card hover:bg-esports-navy-light/40"
+                        ? "bg-blue-50/40"
+                        : "bg-white hover:bg-slate-50"
                     )}
                   >
-                    <td className="py-3 pl-5 pr-2 text-center font-mono text-xs text-esports-silver">
+                    <td className="py-3 pl-5 pr-2 text-center font-mono text-xs text-slate-500">
                       #{row.seed}
                     </td>
 
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-esports-navy-dark border border-esports-navy-border font-display text-xs font-bold text-esports-orange">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 border border-blue-200 font-display text-xs font-bold text-blue-600">
                           {isSolo ? <User className="h-4 w-4" /> : row.teamShortName.slice(0, 3)}
                         </div>
                         <div className="flex flex-col">
-                          <span className="font-display font-black text-white text-sm">
+                          <span className="font-display font-black text-slate-900 text-sm">
                             {row.teamName}
                           </span>
-                          <span className="text-[10px] text-esports-silver font-mono">
+                          <span className="text-[10px] text-slate-500 font-mono">
                             [{row.teamShortName}]
                           </span>
                         </div>
@@ -586,10 +586,10 @@ export default function RapidScoreEntryPage() {
                           handleFieldChange(row.teamId, "placement", Number(e.target.value))
                         }
                         className={cn(
-                          "w-24 rounded-lg border py-2 text-center font-display text-sm font-black text-white focus:outline-none focus:ring-2 focus:ring-esports-orange transition-all",
+                          "w-24 rounded-lg border py-2 text-center font-display text-sm font-black focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm",
                           isWinner
-                            ? "border-amber-400 bg-amber-500/25 text-amber-300 shadow-md shadow-amber-500/30"
-                            : "border-esports-navy-border bg-esports-navy-dark"
+                            ? "border-yellow-400 bg-yellow-100 text-amber-900 font-black shadow-sm"
+                            : "border-slate-300 bg-white text-slate-900"
                         )}
                       />
                     </td>
@@ -604,15 +604,15 @@ export default function RapidScoreEntryPage() {
                         onChange={(e) =>
                           handleFieldChange(row.teamId, "kills", Number(e.target.value))
                         }
-                        className="w-20 rounded-lg border border-esports-navy-border bg-esports-navy-dark py-2 text-center font-mono text-sm font-bold text-white focus:border-esports-orange focus:outline-none"
+                        className="w-20 rounded-lg border border-slate-300 bg-white py-2 text-center font-mono text-sm font-bold text-slate-900 focus:border-blue-500 focus:outline-none shadow-sm"
                       />
                     </td>
 
-                    <td className="py-3 px-3 text-center hidden md:table-cell font-mono text-xs text-esports-cream">
+                    <td className="py-3 px-3 text-center hidden md:table-cell font-mono text-xs text-slate-700">
                       {row.placementPoints}
                     </td>
 
-                    <td className="py-3 px-3 text-center hidden md:table-cell font-mono text-xs text-esports-cream">
+                    <td className="py-3 px-3 text-center hidden md:table-cell font-mono text-xs text-slate-700">
                       {row.finishPoints}
                     </td>
 
@@ -625,7 +625,7 @@ export default function RapidScoreEntryPage() {
                         onChange={(e) =>
                           handleFieldChange(row.teamId, "bonus", Number(e.target.value))
                         }
-                        className="w-16 rounded-lg border border-esports-navy-border bg-esports-navy-dark py-1.5 text-center font-mono text-xs text-emerald-400 focus:outline-none"
+                        className="w-16 rounded-lg border border-slate-200 bg-white py-1.5 text-center font-mono text-xs text-emerald-600 focus:outline-none shadow-sm"
                       />
                     </td>
 
@@ -638,7 +638,7 @@ export default function RapidScoreEntryPage() {
                         onChange={(e) =>
                           handleFieldChange(row.teamId, "penalty", Number(e.target.value))
                         }
-                        className="w-16 rounded-lg border border-esports-navy-border bg-esports-navy-dark py-1.5 text-center font-mono text-xs text-red-400 focus:outline-none"
+                        className="w-16 rounded-lg border border-slate-200 bg-white py-1.5 text-center font-mono text-xs text-red-600 focus:outline-none shadow-sm"
                       />
                     </td>
 
@@ -646,10 +646,10 @@ export default function RapidScoreEntryPage() {
                       <div className="inline-flex items-center justify-end">
                         <span
                           className={cn(
-                            "rounded-lg px-3.5 py-1.5 font-display text-sm font-black tracking-wider shadow-sm",
+                            "rounded-xl px-4 py-1.5 font-display text-sm font-black tracking-wider shadow-sm",
                             isWinner
-                              ? "bg-amber-400 text-zinc-950 shadow-md shadow-amber-400/40"
-                              : "bg-esports-navy-light text-esports-orange border border-esports-navy-border"
+                              ? "bg-yellow-400 text-slate-950 border border-yellow-500 shadow-yellow-400/30"
+                              : "bg-blue-600 text-white shadow-md shadow-blue-500/20"
                           )}
                         >
                           {row.totalPoints} PTS

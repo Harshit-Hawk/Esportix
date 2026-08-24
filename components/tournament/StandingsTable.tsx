@@ -75,42 +75,42 @@ export function StandingsTable({
               <div
                 key={frag.team.id}
                 className={cn(
-                  "relative overflow-hidden rounded-xl border p-4 shadow-lg transition-all",
+                  "relative overflow-hidden rounded-2xl border p-4 shadow-sm transition-all bg-white",
                   isFirst
-                    ? "border-amber-500/50 bg-gradient-to-r from-amber-500/15 via-esports-navy-card to-esports-navy-deep shadow-amber-500/10"
-                    : "border-esports-navy-border bg-esports-navy-card/90"
+                    ? "border-yellow-300 bg-gradient-to-r from-yellow-50 via-amber-50 to-white shadow-yellow-400/15"
+                    : "border-slate-200"
                 )}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div
                       className={cn(
-                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border font-display text-sm font-black",
+                        "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-display text-sm font-black shadow-sm",
                         isFirst
-                          ? "bg-amber-400 text-zinc-950 border-amber-300 shadow-md shadow-amber-400/40"
-                          : "bg-esports-navy-light text-white border-esports-navy-border"
+                          ? "bg-yellow-400 text-slate-950 border border-yellow-500 shadow-yellow-400/30"
+                          : "bg-blue-50 text-blue-600 border border-blue-200"
                       )}
                     >
                       {isFirst ? <Crown className="h-5 w-5" /> : `0${idx + 1}`}
                     </div>
                     <div className="flex flex-col min-w-0">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-esports-silver">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">
                         {isFirst ? "🔥 ELIMINATION MVP" : `#${idx + 1} TOP FRAGGER`}
                       </span>
-                      <span className="font-display text-sm font-black text-white truncate">
+                      <span className="font-display text-sm font-black text-slate-900 truncate">
                         {frag.team.name}
                       </span>
-                      <span className="text-[10px] text-esports-silver font-mono">
+                      <span className="text-[10px] text-slate-500 font-mono">
                         [{frag.team.short_name}]
                       </span>
                     </div>
                   </div>
 
                   <div className="text-right">
-                    <span className="font-display text-xl font-black text-esports-orange">
+                    <span className="font-display text-2xl font-black text-blue-600">
                       {frag.totalKills}
                     </span>
-                    <span className="text-[10px] text-esports-silver block uppercase font-semibold">
+                    <span className="text-[10px] text-slate-500 block uppercase font-bold">
                       Kills
                     </span>
                   </div>
@@ -125,16 +125,16 @@ export function StandingsTable({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {/* Group Tabs */}
         {groups.length > 2 ? (
-          <div className="flex items-center gap-1 rounded-xl border border-esports-navy-border bg-esports-navy p-1">
+          <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
             {groups.map((grp) => (
               <button
                 key={grp}
                 onClick={() => setSelectedGroup(grp)}
                 className={cn(
-                  "rounded-lg px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-all",
+                  "rounded-lg px-4 py-1.5 text-xs font-black uppercase tracking-wider transition-all",
                   selectedGroup === grp
-                    ? "bg-gradient-to-r from-esports-orange to-orange-600 text-white shadow-md shadow-esports-orange/20"
-                    : "text-esports-silver hover:text-white"
+                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                 )}
               >
                 {grp === "All" ? "Overall Standings" : grp}
@@ -142,21 +142,21 @@ export function StandingsTable({
             ))}
           </div>
         ) : (
-          <div className="flex items-center gap-2 text-xs font-bold text-esports-silver uppercase tracking-wider">
-            <Trophy className="h-4 w-4 text-esports-gold" />
+          <div className="flex items-center gap-2 text-xs font-black text-slate-700 uppercase tracking-wider">
+            <Trophy className="h-4 w-4 text-yellow-500" />
             <span>Leaderboard Matrix • {standings.length} {isSolo ? "Combatants" : "Teams"}</span>
           </div>
         )}
 
         {/* Search Box */}
         <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-esports-silver" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             placeholder={isSolo ? "Search player or IGN..." : "Search team, tag, or seed..."}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-xl border border-esports-navy-border bg-esports-navy-card py-2.5 pl-9 pr-4 text-xs text-white placeholder-esports-silver/60 focus:border-esports-orange focus:outline-none focus:ring-1 focus:ring-esports-orange transition-all shadow-inner"
+            className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-4 text-xs text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm"
           />
         </div>
       </div>
@@ -164,30 +164,30 @@ export function StandingsTable({
       {/* Main Scorecard Table Container */}
       <div
         id={tableId}
-        className="overflow-hidden rounded-2xl border border-esports-navy-border bg-esports-navy-card shadow-2xl"
+        className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
       >
         {/* Broadcast Table Header Banner */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-esports-navy-border bg-gradient-to-r from-esports-navy via-esports-navy-light to-esports-navy px-6 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-gradient-to-r from-blue-50 via-slate-50 to-white px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-esports-gold/20 text-esports-gold border border-esports-gold/40">
-              <Trophy className="h-4 w-4" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-yellow-400 text-slate-950 border border-yellow-500 shadow-sm">
+              <Trophy className="h-5 w-5" />
             </div>
             <div>
-              <span className="font-display text-base font-black uppercase tracking-wider text-white">
+              <span className="font-display text-base font-black uppercase tracking-wider text-slate-900">
                 {isSolo ? "Official Solo Rankings" : isDuo ? "Official Duo Standings" : "Official Leaderboard Standings"}
               </span>
-              <span className="text-xs text-esports-silver block">
+              <span className="text-xs text-slate-500 block font-medium">
                 Points calculated after Match {completedMatchesCount}
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 text-[11px] font-semibold text-esports-silver">
+          <div className="flex items-center gap-4 text-[11px] font-bold text-slate-600">
             <span className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-esports-gold shadow-sm shadow-esports-gold" /> 1st: Gold
+              <span className="h-2.5 w-2.5 rounded-full bg-yellow-400 shadow-sm" /> 1st: Gold Champion
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400" /> Qualify Line ({qualifyingCutoff})
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-sm" /> Qualify Line ({qualifyingCutoff})
             </span>
           </div>
         </div>
@@ -196,14 +196,14 @@ export function StandingsTable({
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-esports-navy-border bg-esports-navy-dark/95 text-[11px] font-black uppercase tracking-wider text-esports-silver">
+              <tr className="border-b border-slate-200 bg-slate-50/90 text-[11px] font-black uppercase tracking-wider text-slate-600">
                 <th className="py-3.5 pl-5 pr-2 text-center w-16"># Rank</th>
                 <th className="py-3.5 px-4">{isSolo ? "Player / IGN" : isDuo ? "Duo Pair" : "Squad / Team"}</th>
                 <th className="py-3.5 px-3 text-center hidden sm:table-cell">Group</th>
                 <th className="py-3.5 px-3 text-center">Matches</th>
-                <th className="py-3.5 px-3 text-center text-esports-gold">
+                <th className="py-3.5 px-3 text-center text-amber-600">
                   <span className="flex items-center justify-center gap-1">
-                    <Flame className="h-3.5 w-3.5 text-esports-gold inline" />
+                    <Flame className="h-3.5 w-3.5 text-amber-500 inline" />
                     <span>WWCD</span>
                   </span>
                 </th>
@@ -211,16 +211,16 @@ export function StandingsTable({
                 <th className="py-3.5 px-3 text-center hidden md:table-cell">Finish Pts</th>
                 <th className="py-3.5 px-3 text-center hidden lg:table-cell">Elims</th>
                 <th className="py-3.5 px-3 text-center hidden xl:table-cell">Recent Form</th>
-                <th className="py-3.5 pl-3 pr-6 text-right font-black text-white text-xs w-32">
+                <th className="py-3.5 pl-3 pr-6 text-right font-black text-slate-900 text-xs w-36">
                   TOTAL PTS
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-esports-navy-border/40 text-xs font-semibold">
+            <tbody className="divide-y divide-slate-100 text-xs font-semibold">
               {filteredStandings.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="py-16 text-center text-esports-silver">
-                    <Trophy className="mx-auto h-10 w-10 text-esports-silver/30 mb-2" />
+                  <td colSpan={10} className="py-16 text-center text-slate-500">
+                    <Trophy className="mx-auto h-10 w-10 text-slate-300 mb-2" />
                     <span>No participants found matching &ldquo;{searchTerm}&rdquo;.</span>
                   </td>
                 </tr>
@@ -229,7 +229,6 @@ export function StandingsTable({
                   const isChampion = row.rank === 1;
                   const isSecond = row.rank === 2;
                   const isThird = row.rank === 3;
-                  const isCutoff = row.rank === qualifyingCutoff;
 
                   return (
                     <tr
@@ -238,33 +237,33 @@ export function StandingsTable({
                       className={cn(
                         "table-row-hover cursor-pointer transition-colors",
                         isChampion
-                          ? "bg-gradient-to-r from-amber-500/20 via-esports-navy-light/70 to-transparent hover:from-amber-500/30"
+                          ? "bg-yellow-50/70 hover:bg-yellow-100/60"
                           : isSecond
-                          ? "bg-gradient-to-r from-slate-300/15 via-esports-navy-light/50 to-transparent"
+                          ? "bg-slate-50/80 hover:bg-slate-100/80"
                           : isThird
-                          ? "bg-gradient-to-r from-amber-700/15 via-esports-navy-light/40 to-transparent"
+                          ? "bg-amber-50/40 hover:bg-amber-100/50"
                           : index % 2 === 0
-                          ? "bg-esports-navy-card"
-                          : "bg-esports-navy/40"
+                          ? "bg-white"
+                          : "bg-slate-50/40"
                       )}
                     >
                       {/* Rank Column */}
                       <td className="py-3.5 pl-5 pr-2 text-center">
                         <div className="flex items-center justify-center gap-1.5">
                           {isChampion ? (
-                            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-amber-400 to-amber-600 font-display text-xs font-black text-zinc-950 shadow-md shadow-amber-500/40">
+                            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-yellow-400 font-display text-xs font-black text-slate-950 shadow-md shadow-yellow-400/40 border border-yellow-500">
                               <Crown className="h-4 w-4" />
                             </div>
                           ) : isSecond ? (
-                            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-slate-200 to-slate-400 font-display text-xs font-black text-zinc-950 shadow-sm">
+                            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-200 font-display text-xs font-black text-slate-800 shadow-sm border border-slate-300">
                               02
                             </div>
                           ) : isThird ? (
-                            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-amber-600 to-amber-800 font-display text-xs font-black text-white shadow-sm">
+                            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-100 font-display text-xs font-black text-amber-800 shadow-sm border border-amber-200">
                               03
                             </div>
                           ) : (
-                            <span className="font-display text-xs font-bold text-esports-silver">
+                            <span className="font-display text-xs font-bold text-slate-500">
                               {row.rank < 10 ? `0${row.rank}` : row.rank}
                             </span>
                           )}
@@ -275,10 +274,10 @@ export function StandingsTable({
                               className={cn(
                                 "flex items-center text-[10px] font-bold",
                                 row.rankDelta > 0
-                                  ? "text-emerald-400"
+                                  ? "text-emerald-600"
                                   : row.rankDelta < 0
-                                  ? "text-red-400"
-                                  : "text-zinc-600"
+                                  ? "text-red-500"
+                                  : "text-slate-300"
                               )}
                               title={
                                 row.rankDelta > 0
@@ -303,9 +302,9 @@ export function StandingsTable({
                       {/* Team / Player Logo & Name */}
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-3">
-                          <div className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-esports-navy-border bg-esports-navy-dark shadow-sm">
+                          <div className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-100 shadow-sm">
                             {isSolo ? (
-                              <User className="h-4 w-4 text-esports-orange" />
+                              <User className="h-4 w-4 text-blue-600" />
                             ) : row.team.logo_url ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img
@@ -314,34 +313,34 @@ export function StandingsTable({
                                 className="h-full w-full object-cover"
                               />
                             ) : (
-                              <span className="text-[10px] font-black text-esports-orange">
+                              <span className="text-[10px] font-black text-blue-600">
                                 {row.team.short_name.slice(0, 3)}
                               </span>
                             )}
                           </div>
                           <div className="flex flex-col min-w-0">
                             <div className="flex items-center gap-2">
-                              <span className="font-display font-black text-white text-sm hover:text-esports-orange transition-colors truncate">
+                              <span className="font-display font-black text-slate-900 text-sm hover:text-blue-600 transition-colors truncate">
                                 {row.team.name}
                               </span>
-                              <span className="rounded bg-esports-navy-light/80 px-1.5 py-0.5 text-[10px] font-bold text-esports-silver border border-esports-navy-border/60">
+                              <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-600 border border-slate-200">
                                 {row.team.short_name}
                               </span>
                             </div>
-                            <span className="text-[10px] text-esports-silver/70 hidden sm:block">
-                              Seed #{row.team.seed} • Click for team breakdown
+                            <span className="text-[10px] text-slate-400 hidden sm:block">
+                              Seed #{row.team.seed} • Click for match trajectory
                             </span>
                           </div>
                         </div>
                       </td>
 
                       {/* Group */}
-                      <td className="py-3.5 px-3 text-center hidden sm:table-cell text-xs text-esports-silver">
+                      <td className="py-3.5 px-3 text-center hidden sm:table-cell text-xs text-slate-600">
                         {row.team.group_name}
                       </td>
 
                       {/* Matches Played */}
-                      <td className="py-3.5 px-3 text-center font-mono text-xs text-esports-silver">
+                      <td className="py-3.5 px-3 text-center font-mono text-xs text-slate-700">
                         {row.matchesPlayed}
                       </td>
 
@@ -351,8 +350,8 @@ export function StandingsTable({
                           className={cn(
                             "inline-flex items-center justify-center rounded-lg px-2.5 py-0.5 font-mono text-xs font-black",
                             row.wins > 0
-                              ? "bg-esports-gold/20 text-esports-gold border border-esports-gold/40 shadow-sm shadow-esports-gold/20"
-                              : "text-zinc-500"
+                              ? "bg-yellow-100 text-amber-900 border border-yellow-300 shadow-sm"
+                              : "text-slate-400"
                           )}
                         >
                           {row.wins}
@@ -360,21 +359,21 @@ export function StandingsTable({
                       </td>
 
                       {/* Placement Points */}
-                      <td className="py-3.5 px-3 text-center hidden md:table-cell font-mono text-xs text-esports-cream">
+                      <td className="py-3.5 px-3 text-center hidden md:table-cell font-mono text-xs text-slate-700">
                         {row.placementPoints}
                       </td>
 
                       {/* Finish Points */}
-                      <td className="py-3.5 px-3 text-center hidden md:table-cell font-mono text-xs text-esports-cream">
+                      <td className="py-3.5 px-3 text-center hidden md:table-cell font-mono text-xs text-slate-700">
                         {row.finishPoints}
                       </td>
 
                       {/* Total Kills */}
-                      <td className="py-3.5 px-3 text-center hidden lg:table-cell font-mono text-xs text-esports-silver">
+                      <td className="py-3.5 px-3 text-center hidden lg:table-cell font-mono text-xs text-slate-600">
                         {row.totalKills}
                       </td>
 
-                      {/* Recent Form (Last 5 Placements) */}
+                      {/* Recent Form (Last 4 Placements) */}
                       <td className="py-3.5 px-3 text-center hidden xl:table-cell">
                         <div className="flex items-center justify-center gap-1">
                           {row.recentPlacements.slice(-4).map((place, pIdx) => (
@@ -383,10 +382,10 @@ export function StandingsTable({
                               className={cn(
                                 "inline-flex h-5 w-5 items-center justify-center rounded text-[10px] font-mono font-bold",
                                 place === 1
-                                  ? "bg-esports-gold text-zinc-950 font-black"
+                                  ? "bg-yellow-400 text-slate-950 font-black"
                                   : place <= 4
-                                  ? "bg-esports-navy-light text-white border border-esports-navy-border"
-                                  : "bg-esports-navy-dark text-esports-silver/60"
+                                  ? "bg-blue-100 text-blue-800 border border-blue-200"
+                                  : "bg-slate-100 text-slate-500"
                               )}
                             >
                               {place}
@@ -400,14 +399,14 @@ export function StandingsTable({
                         <div className="inline-flex items-center justify-end">
                           <span
                             className={cn(
-                              "rounded-lg px-3.5 py-1 font-display text-sm font-black tracking-wider text-right shadow-md transition-transform hover:scale-105",
+                              "rounded-xl px-4 py-1.5 font-display text-sm font-black tracking-wider text-right shadow-sm transition-transform hover:scale-105",
                               isChampion
-                                ? "bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-zinc-950 font-black shadow-amber-500/30 text-glow-gold"
+                                ? "bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 text-slate-950 font-black shadow-yellow-400/30 border border-yellow-500"
                                 : isSecond
-                                ? "bg-gradient-to-r from-slate-200 to-slate-300 text-zinc-950 font-black"
+                                ? "bg-slate-200 text-slate-900 font-black border border-slate-300"
                                 : isThird
-                                ? "bg-gradient-to-r from-amber-600 to-amber-700 text-white font-black"
-                                : "bg-esports-navy-light text-esports-orange border border-esports-navy-border font-black"
+                                ? "bg-amber-100 text-amber-900 font-black border border-amber-200"
+                                : "bg-blue-600 text-white font-black shadow-md shadow-blue-500/20"
                             )}
                           >
                             {row.totalPoints} PTS
@@ -423,44 +422,44 @@ export function StandingsTable({
         </div>
 
         {/* Table Footer Stats Summary */}
-        <div className="flex flex-wrap items-center justify-between border-t border-esports-navy-border bg-esports-navy-dark/95 px-6 py-3.5 text-[11px] text-esports-silver">
+        <div className="flex flex-wrap items-center justify-between border-t border-slate-100 bg-slate-50 px-6 py-3.5 text-[11px] text-slate-500">
           <div>
-            Showing <span className="font-bold text-white">{filteredStandings.length}</span> of{" "}
-            <span className="font-bold text-white">{standings.length}</span> {isSolo ? "players" : "teams"}
+            Showing <span className="font-bold text-slate-900">{filteredStandings.length}</span> of{" "}
+            <span className="font-bold text-slate-900">{standings.length}</span> {isSolo ? "players" : "teams"}
           </div>
           <div className="flex items-center gap-4">
             <span>Tie-Breakers: Total Points &gt; Finish Points &gt; Placement Points &gt; Wins</span>
-            <span className="text-emerald-400 font-bold">● Live Verified</span>
+            <span className="text-emerald-600 font-bold">● Live Calculated</span>
           </div>
         </div>
       </div>
 
       {/* Team Details Quick View Modal */}
       {selectedTeamModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="relative w-full max-w-lg rounded-2xl border border-esports-navy-border bg-esports-navy-card p-6 shadow-2xl space-y-5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="relative w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl space-y-5">
             <button
               onClick={() => setSelectedTeamModal(null)}
-              className="absolute right-4 top-4 rounded-lg p-1.5 text-esports-silver hover:bg-esports-navy-light hover:text-white"
+              className="absolute right-4 top-4 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-900"
             >
               <X className="h-5 w-5" />
             </button>
 
             {/* Team Profile Header */}
-            <div className="flex items-center gap-4 border-b border-esports-navy-border pb-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-esports-navy-dark border border-esports-navy-border font-display text-base font-black text-esports-orange">
+            <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 border border-blue-200 font-display text-base font-black text-blue-600">
                 {selectedTeamModal.team.short_name.slice(0, 3)}
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-display text-xl font-black uppercase text-white">
+                  <h3 className="font-display text-xl font-black uppercase text-slate-900">
                     {selectedTeamModal.team.name}
                   </h3>
-                  <span className="rounded bg-esports-navy-light px-2 py-0.5 text-xs font-bold text-esports-gold border border-esports-navy-border">
+                  <span className="rounded-full bg-yellow-400 px-2.5 py-0.5 text-xs font-black text-slate-950 border border-yellow-500">
                     Rank #{selectedTeamModal.rank}
                   </span>
                 </div>
-                <div className="text-xs text-esports-silver font-mono mt-0.5">
+                <div className="text-xs text-slate-500 font-mono mt-0.5">
                   [{selectedTeamModal.team.short_name}] • {selectedTeamModal.team.group_name} • Seed #{selectedTeamModal.team.seed}
                 </div>
               </div>
@@ -468,21 +467,21 @@ export function StandingsTable({
 
             {/* Performance Metrics Grid */}
             <div className="grid grid-cols-3 gap-3 text-center">
-              <div className="rounded-xl border border-esports-navy-border bg-esports-navy-dark p-3">
-                <span className="text-[10px] uppercase font-bold text-esports-silver block">Total Points</span>
-                <span className="font-display text-xl font-black text-esports-orange">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <span className="text-[10px] uppercase font-bold text-slate-500 block">Total Points</span>
+                <span className="font-display text-xl font-black text-blue-600">
                   {selectedTeamModal.totalPoints}
                 </span>
               </div>
-              <div className="rounded-xl border border-esports-navy-border bg-esports-navy-dark p-3">
-                <span className="text-[10px] uppercase font-bold text-esports-silver block">WWCD / Wins</span>
-                <span className="font-display text-xl font-black text-esports-gold">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <span className="text-[10px] uppercase font-bold text-slate-500 block">WWCD / Wins</span>
+                <span className="font-display text-xl font-black text-amber-700">
                   {selectedTeamModal.wins}
                 </span>
               </div>
-              <div className="rounded-xl border border-esports-navy-border bg-esports-navy-dark p-3">
-                <span className="text-[10px] uppercase font-bold text-esports-silver block">Total Kills</span>
-                <span className="font-display text-xl font-black text-white">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <span className="text-[10px] uppercase font-bold text-slate-500 block">Total Kills</span>
+                <span className="font-display text-xl font-black text-slate-900">
                   {selectedTeamModal.totalKills}
                 </span>
               </div>
@@ -490,23 +489,23 @@ export function StandingsTable({
 
             {/* Points Breakdown */}
             <div className="space-y-2 text-xs">
-              <div className="flex justify-between py-1.5 border-b border-esports-navy-border/50 text-esports-silver">
+              <div className="flex justify-between py-2 border-b border-slate-100 text-slate-600">
                 <span>Placement Points:</span>
-                <strong className="text-white font-mono">{selectedTeamModal.placementPoints} PTS</strong>
+                <strong className="text-slate-900 font-mono">{selectedTeamModal.placementPoints} PTS</strong>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-esports-navy-border/50 text-esports-silver">
+              <div className="flex justify-between py-2 border-b border-slate-100 text-slate-600">
                 <span>Finish / Elimination Points:</span>
-                <strong className="text-white font-mono">{selectedTeamModal.finishPoints} PTS</strong>
+                <strong className="text-slate-900 font-mono">{selectedTeamModal.finishPoints} PTS</strong>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-esports-navy-border/50 text-esports-silver">
+              <div className="flex justify-between py-2 border-b border-slate-100 text-slate-600">
                 <span>Best Single Match Placement:</span>
-                <strong className="text-esports-gold font-mono">#{selectedTeamModal.bestPlacement || "-"}</strong>
+                <strong className="text-blue-600 font-mono">#{selectedTeamModal.bestPlacement || "-"}</strong>
               </div>
             </div>
 
             <button
               onClick={() => setSelectedTeamModal(null)}
-              className="w-full rounded-xl bg-esports-navy-light py-2.5 text-xs font-black uppercase tracking-wider text-white hover:bg-esports-navy border border-esports-navy-border"
+              className="w-full rounded-xl bg-slate-900 py-3 text-xs font-black uppercase tracking-wider text-white hover:bg-slate-800 shadow-md"
             >
               Close Details
             </button>

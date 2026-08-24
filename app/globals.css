@@ -5,8 +5,8 @@
 @tailwind utilities;
 
 :root {
-  --background: #070C1E;
-  --foreground: #F8F3E7;
+  --background: #F8FAFC;
+  --foreground: #0F172A;
   --font-sans: 'Inter', sans-serif;
   --font-display: 'Outfit', 'Chakra Petch', sans-serif;
   --font-athletic: 'Teko', 'Chakra Petch', sans-serif;
@@ -14,13 +14,14 @@
 }
 
 body {
-  background-color: #070C1E;
-  color: #F8F3E7;
+  background-color: #F8FAFC;
+  color: #0F172A;
   font-family: var(--font-sans);
   overflow-x: hidden;
   background-image: 
-    radial-gradient(ellipse 80% 80% at 50% -20%, rgba(233, 109, 47, 0.12), transparent),
-    radial-gradient(ellipse 60% 60% at 100% 50%, rgba(16, 28, 52, 0.6), transparent);
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0, 102, 255, 0.08), transparent),
+    radial-gradient(ellipse 50% 50% at 90% 20%, rgba(255, 222, 0, 0.12), transparent),
+    radial-gradient(ellipse 60% 60% at 10% 80%, rgba(0, 102, 255, 0.05), transparent);
 }
 
 /* Custom Esports Scrollbar */
@@ -30,16 +31,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #070C1E;
+  background: #F1F5F9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1F3563;
+  background: #CBD5E1;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #E96D2F;
+  background: #0066FF;
 }
 
 /* Typography & Glows */
@@ -51,34 +52,35 @@ body {
   font-family: var(--font-athletic);
 }
 
-.text-glow-orange {
-  text-shadow: 0 0 16px rgba(233, 109, 47, 0.7), 0 0 32px rgba(233, 109, 47, 0.3);
+.text-glow-blue {
+  text-shadow: 0 0 12px rgba(0, 102, 255, 0.4);
 }
 
-.text-glow-gold {
-  text-shadow: 0 0 16px rgba(255, 183, 3, 0.7), 0 0 32px rgba(255, 183, 3, 0.3);
+.text-glow-yellow {
+  text-shadow: 0 0 12px rgba(255, 222, 0, 0.6);
 }
 
-.box-glow-orange {
-  box-shadow: 0 0 25px -4px rgba(233, 109, 47, 0.4), inset 0 0 15px rgba(233, 109, 47, 0.1);
+.box-glow-blue {
+  box-shadow: 0 0 20px -3px rgba(0, 102, 255, 0.25);
 }
 
-.box-glow-gold {
-  box-shadow: 0 0 30px -4px rgba(255, 183, 3, 0.4), inset 0 0 20px rgba(255, 183, 3, 0.1);
+.box-glow-yellow {
+  box-shadow: 0 0 20px -3px rgba(255, 222, 0, 0.35);
 }
 
 .bg-grid-pattern {
-  background-size: 40px 40px;
+  background-size: 32px 32px;
   background-image: 
-    linear-gradient(to right, rgba(31, 53, 99, 0.18) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(31, 53, 99, 0.18) 1px, transparent 1px);
+    linear-gradient(to right, rgba(226, 232, 240, 0.8) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(226, 232, 240, 0.8) 1px, transparent 1px);
 }
 
 .glass-card {
-  background: rgba(16, 28, 52, 0.75);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(31, 53, 99, 0.7);
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.04);
 }
 
 .glass-card-hover {
@@ -86,18 +88,10 @@ body {
 }
 
 .glass-card-hover:hover {
-  background: rgba(26, 43, 80, 0.85);
-  border-color: rgba(233, 109, 47, 0.6);
+  background: #FFFFFF;
+  border-color: #0066FF;
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(233, 109, 47, 0.2);
-}
-
-.clip-slanted {
-  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
-}
-
-.clip-badge {
-  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  box-shadow: 0 12px 24px -4px rgba(0, 102, 255, 0.12);
 }
 
 /* Dense table row hover animation */
@@ -106,6 +100,6 @@ body {
 }
 
 .table-row-hover:hover {
-  background-color: rgba(26, 43, 80, 0.8) !important;
-  box-shadow: inset 4px 0 0 #E96D2F;
+  background-color: #EFF6FF !important;
+  box-shadow: inset 4px 0 0 #0066FF;
 }

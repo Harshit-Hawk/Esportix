@@ -2,68 +2,60 @@ import type { Config } from "tailwindcss";
 
 export default {
   content: [
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./lib/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        // Light & Electric Blue / Yellow Palette
         esports: {
+          light: {
+            bg: "#F8FAFC",
+            card: "#FFFFFF",
+            subtle: "#F1F5F9",
+            border: "#E2E8F0",
+            hover: "#F8FAFC",
+          },
+          // Electric Blue accents
+          blue: {
+            DEFAULT: "#0066FF",
+            light: "#38BDF8",
+            dark: "#0052CC",
+            glow: "rgba(0, 102, 255, 0.25)",
+          },
+          // Electric Yellow accents
+          yellow: {
+            DEFAULT: "#FFDE00",
+            light: "#FEF08A",
+            dark: "#EAB308",
+            gold: "#F59E0B",
+            glow: "rgba(255, 222, 0, 0.35)",
+          },
+          // Legacy mappings mapped to new Light & Electric palette
           navy: {
-            DEFAULT: "#101C34",
-            dark: "#0B132B",
-            deep: "#070C1E",
-            light: "#1A2B50",
-            card: "#12203F",
-            border: "#1F3563",
+            DEFAULT: "#FFFFFF",
+            dark: "#F8FAFC",
+            card: "#FFFFFF",
+            light: "#F1F5F9",
+            border: "#E2E8F0",
+            deep: "#F8FAFC",
           },
-          orange: {
-            DEFAULT: "#E96D2F",
-            hover: "#D65C1F",
-            glow: "rgba(233, 109, 47, 0.4)",
-            light: "#FF8C53",
-          },
-          gold: {
-            DEFAULT: "#FFB703",
-            glow: "rgba(255, 183, 3, 0.4)",
-            light: "#FCD34D",
-          },
-          silver: {
-            DEFAULT: "#94A3B8",
-            light: "#CBD5E1",
-          },
-          bronze: {
-            DEFAULT: "#B45309",
-            light: "#D97706",
-          },
-          cream: {
-            DEFAULT: "#F8F3E7",
-            dim: "#E8E2D5",
-          },
+          orange: "#0066FF", // Electric Blue is the primary action color
+          gold: "#FFDE00",   // Electric Yellow is the primary reward color
+          silver: "#64748B", // High contrast dark slate text
+          bronze: "#B45309",
+          cream: "#0F172A",  // Deep slate for readable headers
         },
       },
       fontFamily: {
-        sans: ["var(--font-sans)", "Inter", "system-ui", "sans-serif"],
-        display: ["var(--font-display)", "Impact", "Chakra Petch", "sans-serif"],
+        sans: ["var(--font-sans)", "Inter", "sans-serif"],
+        display: ["var(--font-display)", "Outfit", "sans-serif"],
+        athletic: ["var(--font-athletic)", "Teko", "sans-serif"],
         mono: ["var(--font-mono)", "JetBrains Mono", "monospace"],
-      },
-      animation: {
-        "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        "live-glow": "liveGlow 2s ease-in-out infinite alternate",
-        "shimmer": "shimmer 2s linear infinite",
-      },
-      keyframes: {
-        liveGlow: {
-          "0%": { opacity: "0.6", transform: "scale(0.98)" },
-          "100%": { opacity: "1", transform: "scale(1.03)", filter: "drop-shadow(0 0 10px rgba(233, 109, 47, 0.8))" },
-        },
-        shimmer: {
-          "0%": { transform: "translateX(-100%)" },
-          "100%": { transform: "translateX(100%)" },
-        },
       },
     },
   },
