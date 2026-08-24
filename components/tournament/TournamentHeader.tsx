@@ -18,6 +18,8 @@ import {
   ChevronRight,
   TrendingUp,
   Zap,
+  Cpu,
+  Activity,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -52,30 +54,30 @@ export function TournamentHeader({
     totalMatchesCount > 0 ? Math.min(100, Math.round((completedMatchesCount / totalMatchesCount) * 100)) : 0;
 
   return (
-    <div className="overflow-hidden rounded-3xl border-2 border-slate-200 bg-white shadow-sm space-y-4 p-5 sm:p-7">
-      {/* Live Match Ticker Banner */}
-      <div className="flex items-center justify-between rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 via-slate-50 to-blue-50 px-4 py-2.5 text-xs">
-        <div className="flex items-center gap-2.5 overflow-hidden">
+    <div className="relative overflow-hidden rounded-3xl border-2 border-[#242945] bg-[#11131F] p-5 sm:p-7 shadow-[0_0_30px_rgba(0,240,255,0.06)] retro-grid space-y-5">
+      {/* Top Cyber Telemetry Bar */}
+      <div className="flex items-center justify-between rounded-xl border border-[#00F0FF]/30 bg-[#090A10]/90 px-4 py-2 text-xs">
+        <div className="flex items-center gap-3 overflow-hidden">
           <span className="flex h-2.5 w-2.5 relative shrink-0">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-600" />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00F0FF] opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#00F0FF] shadow-[0_0_8px_#00F0FF]" />
           </span>
-          <span className="font-oswald font-black uppercase tracking-wider text-blue-900 text-xs shrink-0">
-            BROADCAST FEED
+          <span className="font-orbitron font-black uppercase tracking-wider text-[#00F0FF] text-xs shrink-0 flex items-center gap-1">
+            <Activity className="h-3.5 w-3.5" /> LIVE TELEMETRY
           </span>
-          <span className="text-slate-300 hidden sm:inline">|</span>
-          <span className="text-slate-700 truncate font-medium text-xs">
+          <span className="text-slate-700 hidden sm:inline">|</span>
+          <span className="text-slate-300 font-chakra text-xs truncate">
             {latestMatch?.status === "COMPLETED" ? (
               <>
-                Latest: <strong className="text-slate-900 font-bold">{latestMatch.name} ({latestMatch.map_name})</strong> completed • {leaderTeam?.team.name} leading with {leaderTeam?.totalPoints} pts
+                LAST MATCH: <strong className="text-white">{latestMatch.name} [{latestMatch.map_name}]</strong> • CURRENT #1: <span className="text-[#FFE600] font-bold">{leaderTeam?.team.name}</span> ({leaderTeam?.totalPoints} PTS)
               </>
             ) : isLive ? (
               <>
-                <strong className="text-red-600 font-bold">{latestMatch?.name || "Match"} is LIVE NOW</strong> on {latestMatch?.map_name || "Erangel"}
+                <strong className="text-[#FF2A85] font-bold animate-pulse">WAR ZONE ACTIVE:</strong> {latestMatch?.name || "Match"} ON {latestMatch?.map_name || "Erangel"}
               </>
             ) : (
               <>
-                Tournament Ready • {standings.length} Teams Registered across {totalMatchesCount} Matches
+                GRID ONLINE • {standings.length} COMBATANTS LINKED • {totalMatchesCount} MATCHES SCHEDULED
               </>
             )}
           </span>
@@ -83,9 +85,9 @@ export function TournamentHeader({
 
         <Link
           href={`/tournament/${tournament.slug}/projector`}
-          className="shrink-0 flex items-center gap-1 font-oswald font-bold text-xs uppercase tracking-wider text-blue-600 hover:text-blue-800 ml-2"
+          className="shrink-0 flex items-center gap-1 font-chakra font-bold text-xs uppercase tracking-wider text-[#00F0FF] hover:text-white ml-2 transition-colors"
         >
-          <span>Stage Mode</span>
+          <span>CYBER STAGE</span>
           <ChevronRight className="h-3.5 w-3.5" />
         </Link>
       </div>
@@ -93,42 +95,43 @@ export function TournamentHeader({
       {/* Main Tournament Banner Content */}
       <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between pt-1">
         <div className="flex items-start sm:items-center gap-4">
-          <GameLogo
-            slug={tournament.game?.slug}
-            name={tournament.game?.name}
-            logoUrl={tournament.logo_url}
-            size="lg"
-            className="shadow-sm"
-          />
+          <div className="relative rounded-2xl border-2 border-[#00F0FF]/40 p-1 bg-[#16192B] shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+            <GameLogo
+              slug={tournament.game?.slug}
+              name={tournament.game?.name}
+              logoUrl={tournament.logo_url}
+              size="lg"
+            />
+          </div>
 
-          <div className="space-y-1">
-            <div className="flex flex-wrap items-center gap-2">
+          <div className="space-y-1.5">
+            <div className="flex flex-wrap items-center gap-2 font-chakra">
               {isLive ? (
-                <span className="inline-flex items-center gap-1.5 rounded-md bg-red-50 px-2.5 py-0.5 text-xs font-black uppercase text-red-600 border border-red-200">
-                  <span className="h-1.5 w-1.5 rounded-full bg-red-600 animate-pulse" />
-                  LIVE NOW
+                <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#FF2A85]/20 border border-[#FF2A85] px-2.5 py-0.5 text-xs font-black uppercase text-[#FF2A85] shadow-[0_0_10px_rgba(255,42,133,0.3)]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#FF2A85] animate-pulse" />
+                  LIVE ARENA
                 </span>
               ) : (
-                <span className="rounded-md bg-slate-100 px-2.5 py-0.5 text-xs font-bold uppercase text-slate-700 border border-slate-200">
+                <span className="rounded-lg bg-[#16192B] border border-[#242945] px-2.5 py-0.5 text-xs font-bold uppercase text-slate-300">
                   {tournament.status}
                 </span>
               )}
 
-              <span className="rounded-md bg-blue-50 px-2.5 py-0.5 text-xs font-black uppercase text-blue-600 border border-blue-200">
-                {tournament.format || "SQUAD"} FORMAT
+              <span className="rounded-lg bg-[#00F0FF]/15 border border-[#00F0FF]/40 px-2.5 py-0.5 text-xs font-black uppercase text-[#00F0FF]">
+                {tournament.format || "SQUAD"} PROTOCOL
               </span>
 
-              <span className="text-xs font-bold text-slate-500">
+              <span className="text-xs font-bold text-slate-400 font-mono">
                 {tournament.game?.name || "Esports Title"}
               </span>
             </div>
 
-            <h1 className="font-oswald text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight text-slate-900 leading-none">
+            <h1 className="font-orbitron text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight text-white leading-none">
               {tournament.name}
             </h1>
 
             {tournament.description && (
-              <p className="text-xs text-slate-500 max-w-2xl line-clamp-1 leading-relaxed">
+              <p className="text-xs text-slate-400 max-w-2xl line-clamp-1 font-chakra leading-relaxed">
                 {tournament.description}
               </p>
             )}
@@ -136,40 +139,40 @@ export function TournamentHeader({
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-3">
           <Link
             href={`/tournament/${tournament.slug}/projector`}
-            className="inline-flex items-center gap-1.5 rounded-xl border-2 border-slate-300 bg-white px-4 py-2.5 font-oswald text-xs font-bold uppercase tracking-wider text-slate-850 hover:bg-slate-50 hover:text-slate-900 transition-all shadow-xs"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-[#00F0FF]/40 bg-[#16192B] px-4 py-2.5 font-chakra text-xs font-bold uppercase tracking-wider text-[#00F0FF] hover:bg-[#00F0FF] hover:text-slate-950 transition-all shadow-[0_0_10px_rgba(0,240,255,0.15)]"
           >
-            <Maximize2 className="h-3.5 w-3.5 text-blue-600" />
-            <span>Projector View</span>
+            <Maximize2 className="h-4 w-4" />
+            <span>Projector HUD</span>
           </Link>
 
           {onOpenExport && (
             <button
               onClick={onOpenExport}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-[#141414] border border-[#333] px-5 py-2.5 font-oswald text-xs font-black uppercase tracking-wider text-[#F5C400] shadow-md hover:bg-slate-900 active:scale-95 transition-all"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#FF2A85] to-[#9D4EDD] px-5 py-2.5 font-chakra text-xs font-black uppercase tracking-wider text-white shadow-[0_0_15px_rgba(255,42,133,0.3)] hover:brightness-110 active:scale-95 transition-all"
             >
-              <Share2 className="h-3.5 w-3.5 text-[#F5C400]" />
-              <span>Export Poster / CSV</span>
+              <Share2 className="h-4 w-4 text-[#FFE600]" />
+              <span>Export Holo-Poster</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Dynamic Metrics & Progress Strip */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 border-t border-slate-100 pt-4 text-xs">
+      {/* Cyber Metrics & Progress Strip */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 border-t border-[#242945] pt-4 text-xs font-chakra">
         {/* Tournament Leader */}
-        <div className="space-y-1">
-          <span className="text-slate-500 font-oswald font-bold uppercase text-xs tracking-wider block">
-            #1 Leader
+        <div className="space-y-1 rounded-xl bg-[#090A10]/60 border border-[#242945] p-3">
+          <span className="text-slate-400 font-bold uppercase text-[10px] tracking-wider block">
+            #1 DOMINATOR
           </span>
-          <div className="font-oswald font-black text-slate-900 truncate flex items-center gap-1.5 text-sm">
+          <div className="font-orbitron font-black text-white truncate flex items-center gap-1.5 text-sm">
             {leaderTeam ? (
               <>
-                <Crown className="h-4 w-4 text-yellow-500 shrink-0" />
+                <Crown className="h-4 w-4 text-[#FFE600] shrink-0" />
                 <span className="truncate">{leaderTeam.team.name}</span>
-                <span className="font-mono text-blue-600 text-xs font-black">({leaderTeam.totalPoints} pts)</span>
+                <span className="font-mono text-[#00F0FF] text-xs font-bold">({leaderTeam.totalPoints}P)</span>
               </>
             ) : (
               "—"
@@ -177,47 +180,47 @@ export function TournamentHeader({
           </div>
         </div>
 
-        {/* Matches Completed with Progress Bar */}
-        <div className="space-y-1">
-          <div className="flex justify-between items-center text-xs font-oswald font-bold uppercase tracking-wider text-slate-500">
-            <span>Schedule</span>
-            <span className="font-mono">{progressPercent}%</span>
+        {/* Matches Completed with Holographic Progress Bar */}
+        <div className="space-y-1 rounded-xl bg-[#090A10]/60 border border-[#242945] p-3">
+          <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            <span>GRID PROGRESS</span>
+            <span className="font-mono text-[#00F0FF]">{progressPercent}%</span>
           </div>
-          <div className="h-2 w-full rounded-full bg-slate-100 border border-slate-200 overflow-hidden">
+          <div className="h-2 w-full rounded-full bg-[#16192B] border border-[#242945] overflow-hidden">
             <div
               style={{ width: `${progressPercent}%` }}
-              className="h-full bg-gradient-to-r from-blue-600 to-cyan-400 transition-all duration-500 rounded-full"
+              className="h-full bg-gradient-to-r from-[#00F0FF] to-[#FF2A85] shadow-[0_0_10px_#00F0FF] transition-all duration-500 rounded-full"
             />
           </div>
-          <span className="text-[10px] text-slate-500 font-mono block">
-            {completedMatchesCount} of {totalMatchesCount} Matches Completed
+          <span className="text-[10px] text-slate-400 font-mono block">
+            {completedMatchesCount} OF {totalMatchesCount} MATCHES LOGGED
           </span>
         </div>
 
         {/* Total Elimination Frags */}
-        <div className="space-y-1">
-          <span className="text-slate-500 font-oswald font-bold uppercase text-xs tracking-wider block">
-            Total Eliminations
+        <div className="space-y-1 rounded-xl bg-[#090A10]/60 border border-[#242945] p-3">
+          <span className="text-slate-400 font-bold uppercase text-[10px] tracking-wider block">
+            TOTAL ELIMINATIONS
           </span>
-          <div className="font-oswald font-black text-slate-900 text-sm font-mono flex items-center gap-1.5">
-            <Flame className="h-4 w-4 text-rose-500" />
-            <span>{totalKills} frags</span>
+          <div className="font-orbitron font-black text-[#FF2A85] text-sm font-mono flex items-center gap-1.5">
+            <Flame className="h-4 w-4 text-[#FF2A85]" />
+            <span>{totalKills} FRAGS</span>
           </div>
-          <span className="text-[10px] text-slate-500 block">
-            Top Fragger: {topFraggerTeam?.team.short_name || "—"} ({topFraggerTeam?.totalKills || 0})
+          <span className="text-[10px] text-slate-400 block truncate">
+            MVP: {topFraggerTeam?.team.short_name || "—"} ({topFraggerTeam?.totalKills || 0})
           </span>
         </div>
 
         {/* Current Active Map & Stage */}
-        <div className="space-y-1">
-          <span className="text-slate-500 font-oswald font-bold uppercase text-xs tracking-wider block">
-            Active Map & Stage
+        <div className="space-y-1 rounded-xl bg-[#090A10]/60 border border-[#242945] p-3">
+          <span className="text-slate-400 font-bold uppercase text-[10px] tracking-wider block">
+            ACTIVE ARENA
           </span>
-          <div className="font-oswald font-black text-slate-900 text-sm truncate">
-            {latestMatch ? `${latestMatch.map_name || "Arena"}` : "Grand Finals"}
+          <div className="font-orbitron font-black text-white text-sm truncate">
+            {latestMatch ? `${latestMatch.map_name || "Arena"}` : "GRAND FINALS"}
           </div>
-          <span className="text-[10px] text-blue-600 font-bold block truncate">
-            {latestMatch?.round_name || "Scheduled Stage"}
+          <span className="text-[10px] text-[#00F0FF] font-bold block truncate">
+            {latestMatch?.round_name || "SCHEDULED STAGE"}
           </span>
         </div>
       </div>
