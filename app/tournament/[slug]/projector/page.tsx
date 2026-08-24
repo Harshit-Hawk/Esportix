@@ -6,7 +6,8 @@ import { supabase } from "@/lib/supabase/client";
 import { Tournament, ScoringRulesConfig, Team, Match } from "@/types/database";
 import { calculateLeaderboard, LeaderboardRow } from "@/lib/scoring/leaderboard";
 import { useTournamentRealtime } from "@/hooks/use-tournament-realtime";
-import { Trophy, Maximize, Minimize, ArrowLeft, Clock } from "lucide-react";
+import { GameLogo } from "@/components/common/GameLogo";
+import { Trophy, Maximize, Minimize, ArrowLeft, Clock, User } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -95,6 +96,7 @@ export default function ProjectorScoreboardPage() {
   }, [teams, matches, scoringRules]);
 
   const completedMatchesCount = matches.filter((m) => m.status === "COMPLETED").length;
+  const isSolo = tournament?.format === "SOLO";
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -106,12 +108,78 @@ export default function ProjectorScoreboardPage() {
     }
   };
 
-  const col1 = standings.slice(0, 8);
-  const col2 = standings.slice(8, 16);
+  // Adaptive column calculation
+  const shouldSplitColumns = standings.length > 8;
+  const splitIndex = shouldSplitColumns ? Math.ceil(standings.length / 2) : standings.length;
+  const col1 = standings.slice(0, splitIndex);
+  const col2 = shouldSplitColumns ? standings.slice(splitIndex) : [];
+
+  const renderTableSection = (rows: LeaderboardRow[], title: string) => (
+    <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-950 shadow-md">
+      <div className="border-b border-slate-800 bg-slate-900/80 px-4 py-2.5 text-xs font-semibold text-slate-300 flex items-center justify-between">
+        <span>{title}</span>
+        <span className="text-[11px] text-slate-500 font-mono">{rows.length} {isSolo ? "Combatants" : "Teams"}</span>
+      </div>
+      <table className="w-full text-left text-xs border-collapse">
+        <thead>
+          <tr className="border-b border-slate-800 text-[11px] font-semibold text-slate-400 uppercase">
+            <th className="py-3 pl-4 pr-2 text-center w-12">#</th>
+            <th className="py-3 px-3">{isSolo ? "Player / IGN" : "Team / Squad"}</th>
+            <th className="py-3 px-3 text-center">Wins</th>
+            <th className="py-3 px-3 text-center">Place</th>
+            <th className="py-3 px-3 text-center">Kills</th>
+            <th className="py-3 pl-3 pr-4 text-right">TOTAL</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-800/60 font-medium">
+          {rows.map((row) => (
+            <tr
+              key={row.team.id}
+              className={cn(
+                "transition-colors",
+                row.rank === 1 ? "bg-amber-950/25" : "hover:bg-slate-900/40"
+              )}
+            >
+              <td className="py-3 pl-4 pr-2 text-center font-mono font-bold">
+                {row.rank === 1 ? (
+                  <span className="text-amber-400 font-extrabold text-sm">#1</span>
+                ) : (
+                  <span className="text-slate-400">#{row.rank}</span>
+                )}
+              </td>
+              <td className="py-3 px-3">
+                <div className="flex items-center gap-2">
+                  {isSolo && <User className="h-3.5 w-3.5 text-slate-500 shrink-0" />}
+                  <span className="font-semibold text-white text-sm">
+                    {row.team.name}
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-mono">
+                    [{row.team.short_name}]
+                  </span>
+                </div>
+              </td>
+              <td className="py-3 px-3 text-center font-mono text-amber-400 font-bold">
+                {row.wins}
+              </td>
+              <td className="py-3 px-3 text-center font-mono text-slate-300">
+                {row.placementPoints}
+              </td>
+              <td className="py-3 px-3 text-center font-mono text-slate-300">
+                {row.totalKills}
+              </td>
+              <td className="py-3 pl-3 pr-4 text-right font-mono font-bold text-sm text-blue-400">
+                {row.totalPoints} pts
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-900 text-white select-none">
-      {/* Header */}
+      {/* Stage Broadcast Header */}
       <header className="flex items-center justify-between border-b border-slate-800 bg-slate-950 px-6 py-3.5">
         <div className="flex items-center gap-4">
           <Link
@@ -122,17 +190,24 @@ export default function ProjectorScoreboardPage() {
             <span>Exit Stage</span>
           </Link>
 
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold text-white tracking-tight">
-                {tournament?.name || "Tournament Leaderboard"}
-              </h1>
-              <span className="rounded bg-blue-900/60 text-blue-300 border border-blue-700 px-2 py-0.2 text-[10px] font-semibold">
-                {tournament?.format || "SQUAD"}
-              </span>
-            </div>
-            <div className="text-xs text-slate-400 font-mono">
-              {tournament?.game?.name} • Match {completedMatchesCount} of {matches.length}
+          <div className="flex items-center gap-3">
+            <GameLogo
+              slug={tournament?.game?.slug}
+              name={tournament?.game?.name}
+              size="sm"
+            />
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg font-bold text-white tracking-tight">
+                  {tournament?.name || "Tournament Leaderboard"}
+                </h1>
+                <span className="rounded bg-blue-900/60 text-blue-300 border border-blue-700 px-2 py-0.2 text-[10px] font-semibold">
+                  {tournament?.format || "SQUAD"}
+                </span>
+              </div>
+              <div className="text-xs text-slate-400 font-mono">
+                {tournament?.game?.name} • Match {completedMatchesCount} of {matches.length}
+              </div>
             </div>
           </div>
         </div>
@@ -140,7 +215,7 @@ export default function ProjectorScoreboardPage() {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 rounded-full bg-red-950/80 border border-red-800 px-2.5 py-0.5 text-xs font-semibold text-red-400">
             <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
-            <span>LIVE</span>
+            <span>LIVE STAGE</span>
           </div>
 
           <div className="hidden sm:flex items-center gap-1.5 font-mono text-xs text-slate-400 bg-slate-800 px-3 py-1 rounded">
@@ -151,116 +226,29 @@ export default function ProjectorScoreboardPage() {
           <button
             onClick={toggleFullscreen}
             className="rounded bg-slate-800 p-1.5 text-slate-300 hover:bg-slate-700 transition-colors"
+            title="Toggle Fullscreen"
           >
             {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
           </button>
         </div>
       </header>
 
-      {/* Main Dual-Column Stadium Table */}
-      <main className="flex-1 p-6">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          {/* Top 8 */}
-          <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-950 shadow-md">
-            <div className="border-b border-slate-800 bg-slate-900/80 px-4 py-2 text-xs font-semibold text-slate-300">
-              Rank 1 – 8
-            </div>
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-slate-800 text-[11px] font-semibold text-slate-400 uppercase">
-                  <th className="py-2.5 pl-4 pr-2 text-center w-12">#</th>
-                  <th className="py-2.5 px-3">Team</th>
-                  <th className="py-2.5 px-3 text-center">Wins</th>
-                  <th className="py-2.5 px-3 text-center">Place</th>
-                  <th className="py-2.5 px-3 text-center">Kills</th>
-                  <th className="py-2.5 pl-3 pr-4 text-right">TOTAL</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60 font-medium">
-                {col1.map((row) => (
-                  <tr
-                    key={row.team.id}
-                    className={cn(
-                      row.rank === 1 ? "bg-amber-950/20" : "hover:bg-slate-900/40"
-                    )}
-                  >
-                    <td className="py-3 pl-4 pr-2 text-center font-mono font-bold text-slate-400">
-                      {row.rank === 1 ? <span className="text-amber-400 font-extrabold">#1</span> : `#${row.rank}`}
-                    </td>
-                    <td className="py-3 px-3">
-                      <span className="font-semibold text-white">
-                        {row.team.name}
-                      </span>
-                      <span className="text-[10px] text-slate-400 font-mono ml-1.5">
-                        [{row.team.short_name}]
-                      </span>
-                    </td>
-                    <td className="py-3 px-3 text-center font-mono text-amber-400 font-bold">
-                      {row.wins}
-                    </td>
-                    <td className="py-3 px-3 text-center font-mono text-slate-300">
-                      {row.placementPoints}
-                    </td>
-                    <td className="py-3 px-3 text-center font-mono text-slate-300">
-                      {row.totalKills}
-                    </td>
-                    <td className="py-3 pl-3 pr-4 text-right font-mono font-bold text-sm text-blue-400">
-                      {row.totalPoints} pts
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {/* Main Broadcast Arena Table */}
+      <main className="flex-1 p-6 flex flex-col justify-center">
+        {standings.length === 0 ? (
+          <div className="rounded-xl border border-slate-800 bg-slate-950 p-12 text-center text-slate-400">
+            No participants registered yet.
           </div>
-
-          {/* 9 - 16 */}
-          <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-950 shadow-md">
-            <div className="border-b border-slate-800 bg-slate-900/80 px-4 py-2 text-xs font-semibold text-slate-300">
-              Rank 9 – 16
-            </div>
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-slate-800 text-[11px] font-semibold text-slate-400 uppercase">
-                  <th className="py-2.5 pl-4 pr-2 text-center w-12">#</th>
-                  <th className="py-2.5 px-3">Team</th>
-                  <th className="py-2.5 px-3 text-center">Wins</th>
-                  <th className="py-2.5 px-3 text-center">Place</th>
-                  <th className="py-2.5 px-3 text-center">Kills</th>
-                  <th className="py-2.5 pl-3 pr-4 text-right">TOTAL</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60 font-medium">
-                {col2.map((row) => (
-                  <tr key={row.team.id} className="hover:bg-slate-900/40">
-                    <td className="py-3 pl-4 pr-2 text-center font-mono font-bold text-slate-400">
-                      #{row.rank}
-                    </td>
-                    <td className="py-3 px-3">
-                      <span className="font-semibold text-white">
-                        {row.team.name}
-                      </span>
-                      <span className="text-[10px] text-slate-400 font-mono ml-1.5">
-                        [{row.team.short_name}]
-                      </span>
-                    </td>
-                    <td className="py-3 px-3 text-center font-mono text-slate-400">
-                      {row.wins}
-                    </td>
-                    <td className="py-3 px-3 text-center font-mono text-slate-300">
-                      {row.placementPoints}
-                    </td>
-                    <td className="py-3 px-3 text-center font-mono text-slate-300">
-                      {row.totalKills}
-                    </td>
-                    <td className="py-3 pl-3 pr-4 text-right font-mono font-bold text-sm text-slate-300">
-                      {row.totalPoints} pts
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        ) : shouldSplitColumns ? (
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {renderTableSection(col1, `Rank 1 – ${splitIndex}`)}
+            {renderTableSection(col2, `Rank ${splitIndex + 1} – ${standings.length}`)}
           </div>
-        </div>
+        ) : (
+          <div className="max-w-4xl mx-auto w-full">
+            {renderTableSection(col1, `Official Standings (Rank 1 – ${standings.length})`)}
+          </div>
+        )}
       </main>
     </div>
   );
