@@ -1,6 +1,7 @@
 export type UserRole = "SUPER_ADMIN" | "TOURNAMENT_ADMIN" | "VIEWER";
 export type TournamentStatus = "DRAFT" | "UPCOMING" | "LIVE" | "COMPLETED" | "ARCHIVED";
 export type TournamentVisibility = "PUBLIC" | "UNLISTED" | "PRIVATE";
+export type TournamentFormat = "SOLO" | "DUO" | "TRIO" | "SQUAD" | "5v5" | "CUSTOM";
 export type MatchStatus = "SCHEDULED" | "LIVE" | "COMPLETED" | "CANCELLED";
 
 export interface Game {
@@ -90,6 +91,8 @@ export interface Tournament {
   banner_url: string | null;
   status: TournamentStatus;
   visibility: TournamentVisibility;
+  format: TournamentFormat;
+  team_size: number;
   start_date: string | null;
   end_date: string | null;
   created_by: string | null;

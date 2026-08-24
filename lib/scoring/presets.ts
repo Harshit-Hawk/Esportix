@@ -1,9 +1,14 @@
 import { ScoringRulesConfig } from "@/types/database";
 
-export const SCORING_PRESETS: Record<string, { name: string; description: string; rules: ScoringRulesConfig }> = {
+export const SCORING_PRESETS: Record<
+  string,
+  { name: string; description: string; format: string; defaultTeamSize: number; rules: ScoringRulesConfig }
+> = {
   bgmi_official_10pt: {
-    name: "BGMI Official (10-Point System)",
-    description: "Official Krafton / BGIS 10-Point Scoring System (1st: 10pts, 2nd: 6pts, 3rd: 5pts, 1 pt/kill)",
+    name: "BGMI Squad (Official 10-Pt)",
+    description: "Official Krafton / BGIS 10-Point System for 16 Squads (1st: 10pts, 2nd: 6pts, 3rd: 5pts, 1 pt/kill)",
+    format: "SQUAD",
+    defaultTeamSize: 4,
     rules: {
       placement_rules: {
         "1": 10,
@@ -28,9 +33,11 @@ export const SCORING_PRESETS: Record<string, { name: string; description: string
       tie_breaker_priority: ["total_points", "finish_points", "placement_points", "wins", "total_kills", "best_placement"],
     },
   },
-  bgmi_classic_15pt: {
-    name: "BGMI Classic (15-Point System)",
-    description: "Classic PMCO 15-Point Scoring System (1st: 15pts, 2nd: 12pts, 3rd: 10pts... 1 pt/kill)",
+  bgmi_solo_50players: {
+    name: "BGMI Solo Showdown (50 Players)",
+    description: "Individual Solo Battle Royale with points scaling across top 20 survivors (1st: 15pts, 2nd: 12pts, 3rd: 10pts, 1 pt/kill)",
+    format: "SOLO",
+    defaultTeamSize: 1,
     rules: {
       placement_rules: {
         "1": 15,
@@ -38,17 +45,40 @@ export const SCORING_PRESETS: Record<string, { name: string; description: string
         "3": 10,
         "4": 8,
         "5": 6,
-        "6": 4,
+        "6": 5,
+        "7": 4,
+        "8": 3,
+        "9": 2,
+        "10": 2,
+        "11": 1,
+        "12": 1,
+        "13": 1,
+        "14": 1,
+        "15": 1,
+        "16": 0,
+      },
+      kill_points: 1,
+      win_bonus: 0,
+      tie_breaker_priority: ["total_points", "finish_points", "total_kills", "wins", "best_placement"],
+    },
+  },
+  bgmi_duo_clash: {
+    name: "BGMI Duo Clash (25 Duos)",
+    description: "2-Player Duo tournament scoring for 25 competing pairs (1st: 12pts, 2nd: 9pts, 3rd: 7pts, 1 pt/kill)",
+    format: "DUO",
+    defaultTeamSize: 2,
+    rules: {
+      placement_rules: {
+        "1": 12,
+        "2": 9,
+        "3": 7,
+        "4": 5,
+        "5": 4,
+        "6": 3,
         "7": 2,
         "8": 1,
         "9": 1,
         "10": 1,
-        "11": 1,
-        "12": 1,
-        "13": 0,
-        "14": 0,
-        "15": 0,
-        "16": 0,
       },
       kill_points: 1,
       win_bonus: 0,
@@ -56,8 +86,10 @@ export const SCORING_PRESETS: Record<string, { name: string; description: string
     },
   },
   free_fire_official: {
-    name: "Free Fire (FFWS Official)",
-    description: "Official Free Fire World Series Scoring (1st: 12pts, 2nd: 9pts, 3rd: 8pts... 1 pt/elim)",
+    name: "Free Fire (FFWS Official Squad)",
+    description: "Official Free Fire World Series Scoring for 12 Squads (1st: 12pts, 2nd: 9pts, 3rd: 8pts... 1 pt/elim)",
+    format: "SQUAD",
+    defaultTeamSize: 4,
     rules: {
       placement_rules: {
         "1": 12,
@@ -78,22 +110,49 @@ export const SCORING_PRESETS: Record<string, { name: string; description: string
       tie_breaker_priority: ["total_points", "wins", "finish_points", "placement_points"],
     },
   },
+  free_fire_solo_rush: {
+    name: "Free Fire Solo Rush (48 Players)",
+    description: "Free Fire Solo Battle Royale with 1 point per elimination and top 10 placement bonus",
+    format: "SOLO",
+    defaultTeamSize: 1,
+    rules: {
+      placement_rules: {
+        "1": 15,
+        "2": 10,
+        "3": 8,
+        "4": 6,
+        "5": 4,
+        "6": 3,
+        "7": 2,
+        "8": 1,
+        "9": 1,
+        "10": 1,
+      },
+      kill_points: 1,
+      win_bonus: 0,
+      tie_breaker_priority: ["total_points", "finish_points", "wins", "placement_points"],
+    },
+  },
   valorant_tourney: {
-    name: "Valorant Match & Round Points",
-    description: "Points per map win, round differential, and match victory bonus",
+    name: "Valorant 5v5 Match & Rounds",
+    description: "Points per match victory (3 pts), round differential, and 2-0 sweep bonuses",
+    format: "5v5",
+    defaultTeamSize: 5,
     rules: {
       placement_rules: {
         "1": 3, // Match Win: 3 pts
         "2": 0, // Match Loss: 0 pts
       },
       kill_points: 0,
-      win_bonus: 2, // Bonus for 2-0 sweep
+      win_bonus: 2, // Sweep bonus
       tie_breaker_priority: ["total_points", "wins", "finish_points"],
     },
   },
   cod_mobile_br: {
-    name: "Call of Duty: Mobile Battle Royale",
+    name: "Call of Duty: Mobile Squad BR",
     description: "CODM BR Tournament System (1st: 15pts, 2nd: 10pts, 3rd: 7pts, 1 pt/kill)",
+    format: "SQUAD",
+    defaultTeamSize: 4,
     rules: {
       placement_rules: {
         "1": 15,
@@ -111,8 +170,10 @@ export const SCORING_PRESETS: Record<string, { name: string; description: string
     },
   },
   custom_customizable: {
-    name: "Custom Game System",
-    description: "Fully customizable placement points and kill multiplier",
+    name: "Custom Rules & Formats",
+    description: "Fully customizable placement points, team size, and kill multiplier",
+    format: "CUSTOM",
+    defaultTeamSize: 4,
     rules: {
       placement_rules: {
         "1": 10,

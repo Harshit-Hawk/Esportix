@@ -1,8 +1,22 @@
 "use client";
 
 import { Tournament, Match } from "@/types/database";
-import { Radio, Calendar, Trophy, Gamepad2, Maximize2, Share2, Sparkles, ShieldCheck } from "lucide-react";
+import {
+  Radio,
+  Calendar,
+  Trophy,
+  Gamepad2,
+  Maximize2,
+  Share2,
+  Sparkles,
+  ShieldCheck,
+  User,
+  Users,
+  Layers,
+  Crosshair,
+} from "lucide-react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface TournamentHeaderProps {
   tournament: Tournament;
@@ -20,6 +34,24 @@ export function TournamentHeader({
   onOpenExport,
 }: TournamentHeaderProps) {
   const isLive = tournament.status === "LIVE";
+
+  const getFormatBadge = () => {
+    switch (tournament.format) {
+      case "SOLO":
+        return { label: "SOLO FORMAT", icon: User, color: "text-amber-400 border-amber-500/40 bg-amber-500/10" };
+      case "DUO":
+        return { label: "DUO PAIRS", icon: Users, color: "text-blue-400 border-blue-500/40 bg-blue-500/10" };
+      case "TRIO":
+        return { label: "TRIO CLASH", icon: Users, color: "text-purple-400 border-purple-500/40 bg-purple-500/10" };
+      case "5v5":
+        return { label: "5v5 TACTICAL", icon: Crosshair, color: "text-emerald-400 border-emerald-500/40 bg-emerald-500/10" };
+      default:
+        return { label: "SQUAD BATTLE ROYALE", icon: Layers, color: "text-esports-orange border-esports-orange/40 bg-esports-orange/10" };
+    }
+  };
+
+  const fmtBadge = getFormatBadge();
+  const FormatIcon = fmtBadge.icon;
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-esports-navy-border bg-gradient-to-b from-esports-navy to-esports-navy-dark shadow-2xl">
@@ -63,6 +95,17 @@ export function TournamentHeader({
                     {tournament.status}
                   </span>
                 )}
+
+                {/* Format Badge */}
+                <span
+                  className={cn(
+                    "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wider",
+                    fmtBadge.color
+                  )}
+                >
+                  <FormatIcon className="h-3 w-3" />
+                  {fmtBadge.label}
+                </span>
 
                 {/* Game Pill */}
                 <span className="inline-flex items-center gap-1 rounded-full bg-esports-navy-light border border-esports-navy-border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-esports-cream">
@@ -128,7 +171,7 @@ export function TournamentHeader({
 
             <div className="flex items-center gap-2 text-esports-silver text-[11px]">
               <span className="inline-block h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-              <span>Leaderboard auto-calculated with verified scoring engine</span>
+              <span>Real-Time WebSockets Active • Auto-calculating points</span>
             </div>
           </div>
         )}
