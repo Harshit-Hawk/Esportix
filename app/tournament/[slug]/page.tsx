@@ -196,68 +196,79 @@ export default function TournamentPublicPage() {
         completedMatchesCount={completedMatchesCount}
         totalMatchesCount={matches.length}
         latestMatch={latestMatch}
+        standings={standings}
         onOpenExport={() => setExportModalOpen(true)}
       />
 
-      {/* Main Content Tabs */}
-      <div className="flex items-center gap-2 border-b border-esports-navy-border pb-1 overflow-x-auto">
-        <button
-          onClick={() => setActiveTab("standings")}
-          className={cn(
-            "flex items-center gap-2 rounded-t-lg px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-all",
-            activeTab === "standings"
-              ? "border-b-2 border-esports-orange bg-esports-navy-light text-white"
-              : "text-esports-silver hover:bg-esports-navy-light/40 hover:text-white"
-          )}
-        >
-          <Trophy className="h-4 w-4 text-esports-gold" />
-          <span>Overall Standings</span>
-          <span className="rounded-full bg-esports-navy-dark px-2 py-0.5 text-[10px] font-mono text-esports-silver">
-            {standings.length}
-          </span>
-        </button>
+      {/* Broadcast Navigation Tabs */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-esports-navy-border/80 pb-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setActiveTab("standings")}
+            className={cn(
+              "flex items-center gap-2 rounded-xl px-4 py-2.5 font-display text-xs font-black uppercase tracking-wider transition-all",
+              activeTab === "standings"
+                ? "bg-gradient-to-r from-esports-orange to-orange-600 text-white shadow-lg shadow-esports-orange/25"
+                : "border border-esports-navy-border bg-esports-navy-card/80 text-esports-silver hover:bg-esports-navy-light hover:text-white"
+            )}
+          >
+            <Trophy className="h-4 w-4" />
+            <span>Overall Standings</span>
+            <span className="rounded-full bg-black/30 px-2 py-0.5 text-[10px] font-mono">
+              {standings.length}
+            </span>
+          </button>
 
-        <button
-          onClick={() => setActiveTab("matches")}
-          className={cn(
-            "flex items-center gap-2 rounded-t-lg px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-all",
-            activeTab === "matches"
-              ? "border-b-2 border-esports-orange bg-esports-navy-light text-white"
-              : "text-esports-silver hover:bg-esports-navy-light/40 hover:text-white"
-          )}
-        >
-          <Crosshair className="h-4 w-4 text-esports-orange" />
-          <span>Match Breakdown</span>
-          <span className="rounded-full bg-esports-navy-dark px-2 py-0.5 text-[10px] font-mono text-esports-silver">
-            {matches.length}
-          </span>
-        </button>
+          <button
+            onClick={() => setActiveTab("matches")}
+            className={cn(
+              "flex items-center gap-2 rounded-xl px-4 py-2.5 font-display text-xs font-black uppercase tracking-wider transition-all",
+              activeTab === "matches"
+                ? "bg-gradient-to-r from-esports-orange to-orange-600 text-white shadow-lg shadow-esports-orange/25"
+                : "border border-esports-navy-border bg-esports-navy-card/80 text-esports-silver hover:bg-esports-navy-light hover:text-white"
+            )}
+          >
+            <Layers className="h-4 w-4" />
+            <span>Match Breakdown</span>
+            <span className="rounded-full bg-black/30 px-2 py-0.5 text-[10px] font-mono">
+              {matches.length}
+            </span>
+          </button>
 
-        <button
-          onClick={() => setActiveTab("teams")}
-          className={cn(
-            "flex items-center gap-2 rounded-t-lg px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-all",
-            activeTab === "teams"
-              ? "border-b-2 border-esports-orange bg-esports-navy-light text-white"
-              : "text-esports-silver hover:bg-esports-navy-light/40 hover:text-white"
-          )}
-        >
-          <Users className="h-4 w-4 text-esports-cream" />
-          <span>Teams & Rosters</span>
-        </button>
+          <button
+            onClick={() => setActiveTab("teams")}
+            className={cn(
+              "flex items-center gap-2 rounded-xl px-4 py-2.5 font-display text-xs font-black uppercase tracking-wider transition-all",
+              activeTab === "teams"
+                ? "bg-gradient-to-r from-esports-orange to-orange-600 text-white shadow-lg shadow-esports-orange/25"
+                : "border border-esports-navy-border bg-esports-navy-card/80 text-esports-silver hover:bg-esports-navy-light hover:text-white"
+            )}
+          >
+            <Users className="h-4 w-4" />
+            <span>Teams & Rosters</span>
+            <span className="rounded-full bg-black/30 px-2 py-0.5 text-[10px] font-mono">
+              {teams.length}
+            </span>
+          </button>
 
-        <button
-          onClick={() => setActiveTab("rules")}
-          className={cn(
-            "flex items-center gap-2 rounded-t-lg px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-all",
-            activeTab === "rules"
-              ? "border-b-2 border-esports-orange bg-esports-navy-light text-white"
-              : "text-esports-silver hover:bg-esports-navy-light/40 hover:text-white"
-          )}
-        >
-          <ScrollText className="h-4 w-4 text-esports-silver" />
-          <span>Scoring Rules</span>
-        </button>
+          <button
+            onClick={() => setActiveTab("rules")}
+            className={cn(
+              "flex items-center gap-2 rounded-xl px-4 py-2.5 font-display text-xs font-black uppercase tracking-wider transition-all",
+              activeTab === "rules"
+                ? "bg-gradient-to-r from-esports-orange to-orange-600 text-white shadow-lg shadow-esports-orange/25"
+                : "border border-esports-navy-border bg-esports-navy-card/80 text-esports-silver hover:bg-esports-navy-light hover:text-white"
+            )}
+          >
+            <Sparkles className="h-4 w-4" />
+            <span>Scoring Rules</span>
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2 text-xs text-esports-silver">
+          <span>Sort By:</span>
+          <span className="font-bold text-white font-mono">OFFICIAL FORMULA</span>
+        </div>
       </div>
 
       {/* Tab Panels */}
