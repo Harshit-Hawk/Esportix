@@ -1,9 +1,15 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://jmjpeohpgmyfdrxprtdc.supabase.co";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptanBlb2hwZ215ZmRyeHBydGRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwNzQ2NTcsImV4cCI6MjA5ODY1MDY1N30.8zECeGdZcOCc-nbrTAeHlVKItoqt1-cU73VIPhQHiAI";
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
 export function createBrowserClient() {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return createClient("https://placeholder.supabase.co", "placeholder-key", {
+      auth: { persistSession: false },
+    });
+  }
+
   return createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       persistSession: true,
