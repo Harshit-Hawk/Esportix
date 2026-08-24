@@ -306,10 +306,10 @@ export function StandingsTable({
                       <span className="text-base leading-none">🏆</span>
                     </div>
                   </th>
-                  <th className="py-3 px-3 text-center w-20 font-black">MATCHES</th>
-                  <th className="py-3 px-3 text-center w-20 font-black">FIN. PTS.</th>
-                  <th className="py-3 px-3 text-center w-20 font-black">POS. PTS.</th>
-                  <th className="py-3 pl-3 pr-4 text-right w-24 font-black text-white">TOTAL</th>
+                  <th className="py-3 px-3 text-center w-24 font-black">MATCHES</th>
+                  <th className="py-3 px-3 text-center w-28 font-black">FINISH POINTS</th>
+                  <th className="py-3 px-3 text-center w-28 font-black">POSITION POINTS</th>
+                  <th className="py-3 pl-3 pr-4 text-right w-28 font-black text-white">TOTAL POINTS</th>
                 </tr>
               </thead>
 
