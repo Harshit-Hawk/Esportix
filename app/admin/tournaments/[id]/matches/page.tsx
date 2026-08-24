@@ -19,6 +19,9 @@ import {
   Layers,
   Sparkles,
   Zap,
+  Trash2,
+  Edit2,
+  CalendarPlus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -30,8 +33,9 @@ export default function TournamentMatchesAdminPage() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddMatch, setShowAddMatch] = useState(false);
+  const [editingMatch, setEditingMatch] = useState<Match | null>(null);
 
-  // New Match Form State
+  // New / Edit Match Form State
   const [matchNumber, setMatchNumber] = useState(1);
   const [matchName, setMatchName] = useState("");
   const [mapName, setMapName] = useState("Erangel");
@@ -68,24 +72,72 @@ export default function TournamentMatchesAdminPage() {
     loadData();
   }, [loadData]);
 
-  const handleCreateMatch = async (e: React.FormEvent) => {
+  const handleCreateOrUpdateMatch = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { error } = await supabase.from("matches").insert({
-        tournament_id: tournamentId,
-        match_number: Number(matchNumber),
-        name: matchName || `Match ${matchNumber}`,
-        map_name: mapName,
-        round_name: roundName,
-        status: "SCHEDULED",
-        is_locked: false,
-      });
+      if (editingMatch) {
+        // Update existing match
+        const { error } = await supabase
+          .from("matches")
+          .update({
+            match_number: Number(matchNumber),
+            name: matchName || `Match ${matchNumber}`,
+            map_name: mapName,
+            round_name: roundName,
+          })
+          .eq("id", editingMatch.id);
 
-      if (error) throw new Error(error.message);
-      setShowAddMatch(false);
+        if (error) throw new Error(error.message);
+        setEditingMatch(null);
+      } else {
+        // Insert new match
+        const { error } = await supabase.from("matches").insert({
+          tournament_id: tournamentId,
+          match_number: Number(matchNumber),
+          name: matchName || `Match ${matchNumber}`,
+          map_name: mapName,
+          round_name: roundName,
+          status: "SCHEDULED",
+          is_locked: false,
+        });
+
+        if (error) throw new Error(error.message);
+        setShowAddMatch(false);
+      }
+
       loadData();
     } catch (err: any) {
-      alert("Error adding match: " + err.message);
+      alert("Error saving match: " + err.message);
+    }
+  };
+
+  const handleEditClick = (m: Match) => {
+    setEditingMatch(m);
+    setMatchNumber(m.match_number);
+    setMatchName(m.name);
+    setMapName(m.map_name || "Erangel");
+    setRoundName(m.round_name || "Round 1");
+    setShowAddMatch(true);
+  };
+
+  const handleDeleteMatch = async (m: Match) => {
+    if (!confirm(`Are you sure you want to delete ${m.name}? All recorded scores for this match will also be removed.`)) return;
+    try {
+      const { error } = await supabase.from("matches").delete().eq("id", m.id);
+      if (error) throw new Error(error.message);
+
+      await supabase.from("tournament_audit_logs").insert({
+        tournament_id: tournamentId,
+        user_name: "Admin",
+        action: "DELETE_MATCH",
+        entity_type: "MATCH",
+        entity_id: m.id,
+        old_value: { match_number: m.match_number, name: m.name },
+      });
+
+      loadData();
+    } catch (err: any) {
+      alert("Error deleting match: " + err.message);
     }
   };
 
@@ -113,6 +165,26 @@ export default function TournamentMatchesAdminPage() {
     }
   };
 
+  const handleQuickAddNextMatch = async () => {
+    try {
+      const nextNum = matches.length + 1;
+      const { error } = await supabase.from("matches").insert({
+        tournament_id: tournamentId,
+        match_number: nextNum,
+        name: `Match ${nextNum}`,
+        map_name: "Erangel",
+        round_name: "Grand Finals",
+        status: "SCHEDULED",
+        is_locked: false,
+      });
+
+      if (error) throw new Error(error.message);
+      loadData();
+    } catch (err: any) {
+      alert("Error adding match: " + err.message);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Breadcrumb Header */}
@@ -129,31 +201,62 @@ export default function TournamentMatchesAdminPage() {
             <span className="text-esports-navy-border">/</span>
             <span className="text-xs font-bold text-white uppercase">{tournament?.name}</span>
           </div>
-          <h1 className="font-display text-2xl font-black uppercase text-white mt-1">
-            Matches & Live Score Entry
-          </h1>
+          <div className="flex items-center gap-3 mt-1">
+            <h1 className="font-display text-2xl font-black uppercase text-white">
+              Matches & Dynamic Schedule
+            </h1>
+            <span className="rounded-full bg-esports-navy-light px-2.5 py-0.5 text-xs font-bold text-esports-gold border border-esports-navy-border">
+              {matches.length} {matches.length === 1 ? "Match" : "Matches"}
+            </span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <button
-            onClick={() => setShowAddMatch(!showAddMatch)}
+            onClick={handleQuickAddNextMatch}
+            className="flex items-center gap-1.5 rounded-lg border border-esports-navy-border bg-esports-navy-light px-3.5 py-2 text-xs font-bold uppercase text-esports-cream hover:bg-esports-navy hover:text-white transition-colors"
+            title="Instantly create the next scheduled match"
+          >
+            <Zap className="h-4 w-4 text-esports-gold" />
+            <span>+ Quick Add Match {matches.length + 1}</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setEditingMatch(null);
+              setMatchNumber(matches.length + 1);
+              setMatchName(`Match ${matches.length + 1}`);
+              setShowAddMatch(!showAddMatch);
+            }}
             className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-esports-orange to-orange-600 px-4 py-2 text-xs font-black uppercase tracking-wider text-white shadow hover:brightness-110"
           >
             <PlusCircle className="h-4 w-4" />
-            <span>Add Match</span>
+            <span>Custom Match</span>
           </button>
         </div>
       </div>
 
-      {/* Add Match Drawer */}
+      {/* Add / Edit Match Drawer */}
       {showAddMatch && (
         <form
-          onSubmit={handleCreateMatch}
+          onSubmit={handleCreateOrUpdateMatch}
           className="rounded-xl border border-esports-orange/40 bg-esports-navy-card p-5 shadow-xl space-y-4 animate-in fade-in slide-in-from-top-2"
         >
-          <div className="font-display text-sm font-black uppercase text-white flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-esports-orange" />
-            <span>Schedule New Match</span>
+          <div className="font-display text-sm font-black uppercase text-white flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-esports-orange" />
+              <span>{editingMatch ? `Edit ${editingMatch.name}` : "Create New Dynamic Match"}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setShowAddMatch(false);
+                setEditingMatch(null);
+              }}
+              className="text-xs text-esports-silver hover:text-white"
+            >
+              Close
+            </button>
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
@@ -195,12 +298,13 @@ export default function TournamentMatchesAdminPage() {
                 <option value="Miramar">Miramar</option>
                 <option value="Sanhok">Sanhok</option>
                 <option value="Vikendi">Vikendi</option>
-                <option value="Ascent">Ascent</option>
-                <option value="Bind">Bind</option>
-                <option value="Haven">Haven</option>
                 <option value="Bermuda">Bermuda</option>
                 <option value="Purgatory">Purgatory</option>
                 <option value="Kalahari">Kalahari</option>
+                <option value="Ascent">Ascent</option>
+                <option value="Bind">Bind</option>
+                <option value="Haven">Haven</option>
+                <option value="Custom Map">Custom Map</option>
               </select>
             </div>
 
@@ -220,7 +324,10 @@ export default function TournamentMatchesAdminPage() {
           <div className="flex justify-end gap-2 pt-2">
             <button
               type="button"
-              onClick={() => setShowAddMatch(false)}
+              onClick={() => {
+                setShowAddMatch(false);
+                setEditingMatch(null);
+              }}
               className="rounded-md border border-esports-navy-border px-3 py-1.5 text-xs font-bold uppercase text-esports-silver"
             >
               Cancel
@@ -229,126 +336,163 @@ export default function TournamentMatchesAdminPage() {
               type="submit"
               className="rounded-md bg-esports-orange px-4 py-1.5 text-xs font-black uppercase text-white shadow"
             >
-              Save Match
+              {editingMatch ? "Update Match" : "Save Match"}
             </button>
           </div>
         </form>
       )}
 
-      {/* Matches Grid List */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {matches.map((m) => {
-          const isCompleted = m.status === "COMPLETED";
-          const isLive = m.status === "LIVE";
-          const resultsCount = m.match_results?.length || 0;
+      {/* Matches Grid List / Empty State */}
+      {matches.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-esports-navy-border bg-esports-navy-card/60 p-12 text-center space-y-4">
+          <CalendarPlus className="mx-auto h-12 w-12 text-esports-orange/60" />
+          <div className="space-y-1">
+            <h3 className="font-display text-lg font-black uppercase text-white">
+              No Matches Scheduled Yet
+            </h3>
+            <p className="text-xs text-esports-silver max-w-md mx-auto">
+              Matches are not pre-decided. You can dynamically create Match 1, Match 2, etc. as your tournament unfolds.
+            </p>
+          </div>
+          <button
+            onClick={handleQuickAddNextMatch}
+            className="inline-flex items-center gap-2 rounded-lg bg-esports-orange px-5 py-2.5 text-xs font-black uppercase tracking-wider text-white shadow hover:brightness-110"
+          >
+            <PlusCircle className="h-4 w-4" />
+            <span>Create Match 1</span>
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {matches.map((m) => {
+            const isCompleted = m.status === "COMPLETED";
+            const isLive = m.status === "LIVE";
+            const resultsCount = m.match_results?.length || 0;
 
-          return (
-            <div
-              key={m.id}
-              className={cn(
-                "flex flex-col justify-between rounded-xl border p-5 shadow-lg transition-all",
-                isLive
-                  ? "border-red-500/60 bg-red-500/10 shadow-red-500/10"
-                  : isCompleted
-                  ? "border-esports-navy-border bg-esports-navy-card"
-                  : "border-esports-navy-border/60 bg-esports-navy-card/60"
-              )}
-            >
-              <div>
-                {/* Header */}
-                <div className="flex items-center justify-between border-b border-esports-navy-border/60 pb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-md bg-esports-orange font-display text-xs font-black text-white">
-                      #{m.match_number}
-                    </span>
-                    <h3 className="font-display text-base font-black uppercase text-white">
-                      {m.name}
-                    </h3>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    {isLive ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-red-600 px-2 py-0.5 text-[10px] font-black uppercase text-white animate-pulse">
-                        <Radio className="h-3 w-3" />
-                        LIVE
+            return (
+              <div
+                key={m.id}
+                className={cn(
+                  "flex flex-col justify-between rounded-xl border p-5 shadow-lg transition-all",
+                  isLive
+                    ? "border-red-500/60 bg-red-500/10 shadow-red-500/10"
+                    : isCompleted
+                    ? "border-esports-navy-border bg-esports-navy-card"
+                    : "border-esports-navy-border/60 bg-esports-navy-card/60"
+                )}
+              >
+                <div>
+                  {/* Header */}
+                  <div className="flex items-center justify-between border-b border-esports-navy-border/60 pb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-md bg-esports-orange font-display text-xs font-black text-white">
+                        #{m.match_number}
                       </span>
-                    ) : (
-                      <span
-                        className={cn(
-                          "rounded-full px-2 py-0.5 text-[10px] font-bold uppercase",
-                          isCompleted
-                            ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                            : "bg-esports-navy-light text-esports-silver"
-                        )}
+                      <h3 className="font-display text-base font-black uppercase text-white">
+                        {m.name}
+                      </h3>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => handleEditClick(m)}
+                        title="Edit Match Details"
+                        className="text-esports-silver hover:text-white p-1"
                       >
-                        {m.status}
+                        <Edit2 className="h-3.5 w-3.5" />
+                      </button>
+
+                      <button
+                        onClick={() => handleDeleteMatch(m)}
+                        title="Delete Match"
+                        className="text-esports-silver hover:text-red-400 p-1"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+
+                      {isLive ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-red-600 px-2 py-0.5 text-[10px] font-black uppercase text-white animate-pulse ml-1">
+                          <Radio className="h-3 w-3" />
+                          LIVE
+                        </span>
+                      ) : (
+                        <span
+                          className={cn(
+                            "rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ml-1",
+                            isCompleted
+                              ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                              : "bg-esports-navy-light text-esports-silver"
+                          )}
+                        >
+                          {m.status}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Details */}
+                  <div className="py-4 space-y-2 text-xs text-esports-silver">
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <MapPin className="h-3.5 w-3.5 text-esports-orange" />
+                        <span>Map:</span>
                       </span>
+                      <strong className="text-white font-mono">{m.map_name || "Erangel"}</strong>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <Layers className="h-3.5 w-3.5 text-esports-gold" />
+                        <span>Stage:</span>
+                      </span>
+                      <span className="text-esports-cream">{m.round_name}</span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span>Scores Recorded:</span>
+                      <span className="font-mono text-white font-bold">{resultsCount} Teams</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions Footer */}
+                <div className="border-t border-esports-navy-border/60 pt-3.5 flex items-center justify-between gap-2">
+                  <button
+                    onClick={() => handleToggleLock(m)}
+                    title={m.is_locked ? "Click to unlock scores for editing" : "Click to lock scores"}
+                    className={cn(
+                      "flex items-center gap-1 rounded-md px-2.5 py-1.5 text-[11px] font-bold uppercase transition-colors",
+                      m.is_locked
+                        ? "bg-esports-navy-dark text-esports-gold border border-esports-gold/30 hover:bg-esports-navy-light"
+                        : "bg-esports-navy-dark text-esports-silver hover:text-white"
                     )}
-                  </div>
-                </div>
+                  >
+                    {m.is_locked ? (
+                      <>
+                        <Lock className="h-3.5 w-3.5" />
+                        <span>Locked</span>
+                      </>
+                    ) : (
+                      <>
+                        <Unlock className="h-3.5 w-3.5" />
+                        <span>Unlocked</span>
+                      </>
+                    )}
+                  </button>
 
-                {/* Details */}
-                <div className="py-4 space-y-2 text-xs text-esports-silver">
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5 text-esports-orange" />
-                      <span>Map:</span>
-                    </span>
-                    <strong className="text-white font-mono">{m.map_name || "Erangel"}</strong>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1.5">
-                      <Layers className="h-3.5 w-3.5 text-esports-gold" />
-                      <span>Stage:</span>
-                    </span>
-                    <span className="text-esports-cream">{m.round_name}</span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span>Teams Recorded:</span>
-                    <span className="font-mono text-white font-bold">{resultsCount} Teams</span>
-                  </div>
+                  <Link
+                    href={`/admin/tournaments/${tournamentId}/matches/${m.id}/score`}
+                    className="flex items-center gap-1.5 rounded-md bg-esports-orange px-3.5 py-1.5 text-xs font-black uppercase tracking-wider text-white shadow-md hover:brightness-110 active:scale-95"
+                  >
+                    <Crosshair className="h-3.5 w-3.5" />
+                    <span>Enter Scores</span>
+                  </Link>
                 </div>
               </div>
-
-              {/* Actions Footer */}
-              <div className="border-t border-esports-navy-border/60 pt-3.5 flex items-center justify-between gap-2">
-                <button
-                  onClick={() => handleToggleLock(m)}
-                  title={m.is_locked ? "Click to unlock scores for editing" : "Click to lock scores"}
-                  className={cn(
-                    "flex items-center gap-1 rounded-md px-2.5 py-1.5 text-[11px] font-bold uppercase transition-colors",
-                    m.is_locked
-                      ? "bg-esports-navy-dark text-esports-gold border border-esports-gold/30 hover:bg-esports-navy-light"
-                      : "bg-esports-navy-dark text-esports-silver hover:text-white"
-                  )}
-                >
-                  {m.is_locked ? (
-                    <>
-                      <Lock className="h-3.5 w-3.5" />
-                      <span>Locked</span>
-                    </>
-                  ) : (
-                    <>
-                      <Unlock className="h-3.5 w-3.5" />
-                      <span>Unlocked</span>
-                    </>
-                  )}
-                </button>
-
-                <Link
-                  href={`/admin/tournaments/${tournamentId}/matches/${m.id}/score`}
-                  className="flex items-center gap-1.5 rounded-md bg-esports-orange px-3.5 py-1.5 text-xs font-black uppercase tracking-wider text-white shadow-md hover:brightness-110 active:scale-95"
-                >
-                  <Crosshair className="h-3.5 w-3.5" />
-                  <span>Enter Scores</span>
-                </Link>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
