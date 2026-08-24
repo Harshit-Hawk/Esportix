@@ -123,12 +123,12 @@ export default function ProjectorScoreboardPage() {
         <thead>
           <tr className="bg-[#242424] text-[#F5C400] font-oswald text-xs uppercase tracking-wider border-b border-[#2D2D2D]">
             <th className="py-2.5 pl-3 pr-2 text-center w-12 font-black">#</th>
-            <th className="py-2.5 px-3 font-black">{isSolo ? "PLAYER" : "TEAM"}</th>
+            <th className="py-2.5 px-3 font-black">{isSolo ? "PLAYER / IGN & ID" : "TEAM"}</th>
             <th className="py-2.5 px-3 text-center w-14 font-black">🏆</th>
-            <th className="py-2.5 px-3 text-center w-16 font-black">MATCH</th>
-            <th className="py-2.5 px-3 text-center w-16 font-black">FIN.PTS</th>
-            <th className="py-2.5 px-3 text-center w-16 font-black">POS.PTS</th>
-            <th className="py-2.5 pl-3 pr-4 text-right w-20 font-black text-white">TOTAL</th>
+            <th className="py-2.5 px-3 text-center w-20 font-black">MATCHES</th>
+            <th className="py-2.5 px-3 text-center w-24 font-black">FINISH POINTS</th>
+            <th className="py-2.5 px-3 text-center w-24 font-black">POSITION POINTS</th>
+            <th className="py-2.5 pl-3 pr-4 text-right w-24 font-black text-white">TOTAL POINTS</th>
           </tr>
         </thead>
         <tbody className="font-oswald text-sm">
