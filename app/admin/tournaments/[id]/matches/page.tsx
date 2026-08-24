@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase/client";
 import { Tournament, Match } from "@/types/database";
+import { getMapsForGame } from "@/lib/game-maps";
 import {
   Trophy,
   ArrowLeft,
@@ -22,6 +23,7 @@ import {
   Trash2,
   Edit2,
   CalendarPlus,
+  Gamepad2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -35,20 +37,29 @@ export default function TournamentMatchesAdminPage() {
   const [showAddMatch, setShowAddMatch] = useState(false);
   const [editingMatch, setEditingMatch] = useState<Match | null>(null);
 
-  // New / Edit Match Form State
+  // Form State
   const [matchNumber, setMatchNumber] = useState(1);
   const [matchName, setMatchName] = useState("");
-  const [mapName, setMapName] = useState("Erangel");
+  const [mapName, setMapName] = useState("");
+  const [customMapInput, setCustomMapInput] = useState("");
   const [roundName, setRoundName] = useState("Grand Finals");
+
+  // Get available maps for the tournament's specific game
+  const availableMaps = useMemo(() => {
+    return getMapsForGame(tournament?.game?.slug);
+  }, [tournament?.game?.slug]);
 
   const loadData = useCallback(async () => {
     try {
       const { data: tourney } = await supabase
         .from("tournaments")
-        .select("*")
+        .select("*, game:games(*)")
         .eq("id", tournamentId)
         .single();
       setTournament(tourney);
+
+      const defaultGameMap = getMapsForGame(tourney?.game?.slug)[0] || "Default Map";
+      setMapName(defaultGameMap);
 
       const { data: matchesData } = await supabase
         .from("matches")
@@ -74,15 +85,16 @@ export default function TournamentMatchesAdminPage() {
 
   const handleCreateOrUpdateMatch = async (e: React.FormEvent) => {
     e.preventDefault();
+    const finalMapName = mapName === "Custom Map" && customMapInput ? customMapInput : mapName;
+
     try {
       if (editingMatch) {
-        // Update existing match
         const { error } = await supabase
           .from("matches")
           .update({
             match_number: Number(matchNumber),
             name: matchName || `Match ${matchNumber}`,
-            map_name: mapName,
+            map_name: finalMapName,
             round_name: roundName,
           })
           .eq("id", editingMatch.id);
@@ -90,12 +102,11 @@ export default function TournamentMatchesAdminPage() {
         if (error) throw new Error(error.message);
         setEditingMatch(null);
       } else {
-        // Insert new match
         const { error } = await supabase.from("matches").insert({
           tournament_id: tournamentId,
           match_number: Number(matchNumber),
           name: matchName || `Match ${matchNumber}`,
-          map_name: mapName,
+          map_name: finalMapName,
           round_name: roundName,
           status: "SCHEDULED",
           is_locked: false,
@@ -115,13 +126,13 @@ export default function TournamentMatchesAdminPage() {
     setEditingMatch(m);
     setMatchNumber(m.match_number);
     setMatchName(m.name);
-    setMapName(m.map_name || "Erangel");
+    setMapName(m.map_name || availableMaps[0]);
     setRoundName(m.round_name || "Round 1");
     setShowAddMatch(true);
   };
 
   const handleDeleteMatch = async (m: Match) => {
-    if (!confirm(`Are you sure you want to delete ${m.name}? All recorded scores for this match will also be removed.`)) return;
+    if (!confirm(`Delete ${m.name}? All recorded scores for this match will be removed.`)) return;
     try {
       const { error } = await supabase.from("matches").delete().eq("id", m.id);
       if (error) throw new Error(error.message);
@@ -168,11 +179,13 @@ export default function TournamentMatchesAdminPage() {
   const handleQuickAddNextMatch = async () => {
     try {
       const nextNum = matches.length + 1;
+      const defaultMap = availableMaps[(nextNum - 1) % availableMaps.length] || availableMaps[0] || "Arena";
+
       const { error } = await supabase.from("matches").insert({
         tournament_id: tournamentId,
         match_number: nextNum,
         name: `Match ${nextNum}`,
-        map_name: "Erangel",
+        map_name: defaultMap,
         round_name: "Grand Finals",
         status: "SCHEDULED",
         is_locked: false,
@@ -205,8 +218,9 @@ export default function TournamentMatchesAdminPage() {
             <h1 className="font-display text-2xl font-black uppercase text-white">
               Matches & Dynamic Schedule
             </h1>
-            <span className="rounded-full bg-esports-navy-light px-2.5 py-0.5 text-xs font-bold text-esports-gold border border-esports-navy-border">
-              {matches.length} {matches.length === 1 ? "Match" : "Matches"}
+            <span className="inline-flex items-center gap-1 rounded-full bg-esports-navy-light px-2.5 py-0.5 text-xs font-bold text-esports-orange border border-esports-navy-border">
+              <Gamepad2 className="h-3 w-3" />
+              {tournament?.game?.name || "Esports"}
             </span>
           </div>
         </div>
@@ -215,7 +229,7 @@ export default function TournamentMatchesAdminPage() {
           <button
             onClick={handleQuickAddNextMatch}
             className="flex items-center gap-1.5 rounded-lg border border-esports-navy-border bg-esports-navy-light px-3.5 py-2 text-xs font-bold uppercase text-esports-cream hover:bg-esports-navy hover:text-white transition-colors"
-            title="Instantly create the next scheduled match"
+            title="Instantly schedule the next match for this game"
           >
             <Zap className="h-4 w-4 text-esports-gold" />
             <span>+ Quick Add Match {matches.length + 1}</span>
@@ -226,6 +240,7 @@ export default function TournamentMatchesAdminPage() {
               setEditingMatch(null);
               setMatchNumber(matches.length + 1);
               setMatchName(`Match ${matches.length + 1}`);
+              setMapName(availableMaps[0] || "Map");
               setShowAddMatch(!showAddMatch);
             }}
             className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-esports-orange to-orange-600 px-4 py-2 text-xs font-black uppercase tracking-wider text-white shadow hover:brightness-110"
@@ -236,7 +251,7 @@ export default function TournamentMatchesAdminPage() {
         </div>
       </div>
 
-      {/* Add / Edit Match Drawer */}
+      {/* Add / Edit Match Drawer with Game-Filtered Maps */}
       {showAddMatch && (
         <form
           onSubmit={handleCreateOrUpdateMatch}
@@ -245,7 +260,9 @@ export default function TournamentMatchesAdminPage() {
           <div className="font-display text-sm font-black uppercase text-white flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-esports-orange" />
-              <span>{editingMatch ? `Edit ${editingMatch.name}` : "Create New Dynamic Match"}</span>
+              <span>
+                {editingMatch ? `Edit ${editingMatch.name}` : `Schedule Match for ${tournament?.game?.name || "Game"}`}
+              </span>
             </div>
             <button
               type="button"
@@ -285,27 +302,33 @@ export default function TournamentMatchesAdminPage() {
               />
             </div>
 
+            {/* Game-Filtered Map Selector */}
             <div>
-              <label className="block text-[11px] font-bold uppercase text-esports-silver mb-1">
-                Map Name
+              <label className="block text-[11px] font-bold uppercase text-esports-silver mb-1 flex items-center justify-between">
+                <span>Map Name ({tournament?.game?.name?.split(" ")[0] || "Game"})</span>
               </label>
               <select
                 value={mapName}
                 onChange={(e) => setMapName(e.target.value)}
-                className="w-full rounded-md border border-esports-navy-border bg-esports-navy-dark px-3 py-1.5 text-xs text-white"
+                className="w-full rounded-md border border-esports-navy-border bg-esports-navy-dark px-3 py-1.5 text-xs text-white font-bold focus:border-esports-orange focus:outline-none"
               >
-                <option value="Erangel">Erangel</option>
-                <option value="Miramar">Miramar</option>
-                <option value="Sanhok">Sanhok</option>
-                <option value="Vikendi">Vikendi</option>
-                <option value="Bermuda">Bermuda</option>
-                <option value="Purgatory">Purgatory</option>
-                <option value="Kalahari">Kalahari</option>
-                <option value="Ascent">Ascent</option>
-                <option value="Bind">Bind</option>
-                <option value="Haven">Haven</option>
-                <option value="Custom Map">Custom Map</option>
+                {availableMaps.map((mapOption) => (
+                  <option key={mapOption} value={mapOption}>
+                    {mapOption}
+                  </option>
+                ))}
+                <option value="Custom Map">+ Custom Map</option>
               </select>
+
+              {mapName === "Custom Map" && (
+                <input
+                  type="text"
+                  placeholder="Type Custom Map Name..."
+                  value={customMapInput}
+                  onChange={(e) => setCustomMapInput(e.target.value)}
+                  className="mt-2 w-full rounded-md border border-esports-orange bg-esports-navy px-3 py-1 text-xs text-white"
+                />
+              )}
             </div>
 
             <div>
@@ -342,7 +365,7 @@ export default function TournamentMatchesAdminPage() {
         </form>
       )}
 
-      {/* Matches Grid List / Empty State */}
+      {/* Matches List */}
       {matches.length === 0 ? (
         <div className="rounded-xl border border-dashed border-esports-navy-border bg-esports-navy-card/60 p-12 text-center space-y-4">
           <CalendarPlus className="mx-auto h-12 w-12 text-esports-orange/60" />
@@ -351,7 +374,7 @@ export default function TournamentMatchesAdminPage() {
               No Matches Scheduled Yet
             </h3>
             <p className="text-xs text-esports-silver max-w-md mx-auto">
-              Matches are not pre-decided. You can dynamically create Match 1, Match 2, etc. as your tournament unfolds.
+              Matches are not pre-decided. You can dynamically create Match 1, Match 2, etc. with {tournament?.game?.name || "game"} maps as your tournament unfolds.
             </p>
           </div>
           <button
@@ -359,7 +382,7 @@ export default function TournamentMatchesAdminPage() {
             className="inline-flex items-center gap-2 rounded-lg bg-esports-orange px-5 py-2.5 text-xs font-black uppercase tracking-wider text-white shadow hover:brightness-110"
           >
             <PlusCircle className="h-4 w-4" />
-            <span>Create Match 1</span>
+            <span>Create Match 1 ({availableMaps[0] || "Map 1"})</span>
           </button>
         </div>
       ) : (
@@ -396,7 +419,7 @@ export default function TournamentMatchesAdminPage() {
                     <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => handleEditClick(m)}
-                        title="Edit Match Details"
+                        title="Edit Match"
                         className="text-esports-silver hover:text-white p-1"
                       >
                         <Edit2 className="h-3.5 w-3.5" />
@@ -437,7 +460,7 @@ export default function TournamentMatchesAdminPage() {
                         <MapPin className="h-3.5 w-3.5 text-esports-orange" />
                         <span>Map:</span>
                       </span>
-                      <strong className="text-white font-mono">{m.map_name || "Erangel"}</strong>
+                      <strong className="text-white font-mono">{m.map_name || availableMaps[0]}</strong>
                     </div>
 
                     <div className="flex items-center justify-between">
