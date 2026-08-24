@@ -9,33 +9,24 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        // Light & Electric Blue / Yellow Palette
+        background: "#F8FAFC",
+        foreground: "#0F172A",
+        // Clean neutral palette
+        brand: {
+          50: "#EFF6FF",
+          100: "#DBEAFE",
+          500: "#3B82F6",
+          600: "#2563EB",
+          700: "#1D4ED8",
+        },
+        accent: {
+          50: "#FEFCE8",
+          100: "#FEF9C3",
+          400: "#FACC15",
+          500: "#EAB308",
+          600: "#CA8A04",
+        },
         esports: {
-          light: {
-            bg: "#F8FAFC",
-            card: "#FFFFFF",
-            subtle: "#F1F5F9",
-            border: "#E2E8F0",
-            hover: "#F8FAFC",
-          },
-          // Electric Blue accents
-          blue: {
-            DEFAULT: "#0066FF",
-            light: "#38BDF8",
-            dark: "#0052CC",
-            glow: "rgba(0, 102, 255, 0.25)",
-          },
-          // Electric Yellow accents
-          yellow: {
-            DEFAULT: "#FFDE00",
-            light: "#FEF08A",
-            dark: "#EAB308",
-            gold: "#F59E0B",
-            glow: "rgba(255, 222, 0, 0.35)",
-          },
-          // Legacy mappings mapped to new Light & Electric palette
           navy: {
             DEFAULT: "#FFFFFF",
             dark: "#F8FAFC",
@@ -44,17 +35,17 @@ export default {
             border: "#E2E8F0",
             deep: "#F8FAFC",
           },
-          orange: "#0066FF", // Electric Blue is the primary action color
-          gold: "#FFDE00",   // Electric Yellow is the primary reward color
-          silver: "#64748B", // High contrast dark slate text
+          orange: "#2563EB",
+          gold: "#EAB308",
+          silver: "#64748B",
           bronze: "#B45309",
-          cream: "#0F172A",  // Deep slate for readable headers
+          cream: "#0F172A",
         },
       },
       fontFamily: {
-        sans: ["var(--font-sans)", "Inter", "sans-serif"],
-        display: ["var(--font-display)", "Outfit", "sans-serif"],
-        athletic: ["var(--font-athletic)", "Teko", "sans-serif"],
+        sans: ["var(--font-sans)", "Inter", "-apple-system", "sans-serif"],
+        display: ["var(--font-sans)", "Inter", "-apple-system", "sans-serif"],
+        athletic: ["var(--font-sans)", "Inter", "-apple-system", "sans-serif"],
         mono: ["var(--font-mono)", "JetBrains Mono", "monospace"],
       },
     },

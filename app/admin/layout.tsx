@@ -4,15 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Shield,
-  Trophy,
   LayoutDashboard,
   PlusCircle,
-  Users,
-  Crosshair,
-  Sliders,
-  History,
-  ArrowLeft,
-  Flame,
   Radio,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -25,20 +18,19 @@ export default function AdminLayout({
   const pathname = usePathname();
 
   const sidebarLinks = [
-    { href: "/admin", label: "Dashboard Overview", icon: LayoutDashboard },
+    { href: "/admin", label: "Tournaments", icon: LayoutDashboard },
     { href: "/admin/tournaments/new", label: "Create Tournament", icon: PlusCircle },
   ];
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] bg-[#F8FAFC]">
+    <div className="flex min-h-[calc(100vh-3.5rem)] bg-slate-50">
       {/* Admin Sidebar */}
-      <aside className="hidden w-64 shrink-0 border-r border-slate-200 bg-white p-4 md:block shadow-sm">
-        <div className="flex items-center gap-2 px-3 py-2 text-xs font-black uppercase tracking-widest text-blue-600">
-          <Shield className="h-4 w-4" />
-          <span>Admin Control Center</span>
+      <aside className="hidden w-56 shrink-0 border-r border-slate-200 bg-white p-3 md:block">
+        <div className="px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+          Organizer Portal
         </div>
 
-        <nav className="mt-4 space-y-1.5">
+        <nav className="mt-1 space-y-1">
           {sidebarLinks.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -47,35 +39,34 @@ export default function AdminLayout({
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-black uppercase tracking-wider transition-all",
+                  "flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
                   isActive
-                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                    ? "bg-slate-900 text-white font-semibold"
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 )}
               >
-                <Icon className={cn("h-4 w-4", isActive ? "text-yellow-300" : "text-slate-400")} />
+                <Icon className="h-4 w-4" />
                 <span>{item.label}</span>
               </Link>
             );
           })}
         </nav>
 
-        {/* Quick Demo Access Box */}
-        <div className="mt-8 rounded-2xl border border-yellow-300 bg-gradient-to-br from-yellow-50 to-white p-4 space-y-2.5 shadow-sm">
-          <div className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-amber-800">
-            <Flame className="h-3.5 w-3.5 text-yellow-600" />
-            <span>Active Live Tournament</span>
+        {/* Public Scoreboard Link */}
+        <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
+          <div className="text-[11px] font-semibold text-slate-700">
+            Active Event
           </div>
-          <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
-            BGMI Campus Showdown 2026 is currently live.
+          <p className="text-[11px] text-slate-500 leading-tight">
+            BGMI Campus Showdown 2026
           </p>
           <Link
             href="/tournament/bgmi-campus-showdown-2026"
             target="_blank"
-            className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-white px-3 py-2 text-[11px] font-black uppercase text-blue-600 hover:bg-blue-50 border border-slate-200 shadow-sm"
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700 hover:bg-slate-100 border border-slate-200 shadow-2xs"
           >
-            <Radio className="h-3.5 w-3.5 text-red-500 animate-pulse" />
-            <span>Open Public Board</span>
+            <Radio className="h-3 w-3 text-red-500" />
+            <span>Public Scorecard</span>
           </Link>
         </div>
       </aside>
