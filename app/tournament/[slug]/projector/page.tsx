@@ -173,13 +173,20 @@ export default function ProjectorScoreboardPage() {
                         />
                       ) : (
                         <span className="font-oswald font-black text-[9px] text-slate-800">
-                          {row.team.short_name.slice(0, 3)}
+                          {row.team.short_name ? row.team.short_name.slice(0, 3) : "TM"}
                         </span>
                       )}
                     </div>
-                    <span className="font-oswald font-black text-base text-[#141414]">
-                      {row.team.short_name}
-                    </span>
+                    <div className="flex items-center gap-1.5 overflow-hidden">
+                      <span className="font-oswald font-black text-base text-[#141414] truncate">
+                        {row.team.name}
+                      </span>
+                      {row.team.short_name && row.team.short_name !== row.team.name && (
+                        <span className="rounded bg-[#141414]/10 px-1 py-0.2 font-mono text-[10px] font-bold text-[#141414] shrink-0">
+                          {isSolo ? `ID:${row.team.short_name}` : row.team.short_name}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </td>
                 <td className="py-2.5 px-3 text-center font-oswald text-base font-bold text-[#141414]">
