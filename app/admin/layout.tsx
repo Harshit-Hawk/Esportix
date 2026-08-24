@@ -10,9 +10,6 @@ import {
   PlusCircle,
   Radio,
   Trophy,
-  Terminal,
-  Activity,
-  Cpu,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -38,19 +35,19 @@ export default function AdminLayout({
   }, []);
 
   const sidebarLinks = [
-    { href: "/admin", label: "Command Center", icon: LayoutDashboard },
-    { href: "/admin/tournaments/new", label: "Launch Tournament", icon: PlusCircle },
+    { href: "/admin", label: "Tournaments", icon: LayoutDashboard },
+    { href: "/admin/tournaments/new", label: "Create Tournament", icon: PlusCircle },
   ];
 
   return (
-    <div className="flex min-h-[calc(100vh-3.5rem)] bg-[#05050A] text-white font-rajdhani">
+    <div className="flex min-h-[calc(100vh-3.5rem)] bg-slate-50">
       {/* Admin Sidebar */}
-      <aside className="hidden w-60 shrink-0 border-r-2 border-[#252538] bg-[#0A0A12] p-4 md:block">
-        <div className="px-3 py-2 text-[10px] font-orbitron font-bold uppercase tracking-widest text-[#FCEE0A]">
-          OPERATIONS TERMINAL
+      <aside className="hidden w-56 shrink-0 border-r border-slate-200 bg-white p-3 md:block">
+        <div className="px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+          Organizer Portal
         </div>
 
-        <nav className="mt-2 space-y-1.5">
+        <nav className="mt-1 space-y-1">
           {sidebarLinks.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -59,10 +56,10 @@ export default function AdminLayout({
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider transition-all cyber-cut-tr",
+                  "flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
                   isActive
-                    ? "bg-[#FCEE0A] text-slate-950 font-black shadow-[0_0_15px_rgba(252,238,10,0.4)]"
-                    : "text-slate-300 hover:bg-[#12121E] hover:text-[#FCEE0A]"
+                    ? "bg-slate-900 text-white font-semibold"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -72,36 +69,36 @@ export default function AdminLayout({
           })}
         </nav>
 
-        {/* Dynamic Tournament Link */}
+        {/* Dynamic Tournament Link if exists */}
         {activeTourney ? (
-          <div className="mt-8 border-2 border-[#FCEE0A]/40 bg-[#0E0E1A] p-3.5 space-y-2 shadow-[0_0_15px_rgba(252,238,10,0.1)] cyber-cut-tr">
-            <div className="text-[10px] font-orbitron font-bold uppercase text-[#FCEE0A]">
-              ACTIVE ARENA
+          <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
+            <div className="text-[11px] font-semibold text-slate-700">
+              Active Event
             </div>
-            <p className="text-xs text-white font-bold truncate">
+            <p className="text-[11px] text-slate-500 leading-tight truncate">
               {activeTourney.name}
             </p>
             <Link
               href={`/tournament/${activeTourney.slug}`}
               target="_blank"
-              className="inline-flex w-full items-center justify-center gap-1.5 bg-[#00F0FF] px-3 py-2 text-xs font-black uppercase text-slate-950 hover:brightness-110 transition-all cyber-cut-tr shadow-[0_0_10px_rgba(0,240,255,0.3)]"
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-700 hover:bg-slate-100 border border-slate-200 shadow-2xs"
             >
-              <Radio className="h-3.5 w-3.5 text-slate-950 animate-pulse" />
-              <span>Spectate Live</span>
+              <Radio className="h-3 w-3 text-red-500" />
+              <span>Public Scorecard</span>
             </Link>
           </div>
         ) : (
-          <div className="mt-8 border border-dashed border-[#252538] bg-[#0E0E1A]/50 p-4 text-center space-y-2 cyber-cut-tr">
-            <Trophy className="mx-auto h-5 w-5 text-slate-600" />
-            <p className="text-xs text-slate-400">
-              No active tournaments linked.
+          <div className="mt-6 rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-3 text-center space-y-2">
+            <Trophy className="mx-auto h-5 w-5 text-slate-400" />
+            <p className="text-[11px] text-slate-500">
+              No tournaments yet. Create one to get started.
             </p>
           </div>
         )}
       </aside>
 
       {/* Main Admin Viewport */}
-      <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto cyber-grid">
+      <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
         {children}
       </div>
     </div>
