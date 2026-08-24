@@ -7,6 +7,7 @@ interface RealtimeState {
   isConnected: boolean;
   lastUpdated: Date | null;
   updateCount: number;
+  lastTableUpdated: string | null;
 }
 
 export function useTournamentRealtime(
@@ -17,6 +18,7 @@ export function useTournamentRealtime(
     isConnected: false,
     lastUpdated: new Date(),
     updateCount: 0,
+    lastTableUpdated: null,
   });
 
   const onUpdateRef = useRef(onUpdate);
@@ -25,9 +27,19 @@ export function useTournamentRealtime(
   useEffect(() => {
     if (!tournamentId) return;
 
-    // Create Realtime channel
+    const handlePayload = (tableName: string) => {
+      setState((prev) => ({
+        ...prev,
+        lastUpdated: new Date(),
+        updateCount: prev.updateCount + 1,
+        lastTableUpdated: tableName,
+      }));
+      onUpdateRef.current?.();
+    };
+
+    // Create Realtime channel for all tournament entities
     const channel = supabase
-      .channel(`tournament-${tournamentId}`)
+      .channel(`tournament-realtime-${tournamentId}`)
       .on(
         "postgres_changes",
         {
@@ -35,14 +47,7 @@ export function useTournamentRealtime(
           schema: "public",
           table: "match_results",
         },
-        () => {
-          setState((prev) => ({
-            ...prev,
-            lastUpdated: new Date(),
-            updateCount: prev.updateCount + 1,
-          }));
-          onUpdateRef.current?.();
-        }
+        () => handlePayload("match_results")
       )
       .on(
         "postgres_changes",
@@ -52,14 +57,7 @@ export function useTournamentRealtime(
           table: "matches",
           filter: `tournament_id=eq.${tournamentId}`,
         },
-        () => {
-          setState((prev) => ({
-            ...prev,
-            lastUpdated: new Date(),
-            updateCount: prev.updateCount + 1,
-          }));
-          onUpdateRef.current?.();
-        }
+        () => handlePayload("matches")
       )
       .on(
         "postgres_changes",
@@ -69,14 +67,27 @@ export function useTournamentRealtime(
           table: "tournaments",
           filter: `id=eq.${tournamentId}`,
         },
-        () => {
-          setState((prev) => ({
-            ...prev,
-            lastUpdated: new Date(),
-            updateCount: prev.updateCount + 1,
-          }));
-          onUpdateRef.current?.();
-        }
+        () => handlePayload("tournaments")
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "teams",
+          filter: `tournament_id=eq.${tournamentId}`,
+        },
+        () => handlePayload("teams")
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "scoring_rules",
+          filter: `tournament_id=eq.${tournamentId}`,
+        },
+        () => handlePayload("scoring_rules")
       )
       .subscribe((status) => {
         setState((prev) => ({

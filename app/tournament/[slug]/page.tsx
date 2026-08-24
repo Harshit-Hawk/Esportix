@@ -252,6 +252,7 @@ export default function TournamentPublicPage() {
           standings={standings}
           tournament={tournament}
           completedMatchesCount={completedMatchesCount}
+          matches={matches}
         />
       )}
 
