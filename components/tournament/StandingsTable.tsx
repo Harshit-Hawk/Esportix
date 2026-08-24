@@ -20,8 +20,6 @@ import {
   Medal,
   Crosshair,
   Zap,
-  LayoutGrid,
-  List,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -44,7 +42,6 @@ export function StandingsTable({
 }: StandingsTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("All");
-  const [viewMode, setViewMode] = useState<"BROADCAST" | "TACTICAL">("BROADCAST");
   const [selectedTeamModal, setSelectedTeamModal] = useState<LeaderboardRow | null>(null);
 
   const isSolo = tournament.format === "SOLO";
@@ -75,7 +72,7 @@ export function StandingsTable({
 
   return (
     <div className="space-y-6">
-      {/* Top 3 Podium & MVP Fraggers Showcase (Broadcast Graphic Banner) */}
+      {/* Top 3 Podium & MVP Fraggers Showcase */}
       {standings.length >= 3 && (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {/* #1 Leader Podium Card */}
@@ -91,15 +88,23 @@ export function StandingsTable({
             </div>
             <div className="mt-3 flex items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 border border-[#F5C400]/40 font-oswald text-sm font-black text-[#F5C400]">
-                {top1?.team.short_name.slice(0, 3)}
+                {top1?.team.short_name ? top1.team.short_name.slice(0, 4) : "#1"}
               </div>
               <div className="flex-1 overflow-hidden">
                 <h4 className="font-oswald text-lg font-black uppercase truncate text-white leading-tight">
                   {top1?.team.name}
                 </h4>
-                <span className="font-mono text-xs text-slate-400">
-                  {top1?.totalPoints} PTS ({top1?.placementPoints}p + {top1?.finishPoints}k)
-                </span>
+                <div className="flex items-center gap-1.5 font-mono text-xs text-slate-300">
+                  <span className="text-[#F5C400] font-bold">{top1?.totalPoints} PTS</span>
+                  <span>•</span>
+                  <span>{top1?.totalKills} Kills</span>
+                  {top1?.team.short_name && top1.team.short_name !== top1.team.name && (
+                    <>
+                      <span>•</span>
+                      <span className="text-slate-400">[{top1.team.short_name}]</span>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -116,7 +121,7 @@ export function StandingsTable({
             </div>
             <div className="mt-3 flex items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 border border-slate-700 font-oswald text-sm font-bold text-slate-300">
-                {top2?.team.short_name.slice(0, 3)}
+                {top2?.team.short_name ? top2.team.short_name.slice(0, 4) : "#2"}
               </div>
               <div className="flex-1 overflow-hidden">
                 <h4 className="font-oswald text-base font-black uppercase truncate text-white leading-tight">
@@ -141,7 +146,7 @@ export function StandingsTable({
             </div>
             <div className="mt-3 flex items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 border border-slate-700 font-oswald text-sm font-bold text-slate-300">
-                {top3?.team.short_name.slice(0, 3)}
+                {top3?.team.short_name ? top3.team.short_name.slice(0, 4) : "#3"}
               </div>
               <div className="flex-1 overflow-hidden">
                 <h4 className="font-oswald text-base font-black uppercase truncate text-white leading-tight">
@@ -174,7 +179,8 @@ export function StandingsTable({
                     {killLeader.team.name}
                   </h4>
                   <span className="font-mono text-[11px] text-rose-300">
-                    [{killLeader.team.short_name}] • Avg {(killLeader.totalKills / Math.max(1, killLeader.matchesPlayed)).toFixed(1)} k/m
+                    {killLeader.team.short_name ? `[${killLeader.team.short_name}] • ` : ""}
+                    Avg {(killLeader.totalKills / Math.max(1, killLeader.matchesPlayed)).toFixed(1)} k/m
                   </span>
                 </div>
               </div>
@@ -217,7 +223,7 @@ export function StandingsTable({
           <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder={isSolo ? "Search player or in-game ID..." : "Search team or tag..."}
+            placeholder={isSolo ? "Search full IGN or in-game ID..." : "Search team name or tag..."}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full rounded-xl border border-slate-300 bg-white py-2 pl-9 pr-4 text-xs text-slate-900 placeholder-slate-400 focus:border-slate-900 focus:outline-none shadow-2xs"
@@ -294,7 +300,7 @@ export function StandingsTable({
               <thead>
                 <tr className="bg-[#1C1C1C] text-[#F5C400] font-oswald text-xs uppercase tracking-wider border-b border-[#2B2B2B]">
                   <th className="py-3 pl-3 pr-2 text-center w-14 font-black">#</th>
-                  <th className="py-3 px-3 font-black">{isSolo ? "PLAYER" : "TEAM"}</th>
+                  <th className="py-3 px-4 font-black">{isSolo ? "PLAYER / FULL IGN & ID" : "TEAM / SQUAD NAME"}</th>
                   <th className="py-3 px-3 text-center w-16 font-black" title="WWCD / Wins">
                     <div className="flex items-center justify-center gap-1">
                       <span className="text-base leading-none">🏆</span>
@@ -356,9 +362,9 @@ export function StandingsTable({
                           </div>
                         </td>
 
-                        {/* Team Logo & Short Name */}
-                        <td className="py-2.5 px-3">
-                          <div className="flex items-center gap-2.5">
+                        {/* Full Player / IGN / Team Name & ID */}
+                        <td className="py-2.5 px-4">
+                          <div className="flex items-center gap-3">
                             <div className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded bg-white border border-[#C8C0A5] overflow-hidden shadow-2xs">
                               {isSolo ? (
                                 <User className="h-4 w-4 text-slate-700" />
@@ -371,18 +377,23 @@ export function StandingsTable({
                                 />
                               ) : (
                                 <span className="font-oswald font-black text-[10px] text-slate-800">
-                                  {row.team.short_name.slice(0, 3)}
+                                  {row.team.short_name ? row.team.short_name.slice(0, 3) : "TEAM"}
                                 </span>
                               )}
                             </div>
 
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                              {/* Full IGN / Team Name displayed prominently */}
                               <span className="font-oswald font-black text-base text-[#141414] tracking-wide">
-                                {row.team.short_name}
-                              </span>
-                              <span className="font-sans text-xs text-[#524B36] font-medium hidden md:inline truncate max-w-[160px]">
                                 {row.team.name}
                               </span>
+
+                              {/* In-Game ID / Short Tag Tagged in clean pill */}
+                              {row.team.short_name && (
+                                <span className="rounded bg-[#141414]/10 border border-[#141414]/20 px-1.5 py-0.5 font-mono text-[11px] font-bold text-[#141414]">
+                                  {isSolo ? `ID: ${row.team.short_name}` : row.team.short_name}
+                                </span>
+                              )}
                             </div>
                           </div>
                         </td>
@@ -443,7 +454,7 @@ export function StandingsTable({
         </div>
       </div>
 
-      {/* Team Inspection Modal */}
+      {/* Team / Player Details Modal */}
       {selectedTeamModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 animate-in fade-in">
           <div className="relative w-full max-w-md rounded-2xl border-2 border-[#D8D0B5] bg-[#F4F0E1] p-6 shadow-2xl space-y-4">
@@ -462,9 +473,15 @@ export function StandingsTable({
                 <h3 className="font-oswald text-xl font-black uppercase text-[#141414]">
                   {selectedTeamModal.team.name}
                 </h3>
-                <span className="font-oswald text-xs font-bold text-[#786E50] tracking-wider">
-                  [{selectedTeamModal.team.short_name}] • {selectedTeamModal.team.group_name || "Overall"} • Seed #{selectedTeamModal.team.seed}
-                </span>
+                <div className="flex flex-wrap items-center gap-1.5 font-oswald text-xs font-bold text-[#786E50] tracking-wider mt-0.5">
+                  <span className="rounded bg-[#141414] text-[#F5C400] px-1.5 py-0.5 font-mono text-[11px]">
+                    {isSolo ? `IGN / UID: ${selectedTeamModal.team.short_name}` : `TAG: ${selectedTeamModal.team.short_name}`}
+                  </span>
+                  <span>•</span>
+                  <span>Group: {selectedTeamModal.team.group_name || "Overall"}</span>
+                  <span>•</span>
+                  <span>Seed #{selectedTeamModal.team.seed}</span>
+                </div>
               </div>
             </div>
 

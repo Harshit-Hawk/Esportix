@@ -289,16 +289,18 @@ export function MatchScorecard({
                                 />
                               ) : (
                                 <span className="text-[10px] font-bold text-blue-600">
-                                  {team?.short_name.slice(0, 3)}
+                                  {team?.short_name ? team.short_name.slice(0, 4) : "TM"}
                                 </span>
                               )}
                             </div>
                             <span className="font-display font-black text-slate-900">
                               {team?.name || "Team"}
                             </span>
-                            <span className="text-[10px] text-slate-500 font-mono">
-                              [{team?.short_name}]
-                            </span>
+                            {team?.short_name && team.short_name !== team.name && (
+                              <span className="text-[10px] text-slate-500 font-mono">
+                                [{team.short_name}]
+                              </span>
+                            )}
                             {isMatchTopFragger && (
                               <span className="inline-flex items-center gap-0.5 rounded bg-rose-50 px-1.5 py-0.5 text-[9px] font-black text-rose-600 border border-rose-200 uppercase">
                                 <Crosshair className="h-2.5 w-2.5" />

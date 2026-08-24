@@ -88,16 +88,16 @@ export default function TournamentTeamsAdminPage() {
     try {
       if (isSolo) {
         if (!soloPlayerName || !soloPlayerIgn) {
-          alert("Please enter both Player Name and In-Game ID.");
+          alert("Please enter both Player In-Game Name (IGN) and In-Game ID.");
           return;
         }
 
-        const tag = soloPlayerIgn.replace(/[^a-zA-Z0-9]/g, "").slice(0, 5).toUpperCase() || "SOLO";
+        const tag = soloPlayerIgn.trim();
         const { data: createdTeam, error: tmErr } = await supabase
           .from("teams")
           .insert({
             tournament_id: tournamentId,
-            name: soloPlayerName,
+            name: soloPlayerName.trim(),
             short_name: tag,
             seed: Number(seed),
             group_name: groupName,

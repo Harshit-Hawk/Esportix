@@ -66,11 +66,11 @@ export function TeamRosterGrid({ teams }: TeamRosterGridProps) {
                   )}
                 </div>
                 <div className="flex flex-col">
-                  <h4 className="font-display text-sm font-black uppercase text-slate-900 truncate max-w-[140px]">
+                  <h4 className="font-display text-sm font-black uppercase text-slate-900">
                     {team.name}
                   </h4>
                   <span className="text-[10px] text-slate-500 font-mono">
-                    [{team.short_name}] • {team.group_name}
+                    [{team.short_name}] • {team.group_name || "Overall"}
                   </span>
                 </div>
               </div>
@@ -95,12 +95,12 @@ export function TeamRosterGrid({ teams }: TeamRosterGridProps) {
                       className="flex items-center justify-between rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs border border-slate-200"
                     >
                       <div className="flex items-center gap-2">
-                        <UserCheck className="h-3.5 w-3.5 text-slate-400" />
-                        <span className="font-bold text-slate-900 truncate max-w-[130px]">
+                        <UserCheck className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                        <span className="font-bold text-slate-900">
                           {player.name}
                         </span>
                       </div>
-                      <span className="font-mono text-[11px] font-bold text-blue-600">
+                      <span className="font-mono text-[11px] font-bold text-blue-600 shrink-0">
                         {player.player_identifier || "Player"}
                       </span>
                     </div>
