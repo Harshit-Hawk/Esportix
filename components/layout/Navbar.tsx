@@ -2,47 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Trophy,
-  Shield,
-  Layers,
-  Sparkles,
-  Tv,
-  Radio,
-  ExternalLink,
-  ChevronRight,
-  Sliders,
-} from "lucide-react";
-import { useState } from "react";
+import { Shield, Tv, PlusCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function Navbar() {
   const pathname = usePathname();
-  const [seeding, setSeeding] = useState(false);
-  const [seedSuccess, setSeedSuccess] = useState(false);
-
   const isAdmin = pathname.startsWith("/admin");
-
-  const handleQuickSeed = async () => {
-    try {
-      setSeeding(true);
-      const res = await fetch("/api/seed", { method: "POST" });
-      const data = await res.json();
-      if (data.success) {
-        setSeedSuccess(true);
-        setTimeout(() => {
-          setSeedSuccess(false);
-          window.location.href = `/tournament/${data.tournament.slug}`;
-        }, 1000);
-      } else {
-        alert("Seed failed: " + data.error);
-      }
-    } catch (err: any) {
-      alert("Seed request error: " + err.message);
-    } finally {
-      setSeeding(false);
-    }
-  };
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/95 backdrop-blur">
@@ -88,16 +53,13 @@ export function Navbar() {
 
         {/* Right CTA Actions */}
         <div className="flex items-center gap-2.5">
-          {/* Quick Demo Seed Button */}
-          <button
-            onClick={handleQuickSeed}
-            disabled={seeding || seedSuccess}
-            className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 transition-colors"
-            title="Reset and populate demo BGMI tournament data"
+          <Link
+            href="/admin/tournaments/new"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs"
           >
-            <Sparkles className="h-3.5 w-3.5 text-slate-500" />
-            <span>{seeding ? "Loading..." : seedSuccess ? "✓ Loaded" : "Load Demo"}</span>
-          </button>
+            <PlusCircle className="h-3.5 w-3.5 text-blue-600" />
+            <span>Create Tournament</span>
+          </Link>
 
           {!isAdmin ? (
             <Link
@@ -110,7 +72,7 @@ export function Navbar() {
           ) : (
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
             >
               <Tv className="h-3.5 w-3.5 text-slate-500" />
               <span>Public View</span>

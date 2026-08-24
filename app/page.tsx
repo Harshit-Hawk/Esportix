@@ -185,9 +185,26 @@ export default function HomePage() {
         </div>
 
         {filteredTournaments.length === 0 ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center text-slate-500 space-y-1 shadow-xs">
-            <h3 className="font-display font-black text-slate-900 text-sm uppercase">No Tournaments Found</h3>
-            <p className="text-xs text-slate-500">Try adjusting your filter or search query.</p>
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center text-slate-500 space-y-4 shadow-xs">
+            <Trophy className="mx-auto h-12 w-12 text-slate-300" />
+            <div className="space-y-1">
+              <h3 className="font-display font-black text-slate-900 text-base uppercase">
+                {tournaments.length === 0 ? "No Tournaments Created Yet" : "No Matching Tournaments Found"}
+              </h3>
+              <p className="text-xs text-slate-500 max-w-md mx-auto">
+                {tournaments.length === 0
+                  ? "Start by creating your first official tournament. Select BGMI, Free Fire, Valorant, or Custom rules to begin recording live scores."
+                  : "Try adjusting your search query or game title filter."}
+              </p>
+            </div>
+            {tournaments.length === 0 && (
+              <Link
+                href="/admin/tournaments/new"
+                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-blue-500/20 hover:bg-blue-700 transition-all"
+              >
+                <span>+ Create Your First Tournament</span>
+              </Link>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
