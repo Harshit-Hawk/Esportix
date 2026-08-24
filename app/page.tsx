@@ -62,21 +62,21 @@ export default function HomePage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-10">
       {/* Hero Section */}
-      <div className="relative overflow-hidden rounded-2xl border border-esports-navy-border bg-gradient-to-br from-esports-navy-dark via-esports-navy to-esports-navy-deep p-6 sm:p-10 shadow-2xl">
-        <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-esports-orange/15 blur-3xl" />
-        <div className="pointer-events-none absolute -left-24 -bottom-24 h-96 w-96 rounded-full bg-esports-gold/10 blur-3xl" />
+      <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 sm:p-12 shadow-xl">
+        <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-blue-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute -left-24 -bottom-24 h-96 w-96 rounded-full bg-yellow-400/15 blur-3xl" />
 
         <div className="relative z-10 max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-esports-orange/40 bg-esports-orange/10 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-esports-orange">
-            <Sparkles className="h-3.5 w-3.5 text-esports-gold" />
+          <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-blue-600 shadow-sm">
+            <Sparkles className="h-3.5 w-3.5 text-yellow-500" />
             <span>Collegiate & Pro Esports Scoring Platform</span>
           </div>
 
-          <h1 className="font-display text-3xl font-black uppercase tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Tournament Scoring & <span className="text-esports-orange text-glow-orange">Live Leaderboard</span> Engine
+          <h1 className="font-display text-3xl font-black uppercase tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
+            Tournament Scoring & <span className="text-blue-600">Live Leaderboard</span> Engine
           </h1>
 
-          <p className="text-sm sm:text-base text-esports-silver max-w-2xl leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-600 max-w-2xl leading-relaxed">
             Broadcast-grade point calculations, customizable tie-breakers, real-time standings, and lightning-fast score entry for BGMI, Free Fire, Valorant, COD, and collegiate esports championships.
           </p>
 
@@ -84,9 +84,9 @@ export default function HomePage() {
             {featuredLive && (
               <Link
                 href={`/tournament/${featuredLive.slug}`}
-                className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-esports-orange to-orange-600 px-5 py-3 text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-esports-orange/25 hover:brightness-110 active:scale-95 transition-all"
+                className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-6 py-3.5 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-blue-500/20 hover:brightness-110 active:scale-95 transition-all"
               >
-                <Radio className="h-4 w-4 animate-pulse" />
+                <Radio className="h-4 w-4 animate-pulse text-yellow-300" />
                 <span>Watch Live Scorecard ({featuredLive.name.split(" ")[0]})</span>
                 <ArrowRight className="h-4 w-4 ml-1" />
               </Link>
@@ -94,92 +94,26 @@ export default function HomePage() {
 
             <Link
               href="/admin"
-              className="flex items-center gap-2 rounded-lg border border-esports-navy-border bg-esports-navy-light px-5 py-3 text-xs font-bold uppercase tracking-wider text-white hover:border-esports-orange hover:bg-esports-navy-light/80 transition-all"
+              className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-slate-700 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600 transition-all shadow-sm"
             >
-              <ShieldCheck className="h-4 w-4 text-esports-gold" />
+              <ShieldCheck className="h-4 w-4 text-yellow-500" />
               <span>Admin Control Room</span>
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Feature Highlights Grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-xl border border-esports-navy-border bg-esports-navy-card p-5 shadow-lg">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-esports-orange/10 text-esports-orange mb-3 border border-esports-orange/20">
-            <Zap className="h-5 w-5" />
-          </div>
-          <h3 className="font-display text-sm font-black uppercase text-white">Multi-Game Engine</h3>
-          <p className="text-xs text-esports-silver mt-1">
-            Presets & custom rules for BGMI (10pt/15pt), Free Fire, Valorant, and custom games.
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-esports-navy-border bg-esports-navy-card p-5 shadow-lg">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 mb-3 border border-emerald-500/20">
-            <Radio className="h-5 w-5" />
-          </div>
-          <h3 className="font-display text-sm font-black uppercase text-white">Realtime Sync</h3>
-          <p className="text-xs text-esports-silver mt-1">
-            Scores entered by admins reflect instantly on spectator displays without page refresh.
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-esports-navy-border bg-esports-navy-card p-5 shadow-lg">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-esports-gold/10 text-esports-gold mb-3 border border-esports-gold/20">
-            <Trophy className="h-5 w-5" />
-          </div>
-          <h3 className="font-display text-sm font-black uppercase text-white">Auto Tie-Breaker</h3>
-          <p className="text-xs text-esports-silver mt-1">
-            Configurable multi-tier priority rules: Total Pts &gt; Kills &gt; Place Pts &gt; WWCD &gt; Seed.
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-esports-navy-border bg-esports-navy-card p-5 shadow-lg">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400 mb-3 border border-blue-500/20">
-            <Layers className="h-5 w-5" />
-          </div>
-          <h3 className="font-display text-sm font-black uppercase text-white">Audit Logging</h3>
-          <p className="text-xs text-esports-silver mt-1">
-            Every point modification is logged with timestamps and admin user tracking for fairness.
-          </p>
-        </div>
-      </div>
-
-      {/* Tournaments Explorer */}
-      <div className="space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-esports-navy-border pb-4">
-          <div>
-            <h2 className="font-display text-2xl font-black uppercase tracking-tight text-white">
-              Active & Upcoming Tournaments
-            </h2>
-            <p className="text-xs text-esports-silver mt-0.5">
-              Select a tournament to view live leaderboard standings and match stats.
-            </p>
-          </div>
-
-          {/* Search */}
-          <div className="relative w-full sm:w-72">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-esports-silver" />
-            <input
-              type="text"
-              placeholder="Search tournaments..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-lg border border-esports-navy-border bg-esports-navy-card py-2 pl-9 pr-4 text-xs text-white placeholder-esports-silver/60 focus:border-esports-orange focus:outline-none"
-            />
-          </div>
-        </div>
-
-        {/* Game Filters */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2">
+      {/* Filter & Search Bar */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-5">
+        {/* Game Filter Pills */}
+        <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setSelectedGameSlug("all")}
             className={cn(
-              "rounded-lg px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-all shrink-0",
+              "rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider transition-all",
               selectedGameSlug === "all"
-                ? "bg-esports-orange text-white"
-                : "bg-esports-navy-card text-esports-silver border border-esports-navy-border hover:text-white"
+                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900"
             )}
           >
             All Games
@@ -189,104 +123,114 @@ export default function HomePage() {
               key={g.id}
               onClick={() => setSelectedGameSlug(g.slug)}
               className={cn(
-                "rounded-lg px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-all shrink-0 flex items-center gap-1.5",
+                "rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider transition-all",
                 selectedGameSlug === g.slug
-                  ? "bg-esports-orange text-white"
-                  : "bg-esports-navy-card text-esports-silver border border-esports-navy-border hover:text-white"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                  : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               )}
             >
-              <Gamepad2 className="h-3.5 w-3.5" />
-              <span>{g.name.split(" ")[0]}</span>
+              {g.name}
             </button>
           ))}
         </div>
 
-        {/* Tournaments Grid */}
+        {/* Search */}
+        <div className="relative w-full sm:w-72">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search tournament..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-9 pr-4 text-xs text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none shadow-sm"
+          />
+        </div>
+      </div>
+
+      {/* Tournaments Grid */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-xl font-black uppercase text-slate-900 flex items-center gap-2">
+            <Trophy className="h-5 w-5 text-yellow-500" />
+            <span>Active & Upcoming Tournaments ({filteredTournaments.length})</span>
+          </h2>
+        </div>
+
         {filteredTournaments.length === 0 ? (
-          <div className="rounded-xl border border-esports-navy-border bg-esports-navy-card p-12 text-center">
-            <Trophy className="mx-auto h-12 w-12 text-esports-silver/40 mb-3" />
-            <h3 className="font-display text-lg font-black uppercase text-white">No Tournaments Found</h3>
-            <p className="text-xs text-esports-silver mt-1">
-              Click &ldquo;Quick Seed Demo&rdquo; in the top bar to generate demo tournaments with 18 matches!
+          <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center text-slate-500 space-y-2 shadow-sm">
+            <Trophy className="mx-auto h-12 w-12 text-slate-300 mb-2" />
+            <h3 className="font-display text-base font-black uppercase text-slate-900">
+              No Tournaments Found
+            </h3>
+            <p className="text-xs text-slate-500">
+              Try adjusting your filter or search query.
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredTournaments.map((tourney) => {
               const isLive = tourney.status === "LIVE";
+              const teamCount = (tourney as any).teams?.[0]?.count || 0;
+              const matchCount = (tourney as any).matches?.[0]?.count || 0;
 
               return (
                 <Link
                   key={tourney.id}
                   href={`/tournament/${tourney.slug}`}
-                  className="group flex flex-col justify-between overflow-hidden rounded-xl border border-esports-navy-border bg-esports-navy-card shadow-lg hover:border-esports-orange hover:shadow-esports-orange/10 transition-all"
+                  className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-blue-500 hover:shadow-md"
                 >
-                  <div>
-                    {/* Banner Image / Header */}
-                    <div className="relative h-40 w-full overflow-hidden bg-esports-navy-dark">
-                      {tourney.banner_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={tourney.banner_url}
-                          alt={tourney.name}
-                          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-esports-navy-light/40">
-                          <Trophy className="h-12 w-12 text-esports-orange/50" />
+                  <div className="space-y-4">
+                    {/* Header */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 shadow-sm">
+                          {tourney.logo_url ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={tourney.logo_url}
+                              alt={tourney.name}
+                              className="h-full w-full object-cover rounded-xl"
+                            />
+                          ) : (
+                            <Trophy className="h-6 w-6 text-blue-600" />
+                          )}
                         </div>
-                      )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-esports-navy-card via-black/40 to-transparent" />
-
-                      {/* Status Badge */}
-                      <div className="absolute left-3 top-3">
-                        {isLive ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-red-600/90 px-2.5 py-0.5 text-[10px] font-black uppercase text-white shadow-md animate-pulse">
-                            <Radio className="h-3 w-3" />
-                            LIVE NOW
+                        <div>
+                          <h3 className="font-display text-base font-black uppercase text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+                            {tourney.name}
+                          </h3>
+                          <span className="text-xs font-bold text-slate-500">
+                            {tourney.game?.name || "BGMI"} • <span className="text-blue-600 font-mono">{tourney.format || "SQUAD"}</span>
                           </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-esports-navy-dark/90 px-2.5 py-0.5 text-[10px] font-bold uppercase text-esports-silver border border-esports-navy-border">
-                            {tourney.status}
-                          </span>
-                        )}
+                        </div>
                       </div>
 
-                      {/* Game Pill */}
-                      <div className="absolute right-3 top-3">
-                        <span className="rounded-md bg-esports-navy-dark/90 px-2 py-0.5 text-[10px] font-bold uppercase text-esports-cream border border-esports-navy-border">
-                          {tourney.game?.name || "Esports"}
+                      {isLive ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-red-50 border border-red-200 px-2.5 py-0.5 text-[10px] font-black uppercase text-red-600 animate-pulse">
+                          <Radio className="h-3 w-3" /> LIVE
                         </span>
-                      </div>
+                      ) : (
+                        <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold uppercase text-slate-600">
+                          {tourney.status}
+                        </span>
+                      )}
                     </div>
 
-                    {/* Content */}
-                    <div className="p-5 space-y-2.5">
-                      <h3 className="font-display text-lg font-black uppercase text-white group-hover:text-esports-orange transition-colors">
-                        {tourney.name}
-                      </h3>
-                      <p className="text-xs text-esports-silver line-clamp-2">
-                        {tourney.description || "Official tournament overall standings and points scorecard."}
-                      </p>
-                    </div>
+                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                      {tourney.description || "Live official leaderboard, match-by-match standings, and points scorecard."}
+                    </p>
                   </div>
 
-                  {/* Footer Stats & CTA */}
-                  <div className="border-t border-esports-navy-border/60 bg-esports-navy/60 p-4 flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-3 text-esports-silver font-semibold">
-                      <span className="flex items-center gap-1">
-                        <Users className="h-3.5 w-3.5 text-esports-orange" />
-                        16 Teams
-                      </span>
+                  {/* Footer Metrics */}
+                  <div className="mt-6 border-t border-slate-100 pt-4 flex items-center justify-between text-xs text-slate-500">
+                    <div className="flex items-center gap-3 font-mono">
+                      <span>{teamCount} Teams</span>
                       <span>•</span>
-                      <span className="flex items-center gap-1">
-                        <Flame className="h-3.5 w-3.5 text-esports-gold" />
-                        18 Matches
-                      </span>
+                      <span>{matchCount} Matches</span>
                     </div>
 
-                    <span className="flex items-center gap-1 font-bold text-esports-orange group-hover:translate-x-1 transition-transform">
-                      <span>View Board</span>
+                    <span className="flex items-center gap-1 font-black uppercase text-blue-600 group-hover:translate-x-1 transition-transform">
+                      <span>Scorecard</span>
                       <ChevronRight className="h-4 w-4" />
                     </span>
                   </div>
