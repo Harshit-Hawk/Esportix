@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase/client";
 import { Tournament, Game } from "@/types/database";
+import { GameLogo } from "@/components/common/GameLogo";
 import {
   Trophy,
   Search,
@@ -162,23 +163,31 @@ export default function HomePage() {
                 >
                   <div className="space-y-3">
                     <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <div className="flex items-center gap-2">
+                      <div className="flex items-start gap-3">
+                        {/* Game Logo */}
+                        <GameLogo
+                          slug={tourney.game?.slug}
+                          name={tourney.game?.name}
+                          logoUrl={tourney.logo_url}
+                          size="md"
+                        />
+
+                        <div>
                           <h3 className="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition-colors">
                             {tourney.name}
                           </h3>
+                          <span className="text-xs text-slate-500 font-medium">
+                            {tourney.game?.name || "Game"} • <span className="text-slate-700 font-semibold">{tourney.format || "SQUAD"}</span>
+                          </span>
                         </div>
-                        <span className="text-xs text-slate-500 font-medium">
-                          {tourney.game?.name || "Game"} • <span className="text-slate-700 font-semibold">{tourney.format || "SQUAD"}</span>
-                        </span>
                       </div>
 
                       {isLive ? (
-                        <span className="inline-flex items-center gap-1 rounded-md bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-700 border border-red-200">
+                        <span className="inline-flex items-center gap-1 rounded-md bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-700 border border-red-200 shrink-0">
                           <span className="h-1.5 w-1.5 rounded-full bg-red-600" /> Live
                         </span>
                       ) : (
-                        <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
+                        <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600 shrink-0">
                           {tourney.status}
                         </span>
                       )}
