@@ -38,15 +38,15 @@ export default function AdminLayout({
   }, []);
 
   const sidebarLinks = [
-    { href: "/admin", label: "Tournament Command", icon: LayoutDashboard },
+    { href: "/admin", label: "Command Center", icon: LayoutDashboard },
     { href: "/admin/tournaments/new", label: "Launch Tournament", icon: PlusCircle },
   ];
 
   return (
-    <div className="flex min-h-[calc(100vh-3.5rem)] bg-[#090A10] text-white">
+    <div className="flex min-h-[calc(100vh-3.5rem)] bg-[#05050A] text-white font-rajdhani">
       {/* Admin Sidebar */}
-      <aside className="hidden w-60 shrink-0 border-r border-[#242945] bg-[#0D0E18] p-4 md:block font-chakra">
-        <div className="px-3 py-2 text-[10px] font-orbitron font-bold uppercase tracking-widest text-[#00F0FF]">
+      <aside className="hidden w-60 shrink-0 border-r-2 border-[#252538] bg-[#0A0A12] p-4 md:block">
+        <div className="px-3 py-2 text-[10px] font-orbitron font-bold uppercase tracking-widest text-[#FCEE0A]">
           OPERATIONS TERMINAL
         </div>
 
@@ -59,10 +59,10 @@ export default function AdminLayout({
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider transition-all",
+                  "flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider transition-all cyber-cut-tr",
                   isActive
-                    ? "bg-[#16192B] text-[#00F0FF] border border-[#00F0FF]/40 shadow-[0_0_10px_rgba(0,240,255,0.2)]"
-                    : "text-slate-400 hover:bg-[#11131F] hover:text-white"
+                    ? "bg-[#FCEE0A] text-slate-950 font-black shadow-[0_0_15px_rgba(252,238,10,0.4)]"
+                    : "text-slate-300 hover:bg-[#12121E] hover:text-[#FCEE0A]"
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -74,34 +74,34 @@ export default function AdminLayout({
 
         {/* Dynamic Tournament Link */}
         {activeTourney ? (
-          <div className="mt-8 rounded-2xl border border-[#00F0FF]/30 bg-[#11131F] p-3.5 space-y-2 shadow-sm">
-            <div className="text-[10px] font-orbitron font-bold uppercase text-[#00F0FF]">
-              ACTIVE WARZONE
+          <div className="mt-8 border-2 border-[#FCEE0A]/40 bg-[#0E0E1A] p-3.5 space-y-2 shadow-[0_0_15px_rgba(252,238,10,0.1)] cyber-cut-tr">
+            <div className="text-[10px] font-orbitron font-bold uppercase text-[#FCEE0A]">
+              ACTIVE ARENA
             </div>
-            <p className="text-xs text-white font-chakra font-bold truncate">
+            <p className="text-xs text-white font-bold truncate">
               {activeTourney.name}
             </p>
             <Link
               href={`/tournament/${activeTourney.slug}`}
               target="_blank"
-              className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#00F0FF]/15 border border-[#00F0FF]/40 px-3 py-2 text-xs font-bold uppercase text-[#00F0FF] hover:bg-[#00F0FF] hover:text-slate-950 transition-all shadow-[0_0_10px_rgba(0,240,255,0.15)]"
+              className="inline-flex w-full items-center justify-center gap-1.5 bg-[#00F0FF] px-3 py-2 text-xs font-black uppercase text-slate-950 hover:brightness-110 transition-all cyber-cut-tr shadow-[0_0_10px_rgba(0,240,255,0.3)]"
             >
-              <Radio className="h-3.5 w-3.5 text-[#FF2A85] animate-pulse" />
-              <span>Public Arena</span>
+              <Radio className="h-3.5 w-3.5 text-slate-950 animate-pulse" />
+              <span>Spectate Live</span>
             </Link>
           </div>
         ) : (
-          <div className="mt-8 rounded-2xl border border-dashed border-[#242945] bg-[#11131F]/50 p-4 text-center space-y-2">
+          <div className="mt-8 border border-dashed border-[#252538] bg-[#0E0E1A]/50 p-4 text-center space-y-2 cyber-cut-tr">
             <Trophy className="mx-auto h-5 w-5 text-slate-600" />
             <p className="text-xs text-slate-400">
-              No active tournaments in orbit.
+              No active tournaments linked.
             </p>
           </div>
         )}
       </aside>
 
       {/* Main Admin Viewport */}
-      <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto retro-grid">
+      <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto cyber-grid">
         {children}
       </div>
     </div>
