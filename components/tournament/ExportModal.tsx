@@ -109,7 +109,7 @@ export function ExportModal({
       }
 
       const canvas = await html2canvas(element, {
-        backgroundColor: "#FFFFFF",
+        backgroundColor: "#F4F0E1",
         scale: 2,
         logging: false,
         useCORS: true,

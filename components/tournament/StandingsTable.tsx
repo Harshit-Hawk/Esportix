@@ -13,13 +13,10 @@ import {
   Crown,
   X,
   User,
-  ChevronRight,
-  Sparkles,
-  BarChart3,
   Layers,
-  CheckCircle2,
-  ArrowUpDown,
-  Filter,
+  Sparkles,
+  Download,
+  Share2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -42,8 +39,6 @@ export function StandingsTable({
 }: StandingsTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("All");
-  const [filterTier, setFilterTier] = useState<"ALL" | "TOP_TIER" | "DANGER_TIER">("ALL");
-  const [expandedTeamId, setExpandedTeamId] = useState<string | null>(null);
   const [selectedTeamModal, setSelectedTeamModal] = useState<LeaderboardRow | null>(null);
 
   const isSolo = tournament.format === "SOLO";
@@ -51,433 +46,349 @@ export function StandingsTable({
 
   const groups = ["All", ...Array.from(new Set(standings.map((r) => r.team.group_name).filter(Boolean)))];
 
-  // Highest scorer for kill MVP badge
-  const maxKills = useMemo(() => {
-    return Math.max(...standings.map((r) => r.totalKills), 0);
-  }, [standings]);
-
-  // Max points for proportional progress bar
-  const maxPoints = useMemo(() => {
-    return Math.max(...standings.map((r) => r.totalPoints), 1);
-  }, [standings]);
-
   const filteredStandings = useMemo(() => {
     return standings.filter((row) => {
       const matchesSearch =
         row.team.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         row.team.short_name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesGroup = selectedGroup === "All" || row.team.group_name === selectedGroup;
-
-      let matchesTier = true;
-      if (filterTier === "TOP_TIER") {
-        matchesTier = row.rank <= qualifyingCutoff;
-      } else if (filterTier === "DANGER_TIER") {
-        matchesTier = row.rank > qualifyingCutoff;
-      }
-
-      return matchesSearch && matchesGroup && matchesTier;
+      return matchesSearch && matchesGroup;
     });
-  }, [standings, searchTerm, selectedGroup, filterTier, qualifyingCutoff]);
+  }, [standings, searchTerm, selectedGroup]);
 
-  const toggleExpand = (teamId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setExpandedTeamId(expandedTeamId === teamId ? null : teamId);
-  };
+  const activeStage = matches.find((m) => m.status === "LIVE")?.round_name ||
+    matches[matches.length - 1]?.round_name ||
+    "GRAND FINALS";
 
   return (
     <div className="space-y-4">
-      {/* Dynamic Controls Bar */}
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        {/* Tier & Group Filters */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Tier Tabs */}
-          <div className="inline-flex rounded-xl border border-slate-200 bg-white p-1 shadow-xs">
-            <button
-              onClick={() => setFilterTier("ALL")}
-              className={cn(
-                "rounded-lg px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all",
-                filterTier === "ALL"
-                  ? "bg-blue-600 text-white shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
-              )}
-            >
-              All {isSolo ? "Combatants" : "Teams"} ({standings.length})
-            </button>
-            {standings.length > qualifyingCutoff && (
-              <>
-                <button
-                  onClick={() => setFilterTier("TOP_TIER")}
-                  className={cn(
-                    "rounded-lg px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all",
-                    filterTier === "TOP_TIER"
-                      ? "bg-blue-600 text-white shadow-xs"
-                      : "text-slate-600 hover:text-slate-900"
-                  )}
-                >
-                  Finals Zone (1–{qualifyingCutoff})
-                </button>
-                <button
-                  onClick={() => setFilterTier("DANGER_TIER")}
-                  className={cn(
-                    "rounded-lg px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all",
-                    filterTier === "DANGER_TIER"
-                      ? "bg-blue-600 text-white shadow-xs"
-                      : "text-slate-600 hover:text-slate-900"
-                  )}
-                >
-                  Danger Zone ({qualifyingCutoff + 1}+)
-                </button>
-              </>
-            )}
+      {/* Controls Bar */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        {/* Groups */}
+        {groups.length > 2 ? (
+          <div className="inline-flex rounded-lg border border-slate-300 bg-white p-1 shadow-2xs">
+            {groups.map((grp) => (
+              <button
+                key={grp}
+                onClick={() => setSelectedGroup(grp)}
+                className={cn(
+                  "rounded-md px-3 py-1 text-xs font-bold uppercase transition-all",
+                  selectedGroup === grp
+                    ? "bg-[#171717] text-white"
+                    : "text-slate-600 hover:text-slate-900"
+                )}
+              >
+                {grp === "All" ? "All Groups" : grp}
+              </button>
+            ))}
           </div>
-
-          {/* Group Tabs if multi-group */}
-          {groups.length > 2 && (
-            <div className="inline-flex rounded-xl border border-slate-200 bg-white p-1 shadow-xs">
-              {groups.map((grp) => (
-                <button
-                  key={grp}
-                  onClick={() => setSelectedGroup(grp)}
-                  className={cn(
-                    "rounded-lg px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all",
-                    selectedGroup === grp
-                      ? "bg-slate-900 text-white"
-                      : "text-slate-600 hover:text-slate-900"
-                  )}
-                >
-                  {grp}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Search & Info */}
-        <div className="flex items-center gap-3">
-          <div className="relative w-full sm:w-72">
-            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              placeholder={isSolo ? "Filter player name or in-game ID..." : "Filter team name or tag..."}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-9 pr-4 text-xs text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/10 shadow-xs transition-all"
-            />
+        ) : (
+          <div className="flex items-center gap-2">
+            <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
+              Official Leaderboard ({standings.length} {isSolo ? "Combatants" : "Squads"})
+            </span>
           </div>
+        )}
+
+        {/* Search */}
+        <div className="relative w-full sm:w-64">
+          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            placeholder={isSolo ? "Search player or IGN..." : "Search team or tag..."}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full rounded-xl border border-slate-300 bg-white py-1.5 pl-8 pr-3 text-xs text-slate-900 placeholder-slate-400 focus:border-slate-900 focus:outline-none shadow-2xs"
+          />
         </div>
       </div>
 
-      {/* Main Scorecard Table */}
+      {/* ========================================================= */}
+      {/* BGIS / BGMI OFFICIAL BROADCAST SCOREBOARD GRAPHIC         */}
+      {/* ========================================================= */}
       <div
         id={tableId}
-        className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs"
+        className="relative overflow-hidden rounded-2xl border-2 border-[#D8D0B5] bg-[#F4F0E1] p-4 sm:p-6 shadow-xl"
+        style={{
+          backgroundImage: `
+            radial-gradient(#C8C0A5 1px, transparent 1px),
+            linear-gradient(135deg, rgba(255, 204, 0, 0.15) 0%, transparent 40%, rgba(255, 204, 0, 0.12) 100%)
+          `,
+          backgroundSize: "20px 20px, 100% 100%",
+        }}
       >
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-black uppercase tracking-wider text-slate-600">
-                <th className="py-3.5 pl-4 pr-2 text-center w-14"># Rank</th>
-                <th className="py-3.5 px-3">{isSolo ? "Combatant / Player" : "Team / Squad"}</th>
-                <th className="py-3.5 px-3 text-center w-20">Matches</th>
-                <th className="py-3.5 px-3 text-center w-20">WWCD</th>
-                <th className="py-3.5 px-3 text-center hidden md:table-cell w-24">Place Pts</th>
-                <th className="py-3.5 px-3 text-center hidden md:table-cell w-24">Kill Pts</th>
-                <th className="py-3.5 px-4 hidden lg:table-cell w-44">Points Split</th>
-                <th className="py-3.5 pl-3 pr-6 text-right font-black text-slate-900 w-36">Total Points</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 font-medium">
-              {filteredStandings.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="py-16 text-center text-slate-400">
-                    <div className="space-y-1">
-                      <p className="font-semibold text-slate-700">No participants match your filter</p>
-                      <p className="text-xs text-slate-400">Try clearing your search query or tier selection</p>
+        {/* Top Graphic Header */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-4">
+          {/* Left Shield Badge & Series Logo */}
+          <div className="flex items-center gap-3.5">
+            <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-[#141414] border-2 border-[#F5C400] text-[#F5C400] shadow-md">
+              <div className="flex flex-col items-center justify-center text-center">
+                <Trophy className="h-4 w-4 text-[#F5C400] mb-0.5" />
+                <span className="font-bebas text-[9px] leading-none tracking-widest text-white">
+                  SERIES
+                </span>
+                <span className="font-bebas text-[11px] leading-none font-bold text-[#F5C400]">
+                  {tournament.game?.slug === "bgmi" ? "BGMI" : tournament.format || "PRO"}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <div className="text-[11px] font-bold uppercase tracking-widest text-[#786E50]">
+                {tournament.game?.name || "Official Tournament"}
+              </div>
+              <h2 className="font-oswald text-2xl sm:text-3xl font-black uppercase tracking-tight text-[#141414] leading-none">
+                {tournament.name}
+              </h2>
+            </div>
+          </div>
+
+          {/* Right Stage & Group Pills */}
+          <div className="flex flex-wrap items-center gap-2 sm:self-center">
+            {/* Title Black Banner */}
+            <div className="rounded-lg bg-[#141414] px-4 py-2 text-white border border-[#2D2D2D] shadow-sm">
+              <span className="font-oswald text-base sm:text-lg font-black uppercase tracking-wider text-white">
+                OVERALL STANDINGS
+              </span>
+            </div>
+
+            {/* Stage Badges */}
+            <div className="flex items-center gap-1.5">
+              <span className="rounded-lg bg-[#E5DEC3] border border-[#C8C0A5] px-3 py-2 font-oswald text-xs font-bold uppercase tracking-wider text-[#141414]">
+                {selectedGroup === "All" ? (tournament.format || "SQUAD") : selectedGroup}
+              </span>
+              <span className="rounded-lg bg-[#141414] px-3 py-2 font-oswald text-xs font-bold uppercase tracking-wider text-[#F5C400] border border-[#2D2D2D]">
+                MATCH {completedMatchesCount} OF {matches.length || "LIVE"}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Dense Broadcast Data Table */}
+        <div className="overflow-hidden rounded-xl border border-[#141414] bg-[#141414] shadow-md">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse select-none">
+              {/* Header Bar */}
+              <thead>
+                <tr className="bg-[#1C1C1C] text-[#F5C400] font-oswald text-xs uppercase tracking-wider border-b border-[#2B2B2B]">
+                  <th className="py-2.5 pl-3 pr-2 text-center w-14 font-black">#</th>
+                  <th className="py-2.5 px-3 font-black">{isSolo ? "PLAYER" : "TEAM"}</th>
+                  <th className="py-2.5 px-3 text-center w-16 font-black" title="WWCD / Wins">
+                    <div className="flex items-center justify-center gap-1">
+                      {/* WWCD Chicken / Trophy Graphic */}
+                      <span className="text-base leading-none">🏆</span>
                     </div>
-                  </td>
+                  </th>
+                  <th className="py-2.5 px-3 text-center w-20 font-black">MATCHES</th>
+                  <th className="py-2.5 px-3 text-center w-20 font-black">FIN. PTS.</th>
+                  <th className="py-2.5 px-3 text-center w-20 font-black">POS. PTS.</th>
+                  <th className="py-2.5 pl-3 pr-4 text-right w-24 font-black text-white">TOTAL</th>
                 </tr>
-              ) : (
-                filteredStandings.map((row) => {
-                  const isWinner = row.rank === 1;
-                  const isTop3 = row.rank <= 3;
-                  const isExpanded = expandedTeamId === row.team.id;
-                  const isKillLeader = maxKills > 0 && row.totalKills === maxKills;
+              </thead>
 
-                  // Percentage of placement vs kill points
-                  const placePct = row.totalPoints > 0 ? (row.placementPoints / row.totalPoints) * 100 : 0;
-                  const killPct = row.totalPoints > 0 ? (row.finishPoints / row.totalPoints) * 100 : 0;
+              {/* Table Rows (Alternating Cream) */}
+              <tbody className="font-oswald text-sm">
+                {filteredStandings.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-12 text-center bg-[#EDE8D2] text-slate-600 font-sans text-xs">
+                      No teams found.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredStandings.map((row, idx) => {
+                    const isEven = idx % 2 === 0;
+                    const isWinner = row.rank === 1;
 
-                  return (
-                    <tr
-                      key={row.team.id}
-                      onClick={() => setSelectedTeamModal(row)}
-                      className={cn(
-                        "table-row-hover cursor-pointer transition-colors group",
-                        isWinner
-                          ? "bg-yellow-50/50 hover:bg-yellow-50/80"
-                          : isTop3
-                          ? "bg-slate-50/40 hover:bg-slate-100/50"
-                          : "bg-white hover:bg-slate-50"
-                      )}
-                    >
-                      {/* Rank Column */}
-                      <td className="py-3.5 pl-4 pr-2 text-center">
-                        <div className="flex items-center justify-center gap-1.5">
-                          {isWinner ? (
-                            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-yellow-400 font-display text-xs font-black text-slate-950 shadow-xs border border-yellow-500">
-                              <Crown className="h-4 w-4" />
+                    return (
+                      <tr
+                        key={row.team.id}
+                        onClick={() => setSelectedTeamModal(row)}
+                        className={cn(
+                          "cursor-pointer transition-colors border-b border-[#D8D0B5]/60 hover:brightness-95",
+                          isEven ? "bg-[#EDE8D2]" : "bg-[#E5DEC3]",
+                          isWinner && "bg-[#F5E6AA]"
+                        )}
+                      >
+                        {/* Rank Column */}
+                        <td className="py-2.5 pl-3 pr-2 text-center text-[#171717]">
+                          <div className="flex items-center justify-center gap-1">
+                            {/* Delta */}
+                            <span className="w-3 text-center text-xs font-bold">
+                              {row.rankDelta !== undefined && row.rankDelta > 0 ? (
+                                <span className="text-emerald-700 font-black">▲</span>
+                              ) : row.rankDelta !== undefined && row.rankDelta < 0 ? (
+                                <span className="text-rose-700 font-black">▼</span>
+                              ) : (
+                                <span className="text-slate-600 font-black">—</span>
+                              )}
                             </span>
-                          ) : (
+
+                            {/* Number */}
                             <span
                               className={cn(
-                                "flex h-7 w-7 items-center justify-center rounded-lg font-mono text-xs font-bold transition-all",
-                                isTop3
-                                  ? "bg-slate-200 text-slate-800"
-                                  : "text-slate-600 group-hover:bg-slate-100"
+                                "font-oswald text-base font-black w-5 text-center",
+                                isWinner ? "text-[#141414] font-extrabold" : "text-[#171717]"
                               )}
                             >
                               {row.rank}
                             </span>
-                          )}
-
-                          {/* Delta */}
-                          {row.rankDelta !== undefined && row.rankDelta !== 0 && (
-                            <span
-                              className={cn(
-                                "inline-flex items-center text-[10px] font-bold font-mono",
-                                row.rankDelta > 0 ? "text-emerald-600" : "text-rose-500"
-                              )}
-                              title={`${row.rankDelta > 0 ? `+${row.rankDelta}` : row.rankDelta} positions since last match`}
-                            >
-                              {row.rankDelta > 0 ? (
-                                <ChevronUp className="h-3 w-3" />
-                              ) : (
-                                <ChevronDown className="h-3 w-3" />
-                              )}
-                              <span>{Math.abs(row.rankDelta)}</span>
-                            </span>
-                          )}
-                        </div>
-                      </td>
-
-                      {/* Team / Combatant */}
-                      <td className="py-3.5 px-3">
-                        <div className="flex items-center gap-3">
-                          <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 overflow-hidden shadow-2xs">
-                            {isSolo ? (
-                              <User className="h-4 w-4 text-slate-600" />
-                            ) : row.team.logo_url ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
-                                src={row.team.logo_url}
-                                alt={row.team.name}
-                                className="h-full w-full object-cover"
-                              />
-                            ) : (
-                              <span className="font-bold text-[10px] text-blue-600">
-                                {row.team.short_name.slice(0, 3)}
-                              </span>
-                            )}
                           </div>
+                        </td>
 
-                          <div className="flex flex-col">
-                            <div className="flex items-center gap-2">
-                              <span className="font-display font-black text-slate-900 text-sm group-hover:text-blue-600 transition-colors">
-                                {row.team.name}
-                              </span>
-                              <span className="text-[10px] text-slate-500 font-mono">
-                                [{row.team.short_name}]
-                              </span>
-                              {isKillLeader && (
-                                <span className="inline-flex items-center gap-0.5 rounded-md bg-rose-50 px-1.5 py-0.5 text-[9px] font-bold uppercase text-rose-600 border border-rose-200">
-                                  <Flame className="h-2.5 w-2.5 text-rose-500" />
-                                  MVP Fragger
+                        {/* Team Logo & Short Name */}
+                        <td className="py-2.5 px-3">
+                          <div className="flex items-center gap-2.5">
+                            <div className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded bg-white border border-[#C8C0A5] overflow-hidden shadow-2xs">
+                              {isSolo ? (
+                                <User className="h-4 w-4 text-slate-700" />
+                              ) : row.team.logo_url ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                  src={row.team.logo_url}
+                                  alt={row.team.name}
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : (
+                                <span className="font-oswald font-black text-[10px] text-slate-800">
+                                  {row.team.short_name.slice(0, 3)}
                                 </span>
                               )}
                             </div>
 
-                            {row.team.group_name && (
-                              <span className="text-[10px] text-slate-400">
-                                {row.team.group_name} • Seed #{row.team.seed}
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-oswald font-black text-base text-[#141414] tracking-wide">
+                                {row.team.short_name}
                               </span>
+                              <span className="font-sans text-xs text-[#524B36] font-medium hidden md:inline truncate max-w-[160px]">
+                                {row.team.name}
+                              </span>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* WWCD Wins */}
+                        <td className="py-2.5 px-3 text-center">
+                          <span
+                            className={cn(
+                              "font-oswald text-base font-bold",
+                              row.wins > 0 ? "text-[#141414] font-black" : "text-[#786E50]"
                             )}
-                          </div>
-                        </div>
-                      </td>
+                          >
+                            {row.wins}
+                          </span>
+                        </td>
 
-                      {/* Matches Played */}
-                      <td className="py-3.5 px-3 text-center font-mono text-xs text-slate-700">
-                        {row.matchesPlayed}
-                      </td>
+                        {/* Matches */}
+                        <td className="py-2.5 px-3 text-center font-oswald text-base font-bold text-[#141414]">
+                          {row.matchesPlayed}
+                        </td>
 
-                      {/* WWCD / Wins */}
-                      <td className="py-3.5 px-3 text-center">
-                        <span
-                          className={cn(
-                            "inline-flex items-center justify-center font-mono text-xs font-bold px-2 py-0.5 rounded-md",
-                            row.wins > 0
-                              ? "bg-amber-100 text-amber-900 border border-amber-300"
-                              : "text-slate-400"
-                          )}
-                        >
-                          {row.wins}
-                        </span>
-                      </td>
+                        {/* FIN. PTS (Finish / Kill Points) */}
+                        <td className="py-2.5 px-3 text-center font-oswald text-base font-bold text-[#141414]">
+                          {row.finishPoints}
+                        </td>
 
-                      {/* Placement Points */}
-                      <td className="py-3.5 px-3 text-center hidden md:table-cell font-mono text-xs text-slate-700">
-                        {row.placementPoints}
-                      </td>
+                        {/* POS. PTS (Placement Points) */}
+                        <td className="py-2.5 px-3 text-center font-oswald text-base font-bold text-[#141414]">
+                          {row.placementPoints}
+                        </td>
 
-                      {/* Kill / Finish Points */}
-                      <td className="py-3.5 px-3 text-center hidden md:table-cell font-mono text-xs text-slate-700">
-                        {row.finishPoints}
-                      </td>
-
-                      {/* Visual Points Distribution Bar */}
-                      <td className="py-3.5 px-4 hidden lg:table-cell">
-                        <div className="w-full space-y-1">
-                          <div className="flex h-2 w-full overflow-hidden rounded-full bg-slate-100 border border-slate-200/60">
-                            <div
-                              style={{ width: `${placePct}%` }}
-                              className="bg-blue-600 transition-all duration-300"
-                              title={`Placement: ${row.placementPoints} pts (${Math.round(placePct)}%)`}
-                            />
-                            <div
-                              style={{ width: `${killPct}%` }}
-                              className="bg-yellow-400 transition-all duration-300"
-                              title={`Kills: ${row.finishPoints} pts (${Math.round(killPct)}%)`}
-                            />
-                          </div>
-                          <div className="flex justify-between text-[9px] font-mono text-slate-400">
-                            <span>{row.placementPoints} place</span>
-                            <span>{row.finishPoints} kills</span>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Total Points */}
-                      <td className="py-3.5 pl-3 pr-6 text-right">
-                        <span
-                          className={cn(
-                            "inline-block rounded-xl px-3.5 py-1.5 font-display text-sm font-black tabular-nums transition-all shadow-xs",
-                            isWinner
-                              ? "bg-yellow-400 text-slate-950 border border-yellow-500 shadow-yellow-400/20"
-                              : "bg-blue-600 text-white shadow-blue-500/10"
-                          )}
-                        >
-                          {row.totalPoints} PTS
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+                        {/* TOTAL POINTS */}
+                        <td className="py-2.5 pl-3 pr-4 text-right">
+                          <span
+                            className={cn(
+                              "font-oswald text-lg font-black text-[#141414] tracking-tight",
+                              isWinner && "text-[#141414] font-extrabold"
+                            )}
+                          >
+                            {row.totalPoints}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        {/* Dynamic Scorecard Footer */}
-        <div className="flex flex-wrap items-center justify-between border-t border-slate-100 bg-slate-50/80 px-5 py-3 text-xs text-slate-500 gap-2">
-          <div className="flex items-center gap-4">
-            <span className="font-semibold text-slate-700">
-              Showing {filteredStandings.length} of {standings.length} {isSolo ? "Combatants" : "Squads"}
-            </span>
-            <div className="hidden sm:flex items-center gap-3 text-[11px]">
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-blue-600" />
-                <span>Placement Points</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-yellow-400" />
-                <span>Kill Points</span>
-              </span>
-            </div>
-          </div>
-
-          <span className="text-[11px] font-medium text-slate-500">
-            Official Realtime Scoring Engine • Auto-Synced
+        {/* Graphic Footer Caption */}
+        <div className="mt-3 flex items-center justify-between text-[11px] font-oswald uppercase tracking-wider text-[#786E50]">
+          <span>
+            {tournament.name} • OFFICIAL ESPORTS TOURNAMENT SCORECARD
           </span>
+          <span>POWERED BY ESPORTIX REALTIME ENGINE</span>
         </div>
       </div>
 
-      {/* Interactive Team Quick-Inspection Modal */}
+      {/* Team Details Modal */}
       {selectedTeamModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="relative w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl space-y-5 animate-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 animate-in fade-in">
+          <div className="relative w-full max-w-md rounded-2xl border-2 border-[#D8D0B5] bg-[#F4F0E1] p-6 shadow-2xl space-y-4">
             <button
               onClick={() => setSelectedTeamModal(null)}
-              className="absolute right-4 top-4 rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors"
+              className="absolute right-4 top-4 rounded-xl p-1.5 text-slate-600 hover:bg-slate-200 transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
 
-            {/* Header */}
-            <div className="flex items-center gap-3.5 border-b border-slate-100 pb-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white font-display text-base font-black shadow-md shadow-blue-500/20">
+            <div className="flex items-center gap-3.5 border-b border-[#D8D0B5] pb-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#141414] text-[#F5C400] font-oswald text-lg font-black">
                 #{selectedTeamModal.rank}
               </div>
               <div>
-                <h3 className="font-display text-lg font-black uppercase text-slate-900">
+                <h3 className="font-oswald text-xl font-black uppercase text-[#141414]">
                   {selectedTeamModal.team.name}
                 </h3>
-                <span className="text-xs text-slate-500 font-mono">
+                <span className="font-oswald text-xs font-bold text-[#786E50] tracking-wider">
                   [{selectedTeamModal.team.short_name}] • {selectedTeamModal.team.group_name || "Overall"} • Seed #{selectedTeamModal.team.seed}
                 </span>
               </div>
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-3 gap-3 text-center">
-              <div className="rounded-xl border border-blue-200 bg-blue-50/60 p-3">
-                <span className="text-[10px] font-black uppercase tracking-wider text-blue-700 block">Total Points</span>
-                <span className="font-display text-2xl font-black text-blue-900 font-mono mt-0.5 block">
+            <div className="grid grid-cols-3 gap-2.5 text-center">
+              <div className="rounded-xl border border-[#C8C0A5] bg-[#EDE8D2] p-3">
+                <span className="font-oswald text-[11px] font-black uppercase text-[#786E50] block">Total Points</span>
+                <span className="font-oswald text-2xl font-black text-[#141414] mt-0.5 block">
                   {selectedTeamModal.totalPoints}
                 </span>
               </div>
-              <div className="rounded-xl border border-yellow-200 bg-yellow-50/60 p-3">
-                <span className="text-[10px] font-black uppercase tracking-wider text-amber-800 block">WWCD Wins</span>
-                <span className="font-display text-2xl font-black text-amber-900 font-mono mt-0.5 block">
+              <div className="rounded-xl border border-[#C8C0A5] bg-[#EDE8D2] p-3">
+                <span className="font-oswald text-[11px] font-black uppercase text-[#786E50] block">WWCD Wins</span>
+                <span className="font-oswald text-2xl font-black text-[#141414] mt-0.5 block">
                   {selectedTeamModal.wins}
                 </span>
               </div>
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                <span className="text-[10px] font-black uppercase tracking-wider text-slate-600 block">Total Kills</span>
-                <span className="font-display text-2xl font-black text-slate-900 font-mono mt-0.5 block">
+              <div className="rounded-xl border border-[#C8C0A5] bg-[#EDE8D2] p-3">
+                <span className="font-oswald text-[11px] font-black uppercase text-[#786E50] block">Total Kills</span>
+                <span className="font-oswald text-2xl font-black text-[#141414] mt-0.5 block">
                   {selectedTeamModal.totalKills}
                 </span>
               </div>
             </div>
 
-            {/* Detail Rows */}
-            <div className="space-y-2 text-xs border-t border-slate-100 pt-3">
-              <div className="flex justify-between py-1.5 border-b border-slate-50 font-medium">
-                <span className="text-slate-600">Placement Points</span>
-                <span className="font-mono font-bold text-slate-900">{selectedTeamModal.placementPoints} pts</span>
+            <div className="space-y-2 text-xs border-t border-[#D8D0B5] pt-3 text-[#141414]">
+              <div className="flex justify-between py-1 border-b border-[#D8D0B5]/40 font-semibold font-oswald text-sm">
+                <span>Placement Points (POS. PTS)</span>
+                <span>{selectedTeamModal.placementPoints} pts</span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-slate-50 font-medium">
-                <span className="text-slate-600">Elimination Points</span>
-                <span className="font-mono font-bold text-slate-900">{selectedTeamModal.finishPoints} pts</span>
+              <div className="flex justify-between py-1 border-b border-[#D8D0B5]/40 font-semibold font-oswald text-sm">
+                <span>Elimination Points (FIN. PTS)</span>
+                <span>{selectedTeamModal.finishPoints} pts</span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-slate-50 font-medium">
-                <span className="text-slate-600">Matches Contested</span>
-                <span className="font-mono font-bold text-slate-900">{selectedTeamModal.matchesPlayed} matches</span>
-              </div>
-              <div className="flex justify-between py-1.5 font-medium">
-                <span className="text-slate-600">Avg Points Per Match</span>
-                <span className="font-mono font-bold text-blue-600">
-                  {selectedTeamModal.matchesPlayed > 0
-                    ? (selectedTeamModal.totalPoints / selectedTeamModal.matchesPlayed).toFixed(1)
-                    : "0.0"} pts/m
-                </span>
+              <div className="flex justify-between py-1 font-semibold font-oswald text-sm">
+                <span>Matches Contested</span>
+                <span>{selectedTeamModal.matchesPlayed} matches</span>
               </div>
             </div>
 
             <button
               onClick={() => setSelectedTeamModal(null)}
-              className="w-full rounded-xl bg-slate-100 py-2.5 text-xs font-black uppercase tracking-wider text-slate-700 hover:bg-slate-200 transition-colors"
+              className="w-full rounded-xl bg-[#141414] py-2.5 font-oswald text-sm font-bold uppercase text-white hover:bg-slate-800 transition-colors"
             >
-              Close Details
+              Close
             </button>
           </div>
         </div>
