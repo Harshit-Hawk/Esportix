@@ -21,6 +21,8 @@ import {
   RefreshCw,
   AlertCircle,
   Loader2,
+  Layers,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -201,20 +203,20 @@ export default function TournamentPublicPage() {
       />
 
       {/* Broadcast Navigation Tabs */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-esports-navy-border/80 pb-1">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-1">
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setActiveTab("standings")}
             className={cn(
               "flex items-center gap-2 rounded-xl px-4 py-2.5 font-display text-xs font-black uppercase tracking-wider transition-all",
               activeTab === "standings"
-                ? "bg-gradient-to-r from-esports-orange to-orange-600 text-white shadow-lg shadow-esports-orange/25"
-                : "border border-esports-navy-border bg-esports-navy-card/80 text-esports-silver hover:bg-esports-navy-light hover:text-white"
+                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900"
             )}
           >
-            <Trophy className="h-4 w-4" />
+            <Trophy className="h-4 w-4 text-yellow-300" />
             <span>Overall Standings</span>
-            <span className="rounded-full bg-black/30 px-2 py-0.5 text-[10px] font-mono">
+            <span className="rounded-full bg-black/20 px-2 py-0.5 text-[10px] font-mono">
               {standings.length}
             </span>
           </button>
@@ -224,13 +226,13 @@ export default function TournamentPublicPage() {
             className={cn(
               "flex items-center gap-2 rounded-xl px-4 py-2.5 font-display text-xs font-black uppercase tracking-wider transition-all",
               activeTab === "matches"
-                ? "bg-gradient-to-r from-esports-orange to-orange-600 text-white shadow-lg shadow-esports-orange/25"
-                : "border border-esports-navy-border bg-esports-navy-card/80 text-esports-silver hover:bg-esports-navy-light hover:text-white"
+                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900"
             )}
           >
             <Layers className="h-4 w-4" />
             <span>Match Breakdown</span>
-            <span className="rounded-full bg-black/30 px-2 py-0.5 text-[10px] font-mono">
+            <span className="rounded-full bg-black/20 px-2 py-0.5 text-[10px] font-mono">
               {matches.length}
             </span>
           </button>
@@ -240,13 +242,13 @@ export default function TournamentPublicPage() {
             className={cn(
               "flex items-center gap-2 rounded-xl px-4 py-2.5 font-display text-xs font-black uppercase tracking-wider transition-all",
               activeTab === "teams"
-                ? "bg-gradient-to-r from-esports-orange to-orange-600 text-white shadow-lg shadow-esports-orange/25"
-                : "border border-esports-navy-border bg-esports-navy-card/80 text-esports-silver hover:bg-esports-navy-light hover:text-white"
+                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900"
             )}
           >
             <Users className="h-4 w-4" />
             <span>Teams & Rosters</span>
-            <span className="rounded-full bg-black/30 px-2 py-0.5 text-[10px] font-mono">
+            <span className="rounded-full bg-black/20 px-2 py-0.5 text-[10px] font-mono">
               {teams.length}
             </span>
           </button>
@@ -256,8 +258,8 @@ export default function TournamentPublicPage() {
             className={cn(
               "flex items-center gap-2 rounded-xl px-4 py-2.5 font-display text-xs font-black uppercase tracking-wider transition-all",
               activeTab === "rules"
-                ? "bg-gradient-to-r from-esports-orange to-orange-600 text-white shadow-lg shadow-esports-orange/25"
-                : "border border-esports-navy-border bg-esports-navy-card/80 text-esports-silver hover:bg-esports-navy-light hover:text-white"
+                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900"
             )}
           >
             <Sparkles className="h-4 w-4" />
@@ -265,9 +267,9 @@ export default function TournamentPublicPage() {
           </button>
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-esports-silver">
-          <span>Sort By:</span>
-          <span className="font-bold text-white font-mono">OFFICIAL FORMULA</span>
+        <div className="flex items-center gap-2 text-xs text-slate-500">
+          <span>Sort Order:</span>
+          <span className="font-bold text-slate-900 font-mono">OFFICIAL FORMULA</span>
         </div>
       </div>
 
