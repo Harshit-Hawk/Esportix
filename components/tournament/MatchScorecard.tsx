@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Match, MatchResult, Team } from "@/types/database";
-import { MapPin, Trophy, Shield, Crosshair, Flame, CheckCircle2, Lock } from "lucide-react";
+import { MapPin, Trophy, Shield, Crosshair, Flame, CheckCircle2, Lock, CalendarPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface MatchScorecardProps {
@@ -19,6 +19,21 @@ export function MatchScorecard({
   onSelectMatch,
 }: MatchScorecardProps) {
   const sortedMatches = [...matches].sort((a, b) => a.match_number - b.match_number);
+
+  if (sortedMatches.length === 0) {
+    return (
+      <div className="rounded-xl border border-esports-navy-border bg-esports-navy-card p-12 text-center space-y-3 shadow-xl">
+        <CalendarPlus className="mx-auto h-12 w-12 text-esports-orange/60 mb-2" />
+        <h3 className="font-display text-lg font-black uppercase text-white">
+          No Matches Recorded Yet
+        </h3>
+        <p className="text-xs text-esports-silver max-w-md mx-auto">
+          Matches are created and broadcast dynamically as the tournament unfolds. Match breakdown scorecards will appear here once Match 1 begins.
+        </p>
+      </div>
+    );
+  }
+
   const activeMatch =
     sortedMatches.find((m) => m.id === selectedMatchId) ||
     sortedMatches.find((m) => m.status === "LIVE") ||
@@ -54,7 +69,7 @@ export function MatchScorecard({
                   ? "border-red-500/40 bg-red-500/10 text-red-300 hover:border-red-500"
                   : isCompleted
                   ? "border-esports-navy-border bg-esports-navy-card text-esports-silver hover:bg-esports-navy-light hover:text-white"
-                  : "border-esports-navy-border/40 bg-esports-navy-dark/60 text-zinc-600 cursor-not-allowed"
+                  : "border-esports-navy-border/40 bg-esports-navy-dark/60 text-zinc-600"
               )}
             >
               <div className="flex items-center gap-1.5 w-full justify-between">

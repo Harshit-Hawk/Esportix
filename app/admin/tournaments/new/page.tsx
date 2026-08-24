@@ -160,24 +160,7 @@ export default function CreateTournamentPage() {
         tie_breaker_priority: preset.rules.tie_breaker_priority,
       });
 
-      // 3. Insert Initial 6 Matches
-      const initialMatches = [
-        { match_number: 1, name: "Match 1", map_name: "Erangel", round_name: "Round 1", status: "SCHEDULED" },
-        { match_number: 2, name: "Match 2", map_name: "Miramar", round_name: "Round 1", status: "SCHEDULED" },
-        { match_number: 3, name: "Match 3", map_name: "Sanhok", round_name: "Round 1", status: "SCHEDULED" },
-        { match_number: 4, name: "Match 4", map_name: "Vikendi", round_name: "Round 1", status: "SCHEDULED" },
-        { match_number: 5, name: "Match 5", map_name: "Erangel", round_name: "Round 1", status: "SCHEDULED" },
-        { match_number: 6, name: "Match 6", map_name: "Miramar", round_name: "Grand Finals", status: "SCHEDULED" },
-      ];
-
-      for (const m of initialMatches) {
-        await supabase.from("matches").insert({
-          tournament_id: tourney.id,
-          ...m,
-        });
-      }
-
-      // 4. Audit Log
+      // 3. Audit Log
       await supabase.from("tournament_audit_logs").insert({
         tournament_id: tourney.id,
         user_name: "Super Admin",

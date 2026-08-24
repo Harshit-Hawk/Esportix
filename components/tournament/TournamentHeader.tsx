@@ -115,7 +115,9 @@ export function TournamentHeader({
 
                 {/* Match Progress Pill */}
                 <span className="inline-flex items-center gap-1 rounded-full bg-esports-navy-light/70 border border-esports-navy-border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-esports-gold">
-                  MATCH {completedMatchesCount} OF {totalMatchesCount}
+                  {totalMatchesCount > 0
+                    ? `MATCH ${completedMatchesCount} OF ${totalMatchesCount}`
+                    : "DYNAMIC MATCH SCHEDULE"}
                 </span>
               </div>
 
