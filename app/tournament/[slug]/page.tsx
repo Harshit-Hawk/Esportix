@@ -39,11 +39,9 @@ export default function TournamentPublicPage() {
   const [exportModalOpen, setExportModalOpen] = useState(false);
   const [selectedMatchId, setSelectedMatchId] = useState<string | undefined>(undefined);
 
-  // Fetch full tournament payload
   const fetchTournamentData = useCallback(async () => {
     if (!slug) return;
     try {
-      // 1. Fetch tournament
       const { data: tourney, error: tErr } = await supabase
         .from("tournaments")
         .select("*, game:games(*)")
@@ -51,13 +49,13 @@ export default function TournamentPublicPage() {
         .single();
 
       if (tErr || !tourney) {
+        console.error("Tournament not found:", tErr);
         setLoading(false);
         return;
       }
 
       setTournament(tourney);
 
-      // 2. Fetch scoring rules
       const { data: rules } = await supabase
         .from("scoring_rules")
         .select("*")
@@ -75,7 +73,6 @@ export default function TournamentPublicPage() {
         });
       }
 
-      // 3. Fetch teams with players
       const { data: teamsData } = await supabase
         .from("teams")
         .select("*, players(*)")
@@ -84,7 +81,6 @@ export default function TournamentPublicPage() {
 
       setTeams(teamsData || []);
 
-      // 4. Fetch matches with match results
       const { data: matchesData } = await supabase
         .from("matches")
         .select("*, match_results(*)")
@@ -93,7 +89,7 @@ export default function TournamentPublicPage() {
 
       setMatches(matchesData || []);
     } catch (err) {
-      console.error("Error loading tournament data:", err);
+      console.error("Error fetching tournament:", err);
     } finally {
       setLoading(false);
     }
@@ -103,12 +99,10 @@ export default function TournamentPublicPage() {
     fetchTournamentData();
   }, [fetchTournamentData]);
 
-  // Hook up realtime subscription
   const realtimeState = useTournamentRealtime(tournament?.id, () => {
     fetchTournamentData();
   });
 
-  // Calculate dynamic leaderboard standings
   const standings = useMemo<LeaderboardRow[]>(() => {
     if (!teams.length || !scoringRules) return [];
     return calculateLeaderboard({
@@ -123,28 +117,26 @@ export default function TournamentPublicPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3">
-        <Loader2 className="h-10 w-10 animate-spin text-esports-orange" />
-        <span className="font-display text-sm font-bold uppercase tracking-wider text-esports-silver">
-          Loading Tournament Standings...
-        </span>
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-2 text-slate-500">
+        <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+        <span className="text-xs font-medium">Loading Standings...</span>
       </div>
     );
   }
 
   if (!tournament) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-20 text-center">
-        <AlertCircle className="mx-auto h-12 w-12 text-esports-orange mb-3" />
-        <h2 className="font-display text-2xl font-black uppercase text-white">Tournament Not Found</h2>
-        <p className="text-sm text-esports-silver mt-2">
-          The tournament with slug &ldquo;{slug}&rdquo; could not be located.
+      <div className="mx-auto max-w-xl px-4 py-16 text-center space-y-3">
+        <AlertCircle className="mx-auto h-8 w-8 text-slate-400" />
+        <h2 className="text-lg font-bold text-slate-900">Tournament Not Found</h2>
+        <p className="text-xs text-slate-500">
+          The requested tournament &ldquo;{slug}&rdquo; could not be found.
         </p>
         <button
           onClick={() => (window.location.href = "/")}
-          className="mt-6 rounded-md bg-esports-orange px-5 py-2.5 text-xs font-black uppercase tracking-wider text-white hover:brightness-110"
+          className="rounded-lg bg-slate-900 px-4 py-2 text-xs font-medium text-white hover:bg-slate-800"
         >
-          Return to Tournaments
+          Back to Tournaments
         </button>
       </div>
     );
@@ -152,47 +144,36 @@ export default function TournamentPublicPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
-      {/* Realtime Live Status Banner */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-esports-navy-border/80 bg-esports-navy/90 px-4 py-2.5 text-xs">
-        <div className="flex items-center gap-2.5">
-          <span className="relative flex h-2.5 w-2.5">
+      {/* Realtime Status Indicator */}
+      <div className="flex items-center justify-between border-b border-slate-200 pb-3 text-xs text-slate-500">
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2 w-2">
+            {realtimeState.isConnected && (
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            )}
             <span
               className={cn(
-                "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-                realtimeState.isConnected ? "bg-emerald-400" : "bg-amber-400"
-              )}
-            />
-            <span
-              className={cn(
-                "relative inline-flex rounded-full h-2.5 w-2.5",
+                "relative inline-flex rounded-full h-2 w-2",
                 realtimeState.isConnected ? "bg-emerald-500" : "bg-amber-500"
               )}
             />
           </span>
-          <span className="font-bold text-white uppercase tracking-wider">
-            {realtimeState.isConnected ? "Realtime Sync Active" : "Connecting Live..."}
+          <span className="font-medium text-slate-700">
+            {realtimeState.isConnected ? "Live Sync Active" : "Connecting..."}
           </span>
-          <span className="text-esports-silver text-[11px] hidden sm:inline">
-            • Live scorecard updates automatically when scores are entered
-          </span>
+          <span className="text-slate-400 hidden sm:inline">• Standings update automatically</span>
         </div>
 
-        <div className="flex items-center gap-3 text-[11px] text-esports-silver">
-          {realtimeState.lastUpdated && (
-            <span>Updated {realtimeState.lastUpdated.toLocaleTimeString()}</span>
-          )}
-          <button
-            onClick={fetchTournamentData}
-            title="Force refresh data"
-            className="flex items-center gap-1 text-esports-orange hover:text-white transition-colors"
-          >
-            <RefreshCw className="h-3 w-3" />
-            <span>Refresh</span>
-          </button>
-        </div>
+        <button
+          onClick={fetchTournamentData}
+          className="inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 transition-colors"
+        >
+          <RefreshCw className="h-3 w-3" />
+          <span>Refresh</span>
+        </button>
       </div>
 
-      {/* Broadcast Header */}
+      {/* Tournament Header */}
       <TournamentHeader
         tournament={tournament}
         completedMatchesCount={completedMatchesCount}
@@ -202,21 +183,21 @@ export default function TournamentPublicPage() {
         onOpenExport={() => setExportModalOpen(true)}
       />
 
-      {/* Broadcast Navigation Tabs */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-1">
-        <div className="flex flex-wrap items-center gap-2">
+      {/* Navigation Tabs */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200">
+        <div className="flex items-center gap-1 -mb-px">
           <button
             onClick={() => setActiveTab("standings")}
             className={cn(
-              "flex items-center gap-2 rounded-xl px-4 py-2.5 font-display text-xs font-black uppercase tracking-wider transition-all",
+              "flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-xs font-semibold transition-colors",
               activeTab === "standings"
-                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-                : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-slate-600 hover:text-slate-900"
             )}
           >
-            <Trophy className="h-4 w-4 text-yellow-300" />
-            <span>Overall Standings</span>
-            <span className="rounded-full bg-black/20 px-2 py-0.5 text-[10px] font-mono">
+            <Trophy className="h-3.5 w-3.5" />
+            <span>Standings</span>
+            <span className="rounded bg-slate-100 px-1.5 py-0.2 text-[10px] font-mono text-slate-600 ml-1">
               {standings.length}
             </span>
           </button>
@@ -224,15 +205,15 @@ export default function TournamentPublicPage() {
           <button
             onClick={() => setActiveTab("matches")}
             className={cn(
-              "flex items-center gap-2 rounded-xl px-4 py-2.5 font-display text-xs font-black uppercase tracking-wider transition-all",
+              "flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-xs font-semibold transition-colors",
               activeTab === "matches"
-                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-                : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-slate-600 hover:text-slate-900"
             )}
           >
-            <Layers className="h-4 w-4" />
-            <span>Match Breakdown</span>
-            <span className="rounded-full bg-black/20 px-2 py-0.5 text-[10px] font-mono">
+            <Layers className="h-3.5 w-3.5" />
+            <span>Matches</span>
+            <span className="rounded bg-slate-100 px-1.5 py-0.2 text-[10px] font-mono text-slate-600 ml-1">
               {matches.length}
             </span>
           </button>
@@ -240,36 +221,28 @@ export default function TournamentPublicPage() {
           <button
             onClick={() => setActiveTab("teams")}
             className={cn(
-              "flex items-center gap-2 rounded-xl px-4 py-2.5 font-display text-xs font-black uppercase tracking-wider transition-all",
+              "flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-xs font-semibold transition-colors",
               activeTab === "teams"
-                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-                : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-slate-600 hover:text-slate-900"
             )}
           >
-            <Users className="h-4 w-4" />
+            <Users className="h-3.5 w-3.5" />
             <span>Teams & Rosters</span>
-            <span className="rounded-full bg-black/20 px-2 py-0.5 text-[10px] font-mono">
-              {teams.length}
-            </span>
           </button>
 
           <button
             onClick={() => setActiveTab("rules")}
             className={cn(
-              "flex items-center gap-2 rounded-xl px-4 py-2.5 font-display text-xs font-black uppercase tracking-wider transition-all",
+              "flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-xs font-semibold transition-colors",
               activeTab === "rules"
-                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-                : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-slate-600 hover:text-slate-900"
             )}
           >
-            <Sparkles className="h-4 w-4" />
-            <span>Scoring Rules</span>
+            <ScrollText className="h-3.5 w-3.5" />
+            <span>Rules</span>
           </button>
-        </div>
-
-        <div className="flex items-center gap-2 text-xs text-slate-500">
-          <span>Sort Order:</span>
-          <span className="font-bold text-slate-900 font-mono">OFFICIAL FORMULA</span>
         </div>
       </div>
 
@@ -287,83 +260,58 @@ export default function TournamentPublicPage() {
           matches={matches}
           teams={teams}
           selectedMatchId={selectedMatchId}
-          onSelectMatch={setSelectedMatchId}
+          onSelectMatch={(mId) => setSelectedMatchId(mId)}
         />
       )}
 
-      {activeTab === "teams" && <TeamRosterGrid teams={teams} />}
+      {activeTab === "teams" && (
+        <TeamRosterGrid teams={teams} />
+      )}
 
       {activeTab === "rules" && scoringRules && (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {/* Placement Points Table */}
-          <div className="rounded-xl border border-esports-navy-border bg-esports-navy-card p-6 shadow-xl">
-            <h3 className="font-display text-base font-black uppercase text-white mb-4 flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-esports-gold" />
-              <span>Placement Points System</span>
+          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
+            <h3 className="font-semibold text-slate-900 text-sm border-b border-slate-100 pb-2">
+              Scoring System Configuration
             </h3>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              {Object.entries(scoringRules.placement_rules || {}).map(([place, pts]) => (
-                <div
-                  key={place}
-                  className="flex items-center justify-between rounded-lg bg-esports-navy-dark/70 px-3 py-2 border border-esports-navy-border/40"
-                >
-                  <span className="font-bold text-esports-silver">Rank #{place}</span>
-                  <span className="font-display font-black text-esports-gold">{pts} PTS</span>
-                </div>
-              ))}
+            <div className="space-y-2 text-xs text-slate-600">
+              <div className="flex justify-between py-1 border-b border-slate-50">
+                <span>Points Per Kill</span>
+                <span className="font-mono font-semibold text-slate-900">{scoringRules.kill_points} pt</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-50">
+                <span>Winner Bonus</span>
+                <span className="font-mono font-semibold text-slate-900">{scoringRules.win_bonus} pts</span>
+              </div>
             </div>
           </div>
 
-          {/* Kill Multiplier & Tie-Breakers */}
-          <div className="space-y-6">
-            <div className="rounded-xl border border-esports-navy-border bg-esports-navy-card p-6 shadow-xl">
-              <h3 className="font-display text-base font-black uppercase text-white mb-3 flex items-center gap-2">
-                <Crosshair className="h-5 w-5 text-esports-orange" />
-                <span>Elimination / Kill Points</span>
-              </h3>
-              <div className="flex items-center justify-between rounded-lg bg-esports-navy-dark/70 p-4 border border-esports-navy-border/40">
-                <span className="text-xs text-esports-silver">Points awarded per confirmed kill</span>
-                <span className="font-display text-xl font-black text-esports-orange">
-                  {scoringRules.kill_points} PT / KILL
-                </span>
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-esports-navy-border bg-esports-navy-card p-6 shadow-xl">
-              <h3 className="font-display text-base font-black uppercase text-white mb-3 flex items-center gap-2">
-                <ScrollText className="h-5 w-5 text-esports-silver" />
-                <span>Configured Tie-Breaker Order</span>
-              </h3>
-              <ol className="space-y-2 text-xs">
-                {(scoringRules.tie_breaker_priority || []).map((crit, idx) => (
-                  <li
-                    key={crit}
-                    className="flex items-center gap-3 rounded-lg bg-esports-navy-dark/60 px-3 py-2 border border-esports-navy-border/40"
-                  >
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-esports-navy-light text-[10px] font-black text-esports-orange">
-                      {idx + 1}
-                    </span>
-                    <span className="font-bold text-white capitalize">
-                      {crit.replace("_", " ")}
-                    </span>
-                  </li>
+          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
+            <h3 className="font-semibold text-slate-900 text-sm border-b border-slate-100 pb-2">
+              Placement Points Scale
+            </h3>
+            <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4 text-xs font-mono">
+              {Object.keys(scoringRules.placement_rules || {})
+                .sort((a, b) => Number(a) - Number(b))
+                .map((p) => (
+                  <div key={p} className="flex justify-between rounded bg-slate-50 px-2 py-1 border border-slate-100">
+                    <span className="text-slate-500">#{p}</span>
+                    <span className="font-bold text-slate-900">{scoringRules.placement_rules[p]} pts</span>
+                  </div>
                 ))}
-              </ol>
             </div>
           </div>
         </div>
       )}
 
       {/* Export Modal */}
-      {tournament && (
-        <ExportModal
-          isOpen={exportModalOpen}
-          onClose={() => setExportModalOpen(false)}
-          tournament={tournament}
-          standings={standings}
-          scorecardElementId="overall-scorecard-table"
-        />
-      )}
+      <ExportModal
+        isOpen={exportModalOpen}
+        onClose={() => setExportModalOpen(false)}
+        tournament={tournament}
+        standings={standings}
+        completedMatchesCount={completedMatchesCount}
+      />
     </div>
   );
 }

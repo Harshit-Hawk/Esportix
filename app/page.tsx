@@ -6,17 +6,9 @@ import { supabase } from "@/lib/supabase/client";
 import { Tournament, Game } from "@/types/database";
 import {
   Trophy,
-  Flame,
-  Radio,
-  Gamepad2,
-  Calendar,
-  Users,
   Search,
   ArrowRight,
   ShieldCheck,
-  Zap,
-  Sparkles,
-  Layers,
   ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -60,60 +52,55 @@ export default function HomePage() {
   const featuredLive = tournaments.find((t) => t.status === "LIVE") || tournaments[0];
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-10">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 sm:p-12 shadow-xl">
-        <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-blue-500/10 blur-3xl" />
-        <div className="pointer-events-none absolute -left-24 -bottom-24 h-96 w-96 rounded-full bg-yellow-400/15 blur-3xl" />
-
-        <div className="relative z-10 max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-blue-600 shadow-sm">
-            <Sparkles className="h-3.5 w-3.5 text-yellow-500" />
-            <span>Collegiate & Pro Esports Scoring Platform</span>
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
+      {/* Minimal Hero */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-8 sm:p-10 shadow-sm space-y-4">
+        <div className="max-w-3xl space-y-3">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+            <span>Esports Tournament Scoring Engine</span>
           </div>
 
-          <h1 className="font-display text-3xl font-black uppercase tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
-            Tournament Scoring & <span className="text-blue-600">Live Leaderboard</span> Engine
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight sm:text-4xl">
+            Live Leaderboards & Tournament Management
           </h1>
 
-          <p className="text-sm sm:text-base text-slate-600 max-w-2xl leading-relaxed">
-            Broadcast-grade point calculations, customizable tie-breakers, real-time standings, and lightning-fast score entry for BGMI, Free Fire, Valorant, COD, and collegiate esports championships.
+          <p className="text-sm text-slate-600 leading-relaxed max-w-2xl">
+            Professional scoring rules, multi-tier tie breakers, dynamic matches, and real-time standings for competitive esports tournaments.
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-3">
             {featuredLive && (
               <Link
                 href={`/tournament/${featuredLive.slug}`}
-                className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-6 py-3.5 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-blue-500/20 hover:brightness-110 active:scale-95 transition-all"
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-medium text-white hover:bg-blue-700 transition-colors shadow-sm"
               >
-                <Radio className="h-4 w-4 animate-pulse text-yellow-300" />
-                <span>Watch Live Scorecard ({featuredLive.name.split(" ")[0]})</span>
-                <ArrowRight className="h-4 w-4 ml-1" />
+                <span>View Live Scorecard</span>
+                <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             )}
 
             <Link
               href="/admin"
-              className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-slate-700 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600 transition-all shadow-sm"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
             >
-              <ShieldCheck className="h-4 w-4 text-yellow-500" />
-              <span>Admin Control Room</span>
+              <ShieldCheck className="h-3.5 w-3.5 text-slate-500" />
+              <span>Organizer Portal</span>
             </Link>
           </div>
         </div>
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-4">
         {/* Game Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5 text-xs font-medium">
           <button
             onClick={() => setSelectedGameSlug("all")}
             className={cn(
-              "rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider transition-all",
+              "rounded-lg px-3 py-1.5 transition-colors",
               selectedGameSlug === "all"
-                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-                : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                ? "bg-slate-900 text-white"
+                : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
             )}
           >
             All Games
@@ -123,10 +110,10 @@ export default function HomePage() {
               key={g.id}
               onClick={() => setSelectedGameSlug(g.slug)}
               className={cn(
-                "rounded-xl px-4 py-2 text-xs font-black uppercase tracking-wider transition-all",
+                "rounded-lg px-3 py-1.5 transition-colors",
                 selectedGameSlug === g.slug
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-                  : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  ? "bg-slate-900 text-white"
+                  : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
               )}
             >
               {g.name}
@@ -135,14 +122,14 @@ export default function HomePage() {
         </div>
 
         {/* Search */}
-        <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+        <div className="relative w-full sm:w-64">
+          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             placeholder="Search tournament..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-9 pr-4 text-xs text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none shadow-sm"
+            className="w-full rounded-lg border border-slate-200 bg-white py-1.5 pl-8 pr-3 text-xs text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:outline-none shadow-sm"
           />
         </div>
       </div>
@@ -150,24 +137,18 @@ export default function HomePage() {
       {/* Tournaments Grid */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="font-display text-xl font-black uppercase text-slate-900 flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-yellow-500" />
-            <span>Active & Upcoming Tournaments ({filteredTournaments.length})</span>
+          <h2 className="text-sm font-semibold text-slate-900">
+            Tournaments ({filteredTournaments.length})
           </h2>
         </div>
 
         {filteredTournaments.length === 0 ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center text-slate-500 space-y-2 shadow-sm">
-            <Trophy className="mx-auto h-12 w-12 text-slate-300 mb-2" />
-            <h3 className="font-display text-base font-black uppercase text-slate-900">
-              No Tournaments Found
-            </h3>
-            <p className="text-xs text-slate-500">
-              Try adjusting your filter or search query.
-            </p>
+          <div className="rounded-xl border border-slate-200 bg-white p-12 text-center text-slate-500 space-y-1 shadow-sm">
+            <h3 className="font-semibold text-slate-900 text-sm">No Tournaments Found</h3>
+            <p className="text-xs text-slate-500">Try adjusting your filter or search query.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filteredTournaments.map((tourney) => {
               const isLive = tourney.status === "LIVE";
               const teamCount = (tourney as any).teams?.[0]?.count || 0;
@@ -177,61 +158,49 @@ export default function HomePage() {
                 <Link
                   key={tourney.id}
                   href={`/tournament/${tourney.slug}`}
-                  className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-blue-500 hover:shadow-md"
+                  className="group flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:border-slate-300 hover:shadow transition-all"
                 >
-                  <div className="space-y-4">
-                    {/* Header */}
+                  <div className="space-y-3">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 shadow-sm">
-                          {tourney.logo_url ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={tourney.logo_url}
-                              alt={tourney.name}
-                              className="h-full w-full object-cover rounded-xl"
-                            />
-                          ) : (
-                            <Trophy className="h-6 w-6 text-blue-600" />
-                          )}
-                        </div>
-                        <div>
-                          <h3 className="font-display text-base font-black uppercase text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition-colors">
                             {tourney.name}
                           </h3>
-                          <span className="text-xs font-bold text-slate-500">
-                            {tourney.game?.name || "BGMI"} • <span className="text-blue-600 font-mono">{tourney.format || "SQUAD"}</span>
-                          </span>
                         </div>
+                        <span className="text-xs text-slate-500 font-medium">
+                          {tourney.game?.name || "Game"} • <span className="text-slate-700 font-semibold">{tourney.format || "SQUAD"}</span>
+                        </span>
                       </div>
 
                       {isLive ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-red-50 border border-red-200 px-2.5 py-0.5 text-[10px] font-black uppercase text-red-600 animate-pulse">
-                          <Radio className="h-3 w-3" /> LIVE
+                        <span className="inline-flex items-center gap-1 rounded-md bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-700 border border-red-200">
+                          <span className="h-1.5 w-1.5 rounded-full bg-red-600" /> Live
                         </span>
                       ) : (
-                        <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold uppercase text-slate-600">
+                        <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
                           {tourney.status}
                         </span>
                       )}
                     </div>
 
-                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
-                      {tourney.description || "Live official leaderboard, match-by-match standings, and points scorecard."}
-                    </p>
+                    {tourney.description && (
+                      <p className="text-xs text-slate-500 line-clamp-2">
+                        {tourney.description}
+                      </p>
+                    )}
                   </div>
 
-                  {/* Footer Metrics */}
-                  <div className="mt-6 border-t border-slate-100 pt-4 flex items-center justify-between text-xs text-slate-500">
-                    <div className="flex items-center gap-3 font-mono">
+                  <div className="mt-5 border-t border-slate-100 pt-3 flex items-center justify-between text-xs text-slate-500">
+                    <div className="font-mono text-[11px]">
                       <span>{teamCount} Teams</span>
-                      <span>•</span>
+                      <span className="mx-1.5">•</span>
                       <span>{matchCount} Matches</span>
                     </div>
 
-                    <span className="flex items-center gap-1 font-black uppercase text-blue-600 group-hover:translate-x-1 transition-transform">
-                      <span>Scorecard</span>
-                      <ChevronRight className="h-4 w-4" />
+                    <span className="font-medium text-blue-600 flex items-center gap-0.5">
+                      <span>View</span>
+                      <ChevronRight className="h-3.5 w-3.5" />
                     </span>
                   </div>
                 </Link>
