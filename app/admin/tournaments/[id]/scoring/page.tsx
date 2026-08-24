@@ -77,8 +77,12 @@ export default function TournamentScoringAdminPage() {
       if (rules) {
         setKillPoints(Number(rules.kill_points) || 1);
         setWinBonus(Number(rules.win_bonus) || 0);
-        if (rules.placement_rules) setPlacementRules(rules.placement_rules);
-        if (rules.tie_breaker_priority) setTieBreakers(rules.tie_breaker_priority);
+        if (rules.placement_rules) {
+          setPlacementRules(rules.placement_rules);
+        }
+        if (rules.tie_breaker_priority && rules.tie_breaker_priority.length > 0) {
+          setTieBreakers(rules.tie_breaker_priority);
+        }
       }
     } catch (err) {
       console.error("Error loading scoring rules:", err);
@@ -92,42 +96,46 @@ export default function TournamentScoringAdminPage() {
   }, [loadData]);
 
   const handleApplyPreset = (presetKey: string) => {
-    const preset = SCORING_PRESETS[presetKey];
-    if (preset) {
-      setPlacementRules(preset.rules.placement_rules);
-      setKillPoints(preset.rules.kill_points);
-      setWinBonus(preset.rules.win_bonus);
-      setTieBreakers(preset.rules.tie_breaker_priority);
-    }
+    const p = SCORING_PRESETS[presetKey];
+    if (!p) return;
+    setPlacementRules(p.rules.placement_rules);
+    setKillPoints(p.rules.kill_points);
+    setWinBonus(p.rules.win_bonus);
+    setTieBreakers(p.rules.tie_breaker_priority);
   };
 
-  const handlePlacementChange = (place: string, pts: number) => {
+  const handlePlacementChange = (place: string, points: number) => {
     setPlacementRules((prev) => ({
       ...prev,
-      [place]: Math.max(0, pts),
+      [place]: Math.max(0, points),
     }));
   };
 
   const handleSave = async () => {
     try {
       setSaving(true);
-      await supabase.from("scoring_rules").upsert(
+      const { error } = await supabase.from("scoring_rules").upsert(
         {
           tournament_id: tournamentId,
           placement_rules: placementRules,
-          kill_points: killPoints,
-          win_bonus: winBonus,
+          kill_points: Number(killPoints),
+          win_bonus: Number(winBonus),
+          bonus_rules: {},
+          penalty_rules: {},
           tie_breaker_priority: tieBreakers,
         },
         { onConflict: "tournament_id" }
       );
+
+      if (error) throw new Error(error.message);
 
       await supabase.from("tournament_audit_logs").insert({
         tournament_id: tournamentId,
         user_name: "Admin",
         action: "UPDATE_SCORING_RULES",
         entity_type: "SCORING_RULES",
-        new_value: { killPoints, winBonus, tieBreakers },
+        entity_id: tournamentId,
+        new_value: { killPoints, winBonus, placementRules },
       });
 
       setSaveSuccess(true);
@@ -141,139 +149,152 @@ export default function TournamentScoringAdminPage() {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
-      {/* Breadcrumb */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-esports-navy-border pb-4">
+      {/* Top Breadcrumb Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-4">
         <div>
           <div className="flex items-center gap-3">
             <Link
               href="/admin"
-              className="flex items-center gap-1 text-xs font-bold uppercase text-esports-silver hover:text-white"
+              className="flex items-center gap-1 text-xs font-bold uppercase text-slate-500 hover:text-slate-900"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Control Room</span>
             </Link>
-            <span className="text-esports-navy-border">/</span>
-            <span className="text-xs font-bold text-white uppercase">{tournament?.name}</span>
+            <span className="text-slate-300">/</span>
+            <span className="text-xs font-bold text-slate-900 uppercase">{tournament?.name}</span>
           </div>
-          <h1 className="font-display text-2xl font-black uppercase text-white mt-1">
-            Tournament Scoring System Config
+          <h1 className="font-display text-2xl font-black uppercase text-slate-900 mt-1">
+            Scoring Rules & Tie-Breakers
           </h1>
         </div>
 
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-esports-orange to-orange-600 px-5 py-2 text-xs font-black uppercase tracking-wider text-white shadow hover:brightness-110 disabled:opacity-50"
+          className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-5 py-2.5 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-blue-500/20 hover:brightness-110 active:scale-95 disabled:opacity-50"
         >
-          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+          {saving ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Save className="h-4 w-4 text-yellow-300" />
+          )}
           <span>Save Scoring Rules</span>
         </button>
       </div>
 
       {saveSuccess && (
-        <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs font-bold text-emerald-300 flex items-center gap-2">
-          <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-          <span>✓ Scoring rules saved and live leaderboard recalculation updated!</span>
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-xs font-bold text-emerald-800 flex items-center gap-2 shadow-sm">
+          <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+          <span>✓ Scoring rules successfully updated and live recalculations applied!</span>
         </div>
       )}
 
-      {/* Preset Quick Loader */}
-      <div className="rounded-xl border border-esports-navy-border bg-esports-navy-card p-5 shadow-lg space-y-3">
-        <h3 className="font-display text-sm font-black uppercase text-white flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-esports-gold" />
-          <span>Load Standard Esports Presets</span>
-        </h3>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      {/* Presets Bar */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-yellow-500" />
+            <span>Apply Standard Presets</span>
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
           {Object.entries(SCORING_PRESETS).map(([key, item]) => (
             <button
               key={key}
               type="button"
               onClick={() => handleApplyPreset(key)}
-              className="rounded-lg border border-esports-navy-border bg-esports-navy-dark px-3 py-2 text-left text-xs font-bold text-esports-silver hover:border-esports-orange hover:text-white transition-all"
+              className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-1.5 text-xs font-bold uppercase text-slate-700 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600 shadow-sm"
             >
-              <div className="text-white font-display uppercase">{item.name}</div>
+              {item.name}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        {/* Placement Points Grid */}
-        <div className="rounded-xl border border-esports-navy-border bg-esports-navy-card p-6 shadow-xl space-y-4">
-          <h3 className="font-display text-base font-black uppercase text-white flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-esports-gold" />
-            <span>Placement Points (Ranks 1 - 16)</span>
-          </h3>
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            {Array.from({ length: 16 }, (_, i) => (i + 1).toString()).map((place) => (
-              <div
-                key={place}
-                className="flex items-center justify-between rounded-lg bg-esports-navy-dark px-3 py-2 border border-esports-navy-border"
-              >
-                <span className="font-bold text-esports-silver">Rank #{place}</span>
-                <div className="flex items-center gap-1.5">
-                  <input
-                    type="number"
-                    min={0}
-                    value={placementRules[place] !== undefined ? placementRules[place] : 0}
-                    onChange={(e) => handlePlacementChange(place, Number(e.target.value))}
-                    className="w-14 rounded border border-esports-navy-border bg-esports-navy py-1 text-center font-display font-black text-esports-gold"
-                  />
-                  <span className="text-[10px] text-esports-silver">PTS</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+      {/* Main Form Grids */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {/* Core Points Config */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
+          <h2 className="font-display text-base font-black uppercase text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+            <Crosshair className="h-4 w-4 text-blue-600" />
+            <span>Elimination & Victory Points</span>
+          </h2>
 
-        {/* Multipliers & Tie-Breakers */}
-        <div className="space-y-6">
-          {/* Kill Points Multiplier */}
-          <div className="rounded-xl border border-esports-navy-border bg-esports-navy-card p-6 shadow-xl space-y-4">
-            <h3 className="font-display text-base font-black uppercase text-white flex items-center gap-2">
-              <Crosshair className="h-5 w-5 text-esports-orange" />
-              <span>Kill / Elimination Points Multiplier</span>
-            </h3>
-            <div className="flex items-center justify-between rounded-lg bg-esports-navy-dark p-4 border border-esports-navy-border">
-              <span className="text-xs text-esports-silver">Points per kill confirmed:</span>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  min={0}
-                  step={0.5}
-                  value={killPoints}
-                  onChange={(e) => setKillPoints(Number(e.target.value))}
-                  className="w-20 rounded-md border border-esports-navy-border bg-esports-navy px-3 py-1.5 text-center font-display text-lg font-black text-esports-orange"
-                />
-                <span className="text-xs font-bold text-esports-silver">PT / KILL</span>
-              </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold uppercase text-slate-600 mb-1.5">
+                Points Per Kill / Elim
+              </label>
+              <input
+                type="number"
+                min={0}
+                value={killPoints}
+                onChange={(e) => setKillPoints(Number(e.target.value))}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-mono font-bold text-slate-900 focus:border-blue-500 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase text-slate-600 mb-1.5">
+                Extra Win / WWCD Bonus
+              </label>
+              <input
+                type="number"
+                min={0}
+                value={winBonus}
+                onChange={(e) => setWinBonus(Number(e.target.value))}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-mono font-bold text-slate-900 focus:border-blue-500 focus:outline-none"
+              />
             </div>
           </div>
 
-          {/* Tie-Breaker Priority */}
-          <div className="rounded-xl border border-esports-navy-border bg-esports-navy-card p-6 shadow-xl space-y-4">
-            <h3 className="font-display text-base font-black uppercase text-white flex items-center gap-2">
-              <Sliders className="h-5 w-5 text-esports-silver" />
-              <span>Tie-Breaking Priority Sequence</span>
-            </h3>
-            <p className="text-xs text-esports-silver">
-              When teams have equal overall points, rank is determined using this order:
-            </p>
-            <ol className="space-y-2 text-xs">
-              {tieBreakers.map((crit, idx) => (
-                <li
-                  key={crit}
-                  className="flex items-center gap-3 rounded-lg bg-esports-navy-dark px-3 py-2 border border-esports-navy-border"
+          <div className="pt-2">
+            <label className="block text-xs font-bold uppercase text-slate-600 mb-2">
+              Tie-Breaker Priority Chain
+            </label>
+            <div className="space-y-1.5">
+              {tieBreakers.map((t, idx) => (
+                <div
+                  key={t}
+                  className="flex items-center justify-between rounded-xl bg-slate-50 px-3.5 py-2 text-xs border border-slate-200 text-slate-800"
                 >
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-esports-orange text-[10px] font-black text-white">
-                    {idx + 1}
+                  <span className="font-bold">
+                    {idx + 1}. {t.replace(/_/g, " ").toUpperCase()}
                   </span>
-                  <span className="font-bold text-white capitalize">
-                    {crit.replace("_", " ")}
-                  </span>
-                </li>
+                  <span className="text-[10px] text-slate-400 font-mono">Priority #{idx + 1}</span>
+                </div>
               ))}
-            </ol>
+            </div>
+          </div>
+        </div>
+
+        {/* Placement Points Table */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+          <h2 className="font-display text-base font-black uppercase text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+            <Trophy className="h-4 w-4 text-yellow-500" />
+            <span>Placement Points Scale</span>
+          </h2>
+
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 max-h-96 overflow-y-auto pr-1">
+            {Object.keys(placementRules)
+              .sort((a, b) => Number(a) - Number(b))
+              .map((place) => (
+                <div
+                  key={place}
+                  className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2.5"
+                >
+                  <span className="font-display text-xs font-black text-slate-700">
+                    #{place}
+                  </span>
+                  <input
+                    type="number"
+                    min={0}
+                    value={placementRules[place]}
+                    onChange={(e) => handlePlacementChange(place, Number(e.target.value))}
+                    className="w-14 rounded-lg border border-slate-200 bg-white py-1 text-center font-mono text-xs font-bold text-slate-900 focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+              ))}
           </div>
         </div>
       </div>
