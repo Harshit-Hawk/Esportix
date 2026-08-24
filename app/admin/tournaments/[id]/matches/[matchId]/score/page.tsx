@@ -27,6 +27,8 @@ import {
   Zap,
   Loader2,
   FileCheck,
+  User,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -64,7 +66,6 @@ export default function RapidScoreEntryPage() {
 
   const loadData = useCallback(async () => {
     try {
-      // 1. Fetch tournament
       const { data: tourney } = await supabase
         .from("tournaments")
         .select("*")
@@ -72,7 +73,6 @@ export default function RapidScoreEntryPage() {
         .single();
       setTournament(tourney);
 
-      // 2. Fetch match
       const { data: matchData } = await supabase
         .from("matches")
         .select("*")
@@ -80,7 +80,6 @@ export default function RapidScoreEntryPage() {
         .single();
       setMatch(matchData);
 
-      // 3. Fetch scoring rules
       const { data: rules } = await supabase
         .from("scoring_rules")
         .select("*")
@@ -97,14 +96,12 @@ export default function RapidScoreEntryPage() {
       };
       setScoringRules(activeRules);
 
-      // 4. Fetch teams
       const { data: teams } = await supabase
         .from("teams")
         .select("*")
         .eq("tournament_id", tournamentId)
         .order("seed", { ascending: true });
 
-      // 5. Fetch existing match results
       const { data: results } = await supabase
         .from("match_results")
         .select("*")
@@ -152,7 +149,6 @@ export default function RapidScoreEntryPage() {
         };
       });
 
-      // Sort: placed teams first by placement asc, then unplaced by seed
       rows.sort((a, b) => {
         if (a.placement > 0 && b.placement > 0) return a.placement - b.placement;
         if (a.placement > 0) return -1;
@@ -173,7 +169,8 @@ export default function RapidScoreEntryPage() {
     loadData();
   }, [loadData]);
 
-  // Handle live score input changes
+  const isSolo = tournament?.format === "SOLO";
+
   const handleFieldChange = (
     teamId: string,
     field: "placement" | "kills" | "bonus" | "penalty",
@@ -209,7 +206,6 @@ export default function RapidScoreEntryPage() {
     });
   };
 
-  // Helper to auto-fill sequential placements for unassigned teams
   const handleAutoFillPlacements = () => {
     if (!scoringRules) return;
 
@@ -235,11 +231,9 @@ export default function RapidScoreEntryPage() {
     });
   };
 
-  // Save All Scores Function
   const handleSaveResults = async (publish: boolean = false) => {
     if (!scoringRules || !match) return;
 
-    // Validate
     const validation = validateMatchResults(
       scoreRows.map((r) => ({
         team_id: r.teamId,
@@ -260,7 +254,6 @@ export default function RapidScoreEntryPage() {
     try {
       setIsSaving(true);
 
-      // Save each result row
       for (const row of scoreRows) {
         const { error } = await supabase.from("match_results").upsert(
           {
@@ -280,7 +273,6 @@ export default function RapidScoreEntryPage() {
 
         if (error) throw new Error(error.message);
 
-        // Record audit log if score changed
         const orig = originalScores[row.teamId];
         if (!orig || orig.placement !== row.placement || orig.kills !== row.kills) {
           await supabase.from("tournament_audit_logs").insert({
@@ -301,7 +293,6 @@ export default function RapidScoreEntryPage() {
         }
       }
 
-      // Update match status
       const newStatus = publish ? "COMPLETED" : "LIVE";
       await supabase.from("matches").update({
         status: newStatus,
@@ -311,7 +302,7 @@ export default function RapidScoreEntryPage() {
 
       setSaveSuccessMessage(
         publish
-          ? `✓ Match ${match.match_number} Published & Locked to Public Scoreboard!`
+          ? `✓ Match ${match.match_number} Published & Broadcast to Live Scorecard!`
           : `✓ Draft scores saved for Match ${match.match_number}`
       );
 
@@ -324,8 +315,6 @@ export default function RapidScoreEntryPage() {
       setIsSaving(false);
     }
   };
-
-  const hasDirtyRows = scoreRows.some((r) => r.isDirty);
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
@@ -347,8 +336,11 @@ export default function RapidScoreEntryPage() {
           </div>
           <div className="flex items-center gap-3 mt-1">
             <h1 className="font-display text-2xl font-black uppercase text-white">
-              Score Entry Control Room
+              {isSolo ? "Solo Combatant Score Entry" : "Rapid Score Entry Control Room"}
             </h1>
+            <span className="rounded-full bg-esports-orange/20 border border-esports-orange/40 px-2.5 py-0.5 text-[10px] font-black uppercase text-esports-orange">
+              {tournament?.format || "SQUAD"}
+            </span>
             {match?.is_locked && (
               <span className="inline-flex items-center gap-1 rounded-md bg-esports-navy-light px-2.5 py-0.5 text-xs font-black uppercase text-esports-gold border border-esports-gold/30">
                 <Lock className="h-3 w-3" /> Locked
@@ -363,9 +355,9 @@ export default function RapidScoreEntryPage() {
             onClick={handleAutoFillPlacements}
             type="button"
             className="rounded-lg border border-esports-navy-border bg-esports-navy-light px-3 py-2 text-xs font-bold uppercase text-esports-cream hover:bg-esports-navy hover:text-white"
-            title="Auto-fill 1st to 16th place sequentially"
+            title={`Auto-fill sequential placements 1 to ${scoreRows.length}`}
           >
-            Auto-Fill 1-16
+            Auto-Fill 1-{scoreRows.length}
           </button>
 
           <button
@@ -387,7 +379,7 @@ export default function RapidScoreEntryPage() {
             ) : (
               <FileCheck className="h-4 w-4" />
             )}
-            <span>Publish & Lock</span>
+            <span>Publish & Broadcast Live</span>
           </button>
         </div>
       </div>
@@ -404,7 +396,7 @@ export default function RapidScoreEntryPage() {
             target="_blank"
             className="underline hover:text-white"
           >
-            View Live Scoreboard &rarr;
+            Open Live Scorecard &rarr;
           </Link>
         </div>
       )}
@@ -419,33 +411,31 @@ export default function RapidScoreEntryPage() {
 
       {/* Main Dense Score Entry Grid */}
       <div className="overflow-hidden rounded-xl border border-esports-navy-border bg-esports-navy-card shadow-2xl">
-        {/* Table Banner */}
         <div className="flex items-center justify-between border-b border-esports-navy-border bg-gradient-to-r from-esports-navy to-esports-navy-light px-5 py-3 text-xs">
           <div className="flex items-center gap-3">
             <Crosshair className="h-4 w-4 text-esports-orange" />
             <span className="font-display font-black uppercase tracking-wider text-white">
-              {match?.name} Scorecard Table
+              {match?.name} Score Entry ({scoreRows.length} {isSolo ? "Combatants" : "Teams"})
             </span>
             <span className="text-esports-silver font-mono">
-              • Scoring Rule: {scoringRules?.kill_points} pt/kill
+              • Rule: {scoringRules?.kill_points} pt/kill
             </span>
           </div>
           <div className="text-esports-silver text-[11px]">
-            Tip: Press <kbd className="rounded bg-esports-navy-dark px-1.5 py-0.5 border border-esports-navy-border font-mono text-white">Tab</kbd> to quickly jump across inputs
+            Tip: Press <kbd className="rounded bg-esports-navy-dark px-1.5 py-0.5 border border-esports-navy-border font-mono text-white">Tab</kbd> to advance rows
           </div>
         </div>
 
-        {/* Rapid Input Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-esports-navy-border bg-esports-navy-dark text-[11px] font-black uppercase tracking-wider text-esports-silver">
                 <th className="py-3 pl-4 pr-2 text-center w-12"># Seed</th>
-                <th className="py-3 px-3">Team</th>
+                <th className="py-3 px-3">{isSolo ? "Player" : "Team"}</th>
                 <th className="py-3 px-3 text-center w-28">Placement</th>
-                <th className="py-3 px-3 text-center w-24">Kills</th>
+                <th className="py-3 px-3 text-center w-24">Elims/Kills</th>
                 <th className="py-3 px-3 text-center hidden md:table-cell">Place Pts</th>
-                <th className="py-3 px-3 text-center hidden md:table-cell">Kill Pts</th>
+                <th className="py-3 px-3 text-center hidden md:table-cell">Finish Pts</th>
                 <th className="py-3 px-3 text-center w-20 hidden lg:table-cell">Bonus</th>
                 <th className="py-3 px-3 text-center w-20 hidden lg:table-cell">Penalty</th>
                 <th className="py-3 pl-3 pr-6 text-right font-black text-white w-32">Total Points</th>
@@ -467,16 +457,14 @@ export default function RapidScoreEntryPage() {
                         : "bg-esports-navy-card hover:bg-esports-navy-light/40"
                     )}
                   >
-                    {/* Seed */}
                     <td className="py-2.5 pl-4 pr-2 text-center font-mono text-xs text-esports-silver">
                       #{row.seed}
                     </td>
 
-                    {/* Team Name */}
                     <td className="py-2.5 px-3">
                       <div className="flex items-center gap-2.5">
                         <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-esports-navy-dark border border-esports-navy-border font-display text-[10px] font-bold text-esports-orange">
-                          {row.teamShortName.slice(0, 3)}
+                          {isSolo ? <User className="h-3.5 w-3.5" /> : row.teamShortName.slice(0, 3)}
                         </div>
                         <div className="flex flex-col">
                           <span className="font-display font-black text-white text-sm">
@@ -489,12 +477,11 @@ export default function RapidScoreEntryPage() {
                       </div>
                     </td>
 
-                    {/* Placement Input */}
                     <td className="py-2.5 px-3 text-center">
                       <input
                         type="number"
                         min={0}
-                        max={32}
+                        max={100}
                         value={row.placement === 0 ? "" : row.placement}
                         placeholder="Place"
                         onChange={(e) =>
@@ -509,7 +496,6 @@ export default function RapidScoreEntryPage() {
                       />
                     </td>
 
-                    {/* Kills Input */}
                     <td className="py-2.5 px-3 text-center">
                       <input
                         type="number"
@@ -524,17 +510,14 @@ export default function RapidScoreEntryPage() {
                       />
                     </td>
 
-                    {/* Computed Placement Pts */}
                     <td className="py-2.5 px-3 text-center hidden md:table-cell font-mono text-xs text-esports-cream">
                       {row.placementPoints}
                     </td>
 
-                    {/* Computed Finish/Kill Pts */}
                     <td className="py-2.5 px-3 text-center hidden md:table-cell font-mono text-xs text-esports-cream">
                       {row.finishPoints}
                     </td>
 
-                    {/* Bonus Input */}
                     <td className="py-2.5 px-3 text-center hidden lg:table-cell">
                       <input
                         type="number"
@@ -548,7 +531,6 @@ export default function RapidScoreEntryPage() {
                       />
                     </td>
 
-                    {/* Penalty Input */}
                     <td className="py-2.5 px-3 text-center hidden lg:table-cell">
                       <input
                         type="number"
@@ -562,7 +544,6 @@ export default function RapidScoreEntryPage() {
                       />
                     </td>
 
-                    {/* Auto Computed Total Points */}
                     <td className="py-2.5 pl-3 pr-6 text-right">
                       <div className="inline-flex items-center justify-end">
                         <span

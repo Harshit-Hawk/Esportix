@@ -15,6 +15,8 @@ import {
   Sparkles,
   Info,
   Filter,
+  User,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,7 +24,7 @@ interface StandingsTableProps {
   standings: LeaderboardRow[];
   tournament: Tournament;
   completedMatchesCount: number;
-  qualifyingCutoff?: number; // e.g. Top 8 qualify for Grand Finals
+  qualifyingCutoff?: number;
   tableId?: string;
 }
 
@@ -35,6 +37,9 @@ export function StandingsTable({
 }: StandingsTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("All");
+
+  const isSolo = tournament.format === "SOLO";
+  const isDuo = tournament.format === "DUO";
 
   // Get unique groups
   const groups = ["All", ...Array.from(new Set(standings.map((r) => r.team.group_name).filter(Boolean)))];
@@ -77,7 +82,7 @@ export function StandingsTable({
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-esports-silver" />
           <input
             type="text"
-            placeholder="Search team or tag..."
+            placeholder={isSolo ? "Search player or IGN..." : "Search team or tag..."}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full rounded-lg border border-esports-navy-border bg-esports-navy-card py-2 pl-9 pr-4 text-xs text-white placeholder-esports-silver/60 focus:border-esports-orange focus:outline-none focus:ring-1 focus:ring-esports-orange transition-all"
@@ -95,7 +100,7 @@ export function StandingsTable({
           <div className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-esports-gold" />
             <span className="font-display text-sm font-black uppercase tracking-wider text-white">
-              Official Leaderboard Standings
+              {isSolo ? "Solo Player Rankings" : isDuo ? "Duo Standings" : "Official Leaderboard Standings"}
             </span>
             <span className="text-xs text-esports-silver">
               • After Match {completedMatchesCount}
@@ -118,7 +123,7 @@ export function StandingsTable({
             <thead>
               <tr className="border-b border-esports-navy-border bg-esports-navy-dark/90 text-[11px] font-black uppercase tracking-wider text-esports-silver">
                 <th className="py-3.5 pl-4 pr-2 text-center w-14"># Rank</th>
-                <th className="py-3.5 px-3">Team</th>
+                <th className="py-3.5 px-3">{isSolo ? "Player / Combatant" : isDuo ? "Duo Pair" : "Squad / Team"}</th>
                 <th className="py-3.5 px-3 text-center hidden sm:table-cell">Group</th>
                 <th className="py-3.5 px-3 text-center">Matches</th>
                 <th className="py-3.5 px-3 text-center text-esports-gold">
@@ -129,7 +134,7 @@ export function StandingsTable({
                 </th>
                 <th className="py-3.5 px-3 text-center hidden md:table-cell">Place Pts</th>
                 <th className="py-3.5 px-3 text-center hidden md:table-cell">Finish Pts</th>
-                <th className="py-3.5 px-3 text-center hidden lg:table-cell">Kills</th>
+                <th className="py-3.5 px-3 text-center hidden lg:table-cell">Elims/Kills</th>
                 <th className="py-3.5 px-3 text-center hidden lg:table-cell">Pen/Bonus</th>
                 <th className="py-3.5 pl-3 pr-6 text-right font-black text-white text-xs">
                   TOTAL PTS
@@ -140,7 +145,7 @@ export function StandingsTable({
               {filteredStandings.length === 0 ? (
                 <tr>
                   <td colSpan={10} className="py-12 text-center text-esports-silver">
-                    No teams found matching your search.
+                    No participants found matching your search.
                   </td>
                 </tr>
               ) : (
@@ -148,7 +153,6 @@ export function StandingsTable({
                   const isChampion = row.rank === 1;
                   const isSecond = row.rank === 2;
                   const isThird = row.rank === 3;
-                  const isCutoff = row.rank === qualifyingCutoff;
 
                   return (
                     <tr
@@ -218,11 +222,13 @@ export function StandingsTable({
                         </div>
                       </td>
 
-                      {/* Team Logo & Name */}
+                      {/* Team / Player Logo & Name */}
                       <td className="py-3 px-3">
                         <div className="flex items-center gap-3">
                           <div className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-md border border-esports-navy-border bg-esports-navy-dark">
-                            {row.team.logo_url ? (
+                            {isSolo ? (
+                              <User className="h-4 w-4 text-esports-orange" />
+                            ) : row.team.logo_url ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img
                                 src={row.team.logo_url}
@@ -332,7 +338,7 @@ export function StandingsTable({
         <div className="flex flex-wrap items-center justify-between border-t border-esports-navy-border bg-esports-navy-dark/90 px-5 py-3 text-[11px] text-esports-silver">
           <div>
             Showing <span className="font-bold text-white">{filteredStandings.length}</span> of{" "}
-            <span className="font-bold text-white">{standings.length}</span> competing teams
+            <span className="font-bold text-white">{standings.length}</span> {isSolo ? "players" : "teams"}
           </div>
           <div className="flex items-center gap-4">
             <span>Tie-Breaker: Total Pts &gt; Finish Pts &gt; Place Pts &gt; Wins</span>
