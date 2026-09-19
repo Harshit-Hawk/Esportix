@@ -89,7 +89,7 @@ export function useTournamentRealtime(
         },
         () => handlePayload("scoring_rules")
       )
-      .subscribe((status) => {
+      .subscribe((status: any) => {
         setState((prev) => ({
           ...prev,
           isConnected: status === "SUBSCRIBED",

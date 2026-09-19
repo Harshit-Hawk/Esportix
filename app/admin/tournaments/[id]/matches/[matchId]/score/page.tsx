@@ -102,11 +102,11 @@ export default function RapidScoreEntryPage() {
         .eq("match_id", matchId);
 
       const resultMap = new Map<string, MatchResult>();
-      (results || []).forEach((r) => resultMap.set(r.team_id, r));
+      (results || []).forEach((r: any) => resultMap.set(r.team_id, r));
 
       const origMap: Record<string, { placement: number; kills: number; total: number }> = {};
 
-      const rows: EditableScoreRow[] = (teams || []).map((t) => {
+      const rows: EditableScoreRow[] = (teams || []).map((t: any) => {
         const existing = resultMap.get(t.id);
         const placement = existing ? existing.placement : 0;
         const kills = existing ? existing.kills : 0;

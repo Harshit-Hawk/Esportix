@@ -19,10 +19,11 @@ import {
   Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DEFAULT_GAMES } from "@/lib/games";
 
 export default function HomePage() {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
-  const [games, setGames] = useState<Game[]>([]);
+  const [games, setGames] = useState<Game[]>(DEFAULT_GAMES);
   const [selectedGameSlug, setSelectedGameSlug] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
@@ -30,8 +31,10 @@ export default function HomePage() {
   useEffect(() => {
     async function loadData() {
       try {
-        const { data: gamesData } = await supabase.from("games").select("*");
-        setGames(gamesData || []);
+        const { data: gamesData, error: gamesErr } = await supabase.from("games").select("*");
+        if (!gamesErr && gamesData && gamesData.length > 0) {
+          setGames(gamesData);
+        }
 
         const { data: tourneyData } = await supabase
           .from("tournaments")

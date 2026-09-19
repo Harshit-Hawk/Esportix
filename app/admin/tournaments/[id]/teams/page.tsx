@@ -19,8 +19,10 @@ import {
   CheckCircle,
   Gamepad2,
   Layers,
+  FileSpreadsheet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ExcelUploadModal } from "@/components/tournament/ExcelUploadModal";
 
 export default function TournamentTeamsAdminPage() {
   const params = useParams();
@@ -30,6 +32,7 @@ export default function TournamentTeamsAdminPage() {
   const [teams, setTeams] = useState<(Team & { players?: Player[] })[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddTeam, setShowAddTeam] = useState(false);
+  const [showExcelModal, setShowExcelModal] = useState(false);
 
   // Standard Team Form State
   const [teamName, setTeamName] = useState("");
@@ -241,6 +244,15 @@ export default function TournamentTeamsAdminPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setShowExcelModal(true)}
+            className="flex items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-50 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-emerald-700 shadow-2xs hover:bg-emerald-100 hover:border-emerald-400 transition-all"
+          >
+            <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
+            <span>Import from Excel / CSV</span>
+          </button>
+
           <button
             onClick={() => setShowAddTeam(!showAddTeam)}
             className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-4 py-2 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-blue-500/20 hover:brightness-110"
@@ -567,6 +579,15 @@ export default function TournamentTeamsAdminPage() {
           </div>
         ))}
       </div>
+
+      <ExcelUploadModal
+        isOpen={showExcelModal}
+        onClose={() => setShowExcelModal(false)}
+        tournamentId={tournamentId}
+        currentTeamCount={teams.length}
+        onImportSuccess={loadData}
+        isSolo={isSolo}
+      />
     </div>
   );
 }

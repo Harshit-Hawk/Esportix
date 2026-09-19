@@ -4,7 +4,7 @@ import { seedDatabase } from "../lib/seed-data";
 async function main() {
   console.log("Seeding database with BGMI Campus Showdown 2026...");
   const supabase = createServerClient();
-  const res = await seedDatabase(supabase);
+  const res = await seedDatabase(supabase as any);
   console.log("Seed finished successfully:", res);
 }
 

@@ -5,7 +5,7 @@ import { seedDatabase } from "@/lib/seed-data";
 export async function GET() {
   try {
     const supabase = createServerClient();
-    const result = await seedDatabase(supabase);
+    const result = await seedDatabase(supabase as any);
     return NextResponse.json({ message: "Seed successful", result });
   } catch (err: any) {
     console.error("Seed error:", err);
